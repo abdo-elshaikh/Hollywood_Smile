@@ -1,0 +1,191 @@
+@keyframes scroll {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-100%);
+    }
+}
+
+/* scroll reverse */
+@keyframes scrollReverse {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes slideIn {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideOut {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+@keyframes rotate {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes blink {
+    0% {
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes ease {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+
+/* Container for the Before-After Slider */
+.before-after-slider {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    height: 400px;
+    cursor: ew-resize;
+}
+
+/* Before Image Styling */
+.before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%; /* Initial value, will be dynamically changed with JavaScript */
+    height: 100%;
+    overflow: hidden;
+}
+
+.before img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* After Image Styling */
+.after {
+    position: absolute;
+    top: 0;
+    left: 50%; /* Initial value, will be dynamically changed with JavaScript */
+    width: 50%; /* Initial value, will be dynamically changed with JavaScript */
+    height: 100%;
+    overflow: hidden;
+}
+
+.after img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Resize Button Styling */
+.resize-button {
+    position: absolute;
+    top: 50%;
+    left: 50%; /* Initial position based on rangeValue */
+    transform: translateX(-50%) translateY(-50%);
+    background-color: #fff;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.resize-button svg {
+    fill: #333;
+    width: 20px;
+    height: 20px;
+}
+
+/* Media Query for Mobile Devices */
+@media (max-width: 768px) {
+    .before-after-slider {
+        height: 300px; /* Smaller height on mobile */
+    }
+
+    .resize-button {
+        width: 25px;
+        height: 25px;
+    }
+
+    .resize-button svg {
+        width: 18px;
+        height: 18px;
+    }
+}
