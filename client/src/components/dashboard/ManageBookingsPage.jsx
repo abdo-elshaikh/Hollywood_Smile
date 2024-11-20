@@ -10,11 +10,12 @@ import {
   Button,
   Chip,
 } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
-import { Visibility, Delete } from "@mui/icons-material";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { Visibility, Delete, Done, Cancel } from "@mui/icons-material";
 import bookingService from "../../services/bookingService";
 import { useSnackbar } from "../../contexts/SnackbarProvider";
 import ConfirmationDialog from "../common/ConfirmationDialog";
+import SendSMS from "../SendSMS";
 
 const ManageBookingsPage = () => {
   const [bookings, setBookings] = useState([]);
@@ -115,10 +116,15 @@ const ManageBookingsPage = () => {
     }
   };
 
+  const bookingMessage = (booking) => {
+    return `Hello ${booking.name}, your booking with code ${booking.code} has been ${booking.status.toLowerCase()}.`;
+  };
+
   const filteredBookings =
     activeTab === "All" ? bookings : bookings.filter((booking) => booking.status === activeTab);
 
   const columns = [
+    { field: "code", headerName: "ID", flex: 1, hide: true },
     { field: "name", headerName: "Name", flex: 1 },
     { field: "phone", headerName: "Phone", flex: 1 },
     {
@@ -161,7 +167,7 @@ const ManageBookingsPage = () => {
       renderCell: (params) => {
         const currentStatus = params.row.status;
         return (
-          <Box sx={{ display: "flex", alignItems: "center" }}>
+          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 1, flexWrap: "wrap" }}>
             <Tooltip title="View">
               <IconButton color="primary">
                 <Visibility />
@@ -178,35 +184,47 @@ const ManageBookingsPage = () => {
                 <Delete />
               </IconButton>
             </Tooltip>
-            <Tooltip title="Change Status">
-              <Button
+            <Tooltip title={`${getNewStatus(currentStatus)} Booking` || currentStatus + " Booking"}>
+              <IconButton
                 variant="contained"
                 color="success"
                 size="small"
                 disabled={currentStatus === "Cancelled" || currentStatus === "Completed"}
-                onClick={() => handleChangeStatus(params.row._id, currentStatus)}
+                onClick={() => handleChangeStatus(params.row.id, currentStatus)}
                 sx={{ marginLeft: 1 }}
               >
-                {getNewStatus(currentStatus) || currentStatus}
-              </Button>
+                {/* {getNewStatus(currentStatus) || currentStatus} */}
+                <Done />
+              </IconButton>
             </Tooltip>
             <Tooltip title="Cancel Booking">
-              <Button
+              <IconButton
                 variant="contained"
-                color="error"
+                color="primary"
                 size="small"
                 disabled={currentStatus === "Cancelled" || currentStatus === "Completed"}
-                onClick={() => handleCancelStatus(params.row._id)}
+                onClick={() => handleCancelStatus(params.row.id)}
                 sx={{ marginLeft: 1 }}
               >
-                Cancel
-              </Button>
+                <Cancel />
+              </IconButton>
             </Tooltip>
+            <SendSMS smsContent={bookingMessage(params.row)} phoneNumber={params.row.phone} />
           </Box>
         );
       },
     },
   ];
+
+  const rows = bookings.map((booking) => ({
+    id: booking._id,
+    name: booking.name,
+    phone: booking.phone,
+    date: booking.date,
+    time: booking.time,
+    status: booking.status,
+    code: booking.code,
+  }));
 
   return (
     <Box sx={{ padding: 3 }}>
@@ -235,16 +253,33 @@ const ManageBookingsPage = () => {
           <CircularProgress />
         </Box>
       ) : (
-        <div style={{ height: 400, width: "100%", marginTop: 16 }}>
+        <Box sx={{ height: 500, width: "100%" }}>
           <DataGrid
-            rows={filteredBookings}
+            rows={rows}
             columns={columns}
-            pageSize={5}
-            rowsPerPageOptions={[5, 10, 20]}
-            pagination
-            getRowId={(row) => row._id}
+            pageSize={10}
+            rowsPerPageOptions={[10, 20, 30, 40, 50]}
+            disableSelectionOnClick
+            loading={loading}
+            sx={{
+              border: "1px solid",
+              borderColor: "divider",
+              "& .MuiDataGrid-columnHeaders": {
+                backgroundColor: "primary.main",
+                color: "text.primary",
+              },
+              "& .MuiDataGrid-row": {
+                cursor: "pointer",
+                "&:hover": {
+                  backgroundColor: "action.hover",
+                },
+              },
+            }}
+            components={{
+              Toolbar: GridToolbar,
+            }}
           />
-        </div>
+        </Box>
       )}
 
       <ConfirmationDialog

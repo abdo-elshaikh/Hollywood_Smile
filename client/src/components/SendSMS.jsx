@@ -1,103 +1,122 @@
 // src/components/SendSMS.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import smsService from "../services/smsService";
-import { Box, TextField, Button, Typography, Paper } from "@mui/material";
+import {
+    Box, TextField, Button, Typography, Paper, Tooltip, Container,
+    IconButton, CircularProgress, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions
+} from "@mui/material";
+import { Message } from "@mui/icons-material";
 
-const SendSMS = () => {
-    const [recipient, setRecipient] = useState("");
-    const [content, setContent] = useState("");
+const SendSMS = ({ smsContent, phoneNumber }) => {
+
+    const [loading, setLoading] = useState(false);
+    const [open, setOpen] = useState(false);
     const [responseMessage, setResponseMessage] = useState("");
+    const [messageData, setMessageData] = useState({
+        url: "http://192.168.1.30:8080/SendSMS",
+        username: "abdo",
+        password: "1234",
+        phone: phoneNumber || '',
+        message: smsContent || "",
+    });
+
+    useEffect(() => {
+        setMessageData({
+            ...messageData,
+            phone: phoneNumber,
+            message: smsContent,
+        });
+    }, [smsContent, phoneNumber]);
+
+    const handleOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+        setResponseMessage("");
+        setLoading(false);
+        setMessageData({
+            ...messageData,
+            phone: "",
+            message: "",
+        });
+    };
 
     const handleSendSMS = async () => {
-        if (!recipient || !content) {
-            setResponseMessage("Please enter recipient and content.");
-            return;
-        }
-
-        const data = {
-            sender: "Hollywood", 
-            recipient: recipient,
-            content: content,
-            type: "transactional",
-            unicodeEnabled: true,
-            tag: "Notification",
-            webUrl: "http://localhost:3000",
-        };
-
+        setLoading(true);
         try {
-            const response = await smsService.sendSms(data);
-            if (response.status === 201) {
-                setResponseMessage("SMS sent successfully!");
-                setRecipient("");
-                setContent("");
-            } else {
-                setResponseMessage(response.data.message || "Failed to send SMS. Please try again.");
-                alert("Failed to send SMS. Please try again.");
-            }
+            const response = await smsService.sendLocalSms(messageData);
+            setResponseMessage(response.data.message);
         } catch (error) {
-            setResponseMessage(`Error: ${error.response?.data || error.message}`);
-            console.error(error);
-            alert("Error sending SMS:", error.response?.data || error.message);
+            setResponseMessage(`Error: ${error.response?.data?.message || error.message}`);
+        } finally {
+            setLoading(false);
         }
     };
 
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setMessageData({
+            ...messageData,
+            [name]: value,
+        });
+    }
+
     return (
-        <Box
-            component={Paper}
-            sx={{
-                maxWidth: 400,
-                mx: "auto",
-                my: 4,
-                p: 3,
-                boxShadow: 3,
-                borderRadius: 2,
-            }}
-        >
-            <Typography variant="h5" align="center" gutterBottom>
-                Send Transactional SMS
-            </Typography>
+        <>
+            <Tooltip title="Send SMS">
+                <IconButton onClick={handleOpen}>
+                    <Message />
+                </IconButton>
+            </Tooltip>
+            <Dialog open={open} onClose={handleClose}>
+                <DialogTitle>Send SMS</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        Send SMS to the customer, Enter phone number and message.
+                    </DialogContentText>
+                    <Typography variant="body1" component="p">
+                        {messageData.url} ? {messageData.username} :{messageData.password}
+                    </Typography>
+                    <TextField
+                        label="Phone"
+                        name="phone"
+                        value={messageData.phone}
+                        onChange={handleChange}
+                        fullWidth
+                        margin="normal"
+                    />
+                    <TextField
+                        label="Message"
+                        name="message"
+                        value={messageData.message}
+                        onChange={handleChange}
+                        fullWidth
+                        multiline
+                        rows={4}
+                        margin="normal"
+                    />
 
-            <TextField
-                fullWidth
-                variant="outlined"
-                label="Recipient Phone Number"
-                placeholder="e.g., 1234567890"
-                value={recipient}
-                onChange={(e) => setRecipient(e.target.value)}
-                sx={{ mb: 2 }}
-            />
+                    {responseMessage && (
+                        <Box mt={2}>
+                            <Typography color="success" variant="body1" component="p">
+                                {responseMessage}
+                            </Typography>
+                        </Box>
+                    )}
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose} color="primary">
+                        {loading ? "Cancel" : "Close"}
+                    </Button>
+                    <Button onClick={handleSendSMS} color="primary">
+                        {loading ? "Sending..." : "Send"}
+                    </Button>
+                </DialogActions>
+            </Dialog>
 
-            <TextField
-                fullWidth
-                variant="outlined"
-                label="Message Content"
-                placeholder="Enter your SMS content"
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                multiline
-                rows={3}
-                sx={{ mb: 2 }}
-            />
-
-            <Button
-                fullWidth
-                variant="contained"
-                color="primary"
-                onClick={handleSendSMS}
-            >
-                Send SMS
-            </Button>
-
-            {responseMessage && (
-                <Typography
-                    variant="subtitle1"
-                    color="textSecondary"
-                    sx={{ mt: 2, textAlign: "center" }}
-                >
-                    {responseMessage}
-                </Typography>
-            )}
-        </Box>
+        </>
     );
 };
 

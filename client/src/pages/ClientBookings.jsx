@@ -216,7 +216,7 @@ const ClientBookings = () => {
                                 <Grid item xs={12} key={booking._id}>
                                     <Card elevation={4} sx={{ mb: 2, position: 'relative' }}>
                                         <Chip
-                                            label={t('detect.bookingNo') + ' ' + (index + 1)}
+                                            label={t('detect.bookingNo') + ' : ' + (booking.code)}
                                             color="primary"
                                             sx={{
                                                 position: 'absolute',

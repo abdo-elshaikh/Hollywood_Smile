@@ -104,14 +104,14 @@ const Footer = () => {
         <Box sx={{ mt: 4, textAlign: 'center' }}>
           {[
             { icon: <FacebookIcon />, color: '#3b5998', href: clinicInfo.socialLinks.facebook },
-            { icon: <TwitterIcon />, color: '#1da1f2', href: tics.socialLinks.twitter },
+            { icon: <TwitterIcon />, color: '#1da1f2', href: clinicInfo.socialLinks.twitter },
             { icon: <InstagramIcon />, color: '#e1306c', href: clinicInfo.socialLinks.instagram },
             { icon: <LinkedInIcon />, color: '#0077b5', href: clinicInfo.socialLinks.linkedin },
           ].map(({ icon, color, href }, index) => (
             <IconButton
               key={index}
               aria-label={icon.type.displayName}
-              href={href || '#' + icon.type.displayName}
+              href={href || '#' }
               sx={{
                 color: 'text.primary',
                 '&:hover': {

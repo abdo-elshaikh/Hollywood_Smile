@@ -90,13 +90,15 @@ const AppointmentSection = () => {
         }
 
         try {
-            const response = await bookingService.createBooking(formData);
-            showSnackbar(response.message || 'Booking created successfully!', 'success');
-            await handleAddNotification(response.data._id, 'info');
-            setIsSuccess(true);
-            setCounters(20);
+            const data = await bookingService.createBooking(formData);
+            if (data.success) {
+                showSnackbar(isArabic ? 'تم الحجز بنجاح' : 'Booking successful', 'success');
+                setIsSuccess(true);
+                setCounters(20);
+            }
+            handleAddNotification(data.data._id, 'info');
         } catch (err) {
-            showSnackbar('An error occurred. Please try again.', 'error');
+            showSnackbar(isArabic ? 'حدث خطاء ما' : 'Something went wrong', 'error');
             await handleAddNotification('', 'error');
             console.error(err);
         } finally {

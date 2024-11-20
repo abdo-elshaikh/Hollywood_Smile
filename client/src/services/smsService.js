@@ -18,6 +18,21 @@ const smsService = {
             return error.response.data.message || error.message;
         }
     },
+    sendLocalSms: async (messageData) => {
+        console.log(messageData, 'messageData');
+        const { username, password, phone, message, url } = messageData;
+        try {
+            const response = await axios.post(url, null, {
+                params: { username, password, phone, message },
+               
+            });
+            console.log(response, 'success message sent');
+            return response;
+        } catch (error) {
+            console.error(error, 'error sending message');
+            return error.response?.data?.message || error.message;
+        }
+    },
 }
 
 export default smsService;

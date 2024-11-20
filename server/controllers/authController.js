@@ -7,6 +7,7 @@ const generateToken = require('../utils/generateToken');
 // @route   POST /api/users/register
 // @access  Public
 const registerUser = async (req, res) => {
+    console.log(req.body);
     const { username, email, password } = req.body;
     try {
         // check if email or name is already registered
@@ -15,13 +16,14 @@ const registerUser = async (req, res) => {
             return res.status(400).json({ message: 'User already exists' });
         }
 
-        const user = await User.create({ username, email, password });
+        const user = await User.create({ username, email, password, name: email.split('@')[0] });
         const token = generateToken(user._id);
         const userData = user.toObject();
         delete userData.password;
 
         res.status(201).json({ token, user: userData, message: 'User registered successfully' });
     } catch (error) {
+        console.log(error);
         res.status(500).json({ message: error.message });
     }
 };
@@ -30,10 +32,11 @@ const registerUser = async (req, res) => {
 // @route   POST /api/users/login
 // @access  Public
 const loginUser = async (req, res) => {
+    console.log(req.body);
     const { identifier, password } = req.body;
 
     try {
-        const user = await User.findOne({ $or: [{ email: identifier }, { name: identifier }] });
+        const user = await User.findOne({ $or: [{ email: identifier }, { username: identifier }] });
 
         if (!user) {
             return res.status(404).json({ message: 'User not found' });

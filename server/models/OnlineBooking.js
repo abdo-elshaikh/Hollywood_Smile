@@ -2,6 +2,10 @@ const mongoose = require('mongoose');
 
 const OnlineBookingSchema = new mongoose.Schema(
     {
+        code: {
+            type: String,
+            unique: true,
+        },
         name: {
             type: String,
             required: [true, 'Name is required'],
@@ -47,6 +51,15 @@ const OnlineBookingSchema = new mongoose.Schema(
     },
     { timestamps: true }
 );
+
+// generate booking code
+OnlineBookingSchema.pre('save', async function (next) {
+    const booking = this;
+    if (!booking.code) {
+        booking.code = booking._id.toString().toUpperCase().slice(0, 6);
+    }
+    next();
+});
 
 const OnlineBooking = mongoose.model('OnlineBooking', OnlineBookingSchema);
 module.exports = OnlineBooking;
