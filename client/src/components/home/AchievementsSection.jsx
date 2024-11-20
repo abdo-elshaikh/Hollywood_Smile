@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Container, Grid, Typography, Card, CardContent, CardMedia } from '@mui/material';
-import backgroundImage from '../../assets/Achievements.jpg';
 import axiosInstance from '../../services/axiosInstance';
 import { useCustomTheme } from '../../contexts/ThemeProvider';
 import { useClinicContext } from '../../contexts/ClinicContext';

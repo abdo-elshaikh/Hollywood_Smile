@@ -20,7 +20,6 @@ import {
 import { DarkModeOutlined, LightModeOutlined, Menu as MenuIcon, Settings } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import { useCustomTheme } from '../../contexts/ThemeProvider';
-import logo from '../../assets/logo.png';
 import EnglishIcon from '../../assets/flags/english.svg';
 import ArabicIcon from '../../assets/flags/arabic.svg';
 import { useTranslation } from 'react-i18next';

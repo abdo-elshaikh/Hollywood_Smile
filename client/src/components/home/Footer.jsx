@@ -4,7 +4,6 @@ import FacebookIcon from '@mui/icons-material/Facebook';
 import TwitterIcon from '@mui/icons-material/Twitter';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
-import logo from '../../assets/hollywood-logo.jpg';
 import { useCustomTheme } from '../../contexts/ThemeProvider';
 import { useTranslation } from 'react-i18next';
 import { useClinicContext } from '../../contexts/ClinicContext';
@@ -56,7 +55,6 @@ const Footer = () => {
             <Typography color='#C1713B' variant="h5" gutterBottom>
               {t('Footer.Navigation.title')}
             </Typography>
-            <Divider sx={{ my: 1 }} />
             {navigationLinks.map((text) => (
               <Link
                 key={text}
@@ -76,7 +74,6 @@ const Footer = () => {
             <Typography color='#C1713B' variant="h5" gutterBottom>
               {t('Footer.Services.title')}
             </Typography>
-            <Divider sx={{ my: 1 }} />
             {services.map((text) => (
               <Link
                 key={text}
@@ -96,7 +93,6 @@ const Footer = () => {
             <Typography color='#C1713B' variant="h5" gutterBottom>
               {t('Footer.Contact.title')}
             </Typography>
-            <Divider sx={{ my: 1 }} />
             <Typography mb={1} variant="body2">📍 {isArabic ? clinicInfo?.address.ar : clinicInfo?.address.en}</Typography>
             <Typography mb={1} variant="body2">📞 {`${clinicInfo.primaryContact} / ${clinicInfo.secondaryContact}`}</Typography>
             <Typography mb={1} variant="body2">✉️ {clinicInfo.email}</Typography>
@@ -106,18 +102,18 @@ const Footer = () => {
 
         {/* Social Media Icons */}
         <Box sx={{ mt: 4, textAlign: 'center' }}>
-          {[ 
-            { icon: <FacebookIcon />, color: '#3b5998' }, 
-            { icon: <TwitterIcon />, color: '#1da1f2' }, 
-            { icon: <InstagramIcon />, color: '#e1306c' }, 
-            { icon: <LinkedInIcon />, color: '#0077b5' } 
-          ].map(({ icon, color }, index) => (
+          {[
+            { icon: <FacebookIcon />, color: '#3b5998', href: clinicInfo.socialLinks.facebook },
+            { icon: <TwitterIcon />, color: '#1da1f2', href: tics.socialLinks.twitter },
+            { icon: <InstagramIcon />, color: '#e1306c', href: clinicInfo.socialLinks.instagram },
+            { icon: <LinkedInIcon />, color: '#0077b5', href: clinicInfo.socialLinks.linkedin },
+          ].map(({ icon, color, href }, index) => (
             <IconButton
               key={index}
               aria-label={icon.type.displayName}
-              href="#"
+              href={href || '#' + icon.type.displayName}
               sx={{
-                color: isDark ? 'text.primary' : 'background.paper',
+                color: 'text.primary',
                 '&:hover': {
                   color: color,
                   transform: 'scale(1.1)',
@@ -134,7 +130,7 @@ const Footer = () => {
         {/* Logo and Divider */}
         <Divider sx={{ my: 2 }} >
           <img
-            src={logo}
+            src={isDark ? clinicInfo?.logo?.dark : clinicInfo?.logo?.light}
             alt='Hollywood Smile Clinic'
             style={{
               objectFit: 'cover',
@@ -155,8 +151,10 @@ const Footer = () => {
             &copy; {new Date().getFullYear()} {t('Footer.AllRightsReserved')} | {t('Footer.TermsOfUse')} | {t('Footer.PrivacyPolicy')}
           </Typography>
           <Typography variant="body2" textAlign="center">
-            {t('Footer.MadeWith')} <span role="img" aria-label="heart">❤️</span> {t('Footer.By')} 
-            <Link href="#" target="_blank" color="inherit"> Abdo Mhmd</Link>
+            {t('Footer.MadeWith')} <span role="img" aria-label="heart">❤️</span> {t('Footer.By')} {' '}
+            <Link href="https://www.linkedin.com/in/abdelrahman-mohamed-ahmed-56874a28a/" target="_blank" color="inherit">
+              {isArabic ? 'عبدالرحمن محمد' : 'Abdelrahman Mohamed'}
+            </Link>
           </Typography>
         </Box>
       </Container>

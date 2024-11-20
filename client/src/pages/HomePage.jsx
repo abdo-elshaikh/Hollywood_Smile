@@ -16,7 +16,6 @@ import MapLocationSection from '../components/home/MapLocationSection';
 import FAQSection from '../components/home/FAQSection';
 import OffersSection from '../components/home/OffersSection';
 import FooterSection from '../components/home/FooterSection';
-import DentalCardsSection from '../components/home/DentalCardsSection';
 import BeforeAfterGallery from '../components/home/BeforeAfterGallery';
 import SmileLoveCare from '../components/home/SmileLoveCare';
 import ClientTestimonial from '../components/home/ClientTestimonial';

@@ -14,8 +14,6 @@ import {
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PhoneIcon from '@mui/icons-material/Phone';
 import EmailIcon from '@mui/icons-material/Email';
-import headerImg from '../../assets/hero.jpg';
-import headerimg from '../../assets/map.jpeg';
 import mapHeader from '../../assets/videos/map-header.mp4';
 
 
