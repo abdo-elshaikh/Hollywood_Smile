@@ -46,9 +46,10 @@ if (process.env.NODE_ENV === 'development') {
 
 // Serve static files in production
 if (process.env.NODE_ENV === 'production') {
-    app.use(Express.static(path.join(__dirname, 'public')));
+    const clientBuildPath = path.join(__dirname, '../client/dist');
+    app.use(Express.static(clientBuildPath));
     app.get('*', (req, res) => {
-        res.sendFile(path.resolve(__dirname, 'public', 'index.html'));
+        res.sendFile(path.join(clientBuildPath, 'index.html'));
     });
 }
 
@@ -102,10 +103,15 @@ process.on('SIGINT', () => {
     process.exit(0);
 });
 
-// Custom Api routes
-app.get('/api', (req, res) => {
-    res.send('API Server is running....');
+// Handle API routes or other server-side logic here
+app.get('/', (req, res) => {
+    res.send('API is running...');
 });
+
+// Test route for API
+app.get('/api', require('./routes/routes'));
+
+// Routes
 app.use('/api/files', fileRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
