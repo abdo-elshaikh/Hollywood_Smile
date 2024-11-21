@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Grid, Typography, Button, Card, CardContent, CardMedia, CircularProgress } from '@mui/material';
 import { motion } from 'framer-motion';
-import BeforeAfterSlider from 'react-before-after-slider';
 import { useTranslation } from 'react-i18next';
 import { styled } from '@mui/system';
 import SquareIcon from '@mui/icons-material/Square';
+import { useSwipeable } from 'react-swipeable';
 import axiosInstance from '../../services/axiosInstance';
-import BeforeAfter from '../common/BeforeAfter';
 
 const ImageCard = styled(Card)(({ theme }) => ({
   display: 'flex',
@@ -44,6 +43,75 @@ const StyledButton = styled(Button)(({ theme }) => ({
   },
 }));
 
+const BeforeAfterSlider = ({ beforeImage, afterImage }) => {
+  const [sliderPosition, setSliderPosition] = useState(50);
+
+  const handleSwipe = (delta) => {
+    setSliderPosition((prev) => Math.max(0, Math.min(100, prev + delta)));
+  };
+
+  const handlers = useSwipeable({
+    onSwipedLeft: () => handleSwipe(-5),
+    onSwipedRight: () => handleSwipe(5),
+    trackMouse: true,
+  });
+
+  return (
+    <Box
+      {...handlers}
+      sx={{
+        position: 'relative',
+        width: '100%',
+        height: '300px',
+        overflow: 'hidden',
+        cursor: 'pointer',
+      }}
+    >
+      {/* Before Image */}
+      <img
+        src={beforeImage}
+        alt="Before"
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+        }}
+      />
+
+      {/* After Image */}
+      <img
+        src={afterImage}
+        alt="After"
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: `${sliderPosition}%`,
+          height: '100%',
+          objectFit: 'cover',
+          clipPath: `polygon(0 0, 100% 0, 100% 100%, 0 100%)`,
+        }}
+      />
+
+      {/* Divider */}
+      <Box
+        sx={{
+          position: 'absolute',
+          top: 0,
+          left: `${sliderPosition}%`,
+          width: '5px',
+          height: '100%',
+          backgroundColor: 'white',
+          transform: 'translateX(-50%)',
+        }}
+      />
+    </Box>
+  );
+};
+
 const BeforeAfterGallery = () => {
   const { t } = useTranslation();
   const [data, setData] = useState([]);
@@ -62,7 +130,6 @@ const BeforeAfterGallery = () => {
     { beforeImage: '/images/before-after/ba3-before.jpg', afterImage: '/images/before-after/ba3-after.jpg', description: 'Sed do eiusmod tempor incididunt' },
     { beforeImage: '/images/before-after/ba4-before.jpg', afterImage: '/images/before-after/ba4-after.jpg', description: 'Ut labore et dolore magna aliqua' },
     { beforeImage: '/images/before-after/ba5-before.jpg', afterImage: '/images/before-after/ba5-after.jpg', description: 'Ut enim ad minim veniam' },
-    { beforeImage: '/images/before-after/ba5-before.jpg', afterImage: '/images/before-after/ba5-after.jpg', description: 'Quis nostrud exercitation ullamco' },
   ];
 
   useEffect(() => {
@@ -83,25 +150,6 @@ const BeforeAfterGallery = () => {
 
   return (
     <Box sx={{ backgroundColor: 'background.default', py: 10, px: 4, position: 'relative', zIndex: 1 }}>
-      {/* Background Icons for Aesthetic Enhancement */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.3, rotate: 0 }}
-        animate={{ opacity: 1, scale: 1, rotate: 45 }}
-        transition={{ duration: 1.5 }}
-        style={{ position: 'absolute', bottom: 0, right: 0, zIndex: -1 }}
-      >
-        <SquareIcon sx={{ fontSize: 500, color: '#f07167', opacity: 0.1 }} />
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0, scale: 0.3, rotate: 0 }}
-        animate={{ opacity: 1, scale: 1, rotate: -45 }}
-        transition={{ duration: 1.5 }}
-        style={{ position: 'absolute', top: 0, left: 0, zIndex: -1 }}
-      >
-        <SquareIcon sx={{ fontSize: 500, color: '#f07167', opacity: 0.1 }} />
-      </motion.div>
-
       {/* Title */}
       <Typography variant="h3" align="center" gutterBottom color="primary" sx={{ fontWeight: 'bold' }}>
         {t('BeforeAfterGallery.title')}
@@ -110,14 +158,13 @@ const BeforeAfterGallery = () => {
         {t('BeforeAfterGallery.description')}
       </Typography>
 
-      {/* Loading Spinner */}
       {isLoading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', my: 5 }}>
           <CircularProgress size={50} />
         </Box>
       ) : (
         <Grid container spacing={4}>
-          {data.length > 0 && data.slice(0, visibleCount).map((patient, index) => (
+          {data.slice(0, visibleCount).map((patient, index) => (
             <Grid item xs={12} sm={6} md={4} key={index}>
               <ImageCard
                 component={motion.div}
@@ -126,14 +173,7 @@ const BeforeAfterGallery = () => {
                 transition={{ duration: 0.5 }}
               >
                 <CardMedia>
-                 <BeforeAfterSlider
-                    before={patient.beforeImage}
-                    after={patient.afterImage}
-                    width={window.innerWidth < 600 ? 300 : 500}
-                    height={300}
-                    beforeProps={{ alt: 'Before', after: 'After' }}
-                    afterProps={{ alt: 'After', before: 'Before' }}
-                  />
+                  <BeforeAfterSlider beforeImage={patient.beforeImage} afterImage={patient.afterImage} />
                 </CardMedia>
                 <CardContent
                   sx={{
@@ -143,9 +183,12 @@ const BeforeAfterGallery = () => {
                     position: 'relative',
                     py: 2,
                     backgroundColor: 'rgba(0, 0, 0, 0.4)',
-                  }}>
+                  }}
+                >
                   <Overlay />
-                  <Typography variant="subtitle2" color="inherit">{patient.description.slice(0, 100)}...</Typography>
+                  <Typography variant="subtitle2" color="inherit">
+                    {patient.description.slice(0, 100)}...
+                  </Typography>
                 </CardContent>
               </ImageCard>
             </Grid>
@@ -153,25 +196,8 @@ const BeforeAfterGallery = () => {
         </Grid>
       )}
 
-      {data.length === 0 && (
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <Typography variant="h4" align="center" mt={5}>
-            {t('BeforeAfterGallery.noData')}
-          </Typography>
-        </motion.div>
-      )}
-
-      {/* View More / View Less Button */}
       <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-        <StyledButton
-          variant="contained"
-          color="primary"
-          onClick={handleToggleView}
-        >
+        <StyledButton variant="contained" color="primary" onClick={handleToggleView}>
           {showAll ? t('BeforeAfterGallery.viewLess') : t('BeforeAfterGallery.viewMore')}
         </StyledButton>
       </Box>
