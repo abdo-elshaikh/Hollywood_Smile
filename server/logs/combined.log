@@ -449,3 +449,11 @@
 {"level":"info","message":"Server running in development mode on port 5001 ...","service":"Hollywood Smile Center","timestamp":"2024-11-20 23:12:38"}
 {"level":"info","message":"MongoDB connected successfully","service":"Hollywood Smile Center","timestamp":"2024-11-20 23:12:39"}
 {"level":"info","message":"Admin user already exists","service":"Hollywood Smile Center","timestamp":"2024-11-20 23:12:39"}
+{"level":"info","message":"Logger initialized and ready to use.","service":"Hollywood Smile Center","timestamp":"2024-11-21 13:22:41"}
+{"level":"info","message":"Server running in development mode on port 5001 ...","service":"Hollywood Smile Center","timestamp":"2024-11-21 13:23:02"}
+{"level":"info","message":"MongoDB connected successfully","service":"Hollywood Smile Center","timestamp":"2024-11-21 13:23:07"}
+{"level":"info","message":"Admin user already exists","service":"Hollywood Smile Center","timestamp":"2024-11-21 13:23:07"}
+{"level":"info","message":"Logger initialized and ready to use.","service":"Hollywood Smile Center","timestamp":"2024-11-21 13:30:27"}
+{"level":"info","message":"Server running in development mode on port 5001 ...","service":"Hollywood Smile Center","timestamp":"2024-11-21 13:30:29"}
+{"level":"info","message":"MongoDB connected successfully","service":"Hollywood Smile Center","timestamp":"2024-11-21 13:30:30"}
+{"level":"info","message":"Admin user already exists","service":"Hollywood Smile Center","timestamp":"2024-11-21 13:30:31"}
