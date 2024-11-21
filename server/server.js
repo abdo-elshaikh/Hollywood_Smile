@@ -75,6 +75,24 @@ connectDB();
 // Seed the admin user
 seedAdmin();
 
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (err) => {
+    logger.error(`Unhandled Rejection: ${err.message}`);
+    process.exit(1);
+});
+
+// Handle uncaught exceptions
+process.on('uncaughtException', (err) => {
+    logger.error(`Uncaught Exception: ${err.message}`);
+    process.exit(1);
+});
+
+// Handle SIGINT signal
+process.on('SIGINT', () => {
+    logger.info('SIGINT signal received.');
+    process.exit(0);
+});
+
 // Custom Api routes
 app.get('/', (req, res) => {
     res.send('API Server is running....');
@@ -101,6 +119,10 @@ app.use('/api/before-after', beforeAfterRoutes);
 // Error handling middleware
 app.use(notFound);
 app.use(errorHandler);
+
+
+
+
 
 // Start the server
 const PORT = config.port || 5000;

@@ -26,3 +26,5 @@ dist-ssr
 # other
 package-lock.json
 .env
+
+.vercel

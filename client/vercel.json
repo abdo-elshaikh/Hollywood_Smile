@@ -1,8 +1,28 @@
 {
-    "rewrites": [
+    "version": 2,
+    "builds": [
         {
-            "source": "/(.*)",
-            "destination": "/index.html"
+            "src": "package.json",
+            "use": "@vercel/static-build",
+            "config": {
+                "distDir": "dist"
+            }
         }
-    ]
+    ],
+    "routes": [
+        {
+            "src": "/(.*)",
+            "dest": "/index.html"
+        }
+    ],
+    "env": {
+        "VITE_API_URL": "https://hollywood-smile.vercel.app/api",
+        "VITE_APP_URL": "https://hollywood-smile.vercel.app",
+        "VITE_BASE_URL": "https://hollywood-smile.vercel.app/uploads",
+        "VITE_APP_NAME": "Hollywood Smile Center",
+        "VITE_SUB_NAME": "Hollywood Smile Center",
+        "VITE_APP_PHONE_NUMBER": "+201234567890",
+        "VITE_DEFAULT_USER": "visitor",
+        "VITE_DEFAULT_PASSWORD": "visitor@123"
+    }
 }
