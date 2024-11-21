@@ -16,7 +16,10 @@
     "lint:fix": "eslint . --fix",
     "prettier": "prettier --write .",
     "prettier:check": "prettier --check .",
-    "format": "npm run prettier && npm run lint:fix"
+    "format": "npm run prettier && npm run lint:fix",
+    "run-client" : "cd ../client && npm start",
+    "run-server" : "npm run dev",
+    "run-dev": "concurrently \"npm run run-client\" \"npm run run-server\""
   },
   "dependencies": {
     "bcrypt": "^5.1.1",

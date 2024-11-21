@@ -41,23 +41,9 @@ const app = express();
 
 // cors options
 const corsOptions = {
-    origin: config.CORS_ORIGIN,
+    origin: config.CORS_ORIGIN || '*',
     credentials: true,
 };
-
-// // Serve the React build folder
-// if (process.env.NODE_ENV === 'production') {
-//     const buildPath = path.join(__dirname, 'client/dist');
-//     app.use(express.static(buildPath));
-
-//     app.get('*', (req, res) => {
-//         res.sendFile(path.join(buildPath, 'index.html'));
-//     });
-// } else {
-//     app.get('/', (req, res) => {
-//         res.send('API is running....');
-//     });
-// }
 
 // Middlewares
 app.use(cors(corsOptions));
