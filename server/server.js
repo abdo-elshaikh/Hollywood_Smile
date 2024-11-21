@@ -53,6 +53,10 @@ if (process.env.NODE_ENV === 'production') {
     app.get('*', (req, res) => {
         res.sendFile(path.join(buildPath, 'index.html'));
     });
+} else {
+    app.get('/', (req, res) => {
+        res.send('API is running....');
+    });
 }
 
 // Middlewares
