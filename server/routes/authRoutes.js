@@ -10,12 +10,12 @@ const {
 const { protect, authorize} = require('../middlewares/authMiddleware');
 
 // Public routes
-router.post('/register', registerUser); // POST /api/users/register
-router.post('/login', loginUser); // POST /api/users/login
+router.post('/register', registerUser); // POST /api/auth/register
+router.post('/login', loginUser); // POST /api/auth/login
 
 // Protected routes (Requires authentication)
-router.get('/profile', protect, getUserProfile); // GET /api/users/profile
-router.put('/profile', protect, updateUserProfile); // PUT /api/users/profile
-router.put('/profile/change-password', protect, changePassword); // PUT /api/users/profile/password
+router.get('/profile', protect, getUserProfile); // GET /api/auth/profile
+router.put('/profile', protect, updateUserProfile); // PUT /api/auth/profile
+router.put('/profile/change-password', protect, changePassword); // PUT /api/auth/profile/password
 
 module.exports = router;

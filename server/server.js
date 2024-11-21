@@ -131,10 +131,6 @@ app.use('/api/before-after', beforeAfterRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
-
-
-
-
 // Start the server
 const PORT = config.port || 5000;
 app.listen(PORT, () => {
