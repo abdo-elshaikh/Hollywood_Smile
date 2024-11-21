@@ -39,10 +39,6 @@ const beforeAfterRoutes = require('./routes/beforeAfterRoutes');
 // Initialize Express app
 const app = Express();
 
-// Logger for development
-if (process.env.NODE_ENV === 'development') {
-    app.use(morgan('dev'));
-}
 
 // Serve static files in production
 if (process.env.NODE_ENV === 'production') {
@@ -58,6 +54,7 @@ app.use(cors({
     origin: config.CORS_ORIGIN || '*',
     credentials: true,
 }));
+app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
