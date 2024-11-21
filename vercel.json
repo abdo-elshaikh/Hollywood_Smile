@@ -1,19 +1,17 @@
 {
+  "name": "hollywood-smile-center",
+  "alias": "hollywood-smile-center",
   "version": 2,
   "builds": [
     {
-      "src": "server.js",
+      "src": "server/package.json",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/server.js"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/server.js"
+      "dest": "server.js"
     }
   ],
   "env": {

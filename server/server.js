@@ -39,18 +39,29 @@ const beforeAfterRoutes = require('./routes/beforeAfterRoutes');
 // Initialize Express app
 const app = express();
 
-// cors options
-const corsOptions = {
+// Logger for development
+if (process.env.NODE_ENV === 'development') {
+    app.use(morgan('dev'));
+}
+
+// Serve static files in production
+if (process.env.NODE_ENV === 'production') {
+    app.use(morgan('combined'));
+    const clientBuildPath = path.join(__dirname, '../client/dist');
+    app.use(express.static(clientBuildPath));
+    app.get('*', (req, res) => {
+        res.sendFile(path.join(clientBuildPath, 'index.html'));
+    });
+}
+
+// Middlewares for parsing requests
+app.use(cors({
     origin: config.CORS_ORIGIN || '*',
     credentials: true,
-};
-
-// Middlewares
-app.use(cors(corsOptions));
+}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(morgan('dev'));
 app.use(
     session({
         secret: config.SESSION_SECRET,
