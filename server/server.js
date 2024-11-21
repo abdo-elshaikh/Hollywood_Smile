@@ -1,5 +1,5 @@
 // server.js
-const express = require('express');
+const Express = require('express');
 const dotenv = require('dotenv');
 dotenv.config();
 const cors = require('cors');
@@ -37,7 +37,7 @@ const beforeAfterRoutes = require('./routes/beforeAfterRoutes');
 
 
 // Initialize Express app
-const app = express();
+const app = Express();
 
 // Logger for development
 if (process.env.NODE_ENV === 'development') {
@@ -46,11 +46,9 @@ if (process.env.NODE_ENV === 'development') {
 
 // Serve static files in production
 if (process.env.NODE_ENV === 'production') {
-    app.use(morgan('combined'));
-    const clientBuildPath = path.join(__dirname, '../client/dist');
-    app.use(express.static(clientBuildPath));
+    app.use(Express.static(path.join(__dirname, 'public')));
     app.get('*', (req, res) => {
-        res.sendFile(path.join(clientBuildPath, 'index.html'));
+        res.sendFile(path.resolve(__dirname, 'public', 'index.html'));
     });
 }
 
@@ -76,9 +74,9 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Serve static files
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(Express.static(path.join(__dirname, 'public')));
 // Serve uploads directory as static folder
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', Express.static(path.join(__dirname, 'uploads')));
 
 
 // Call the database connection function
@@ -105,7 +103,7 @@ process.on('SIGINT', () => {
 });
 
 // Custom Api routes
-app.get('/', (req, res) => {
+app.get('/api', (req, res) => {
     res.send('API Server is running....');
 });
 app.use('/api/files', fileRoutes);
