@@ -17,7 +17,6 @@ module.exports = {
   CORS_ORIGIN: process.env.CORS_ORIGIN || '*',
   NODE_ENV: process.env.NODE_ENV || 'client',
   APP_NAME: process.env.APP_NAME || 'Hollywood Smile',
-  CORS_ORIGIN: process.env.CORS_ORIGIN || '*',
   emailConfig: {
     service: process.env.EMAIL_SERVICE || 'gmail',
     user: process.env.EMAIL_USER || 'your-email@gmail.com',

@@ -45,19 +45,19 @@ const corsOptions = {
     credentials: true,
 };
 
-// Serve the React build folder
-if (process.env.NODE_ENV === 'production') {
-    const buildPath = path.join(__dirname, 'client/dist');
-    app.use(express.static(buildPath));
+// // Serve the React build folder
+// if (process.env.NODE_ENV === 'production') {
+//     const buildPath = path.join(__dirname, 'client/dist');
+//     app.use(express.static(buildPath));
 
-    app.get('*', (req, res) => {
-        res.sendFile(path.join(buildPath, 'index.html'));
-    });
-} else {
-    app.get('/', (req, res) => {
-        res.send('API is running....');
-    });
-}
+//     app.get('*', (req, res) => {
+//         res.sendFile(path.join(buildPath, 'index.html'));
+//     });
+// } else {
+//     app.get('/', (req, res) => {
+//         res.send('API is running....');
+//     });
+// }
 
 // Middlewares
 app.use(cors(corsOptions));
@@ -90,6 +90,9 @@ connectDB();
 seedAdmin();
 
 // Custom Api routes
+app.get('/', (req, res) => {
+    res.send('API Server is running....');
+});
 app.use('/api/files', fileRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
