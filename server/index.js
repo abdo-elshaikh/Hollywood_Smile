@@ -76,7 +76,6 @@ app.use(Express.static(path.join(__dirname, 'public')));
 // Serve uploads directory as static folder
 app.use('/uploads', Express.static(path.join(__dirname, 'uploads')));
 
-
 // Call the database connection function
 connectDB();
 // Seed the admin user
@@ -104,9 +103,6 @@ process.on('SIGINT', () => {
 app.get('/', (req, res) => {
     res.send('API is running...');
 });
-
-// Test route for API
-app.get('/api', require('./routes/routes'));
 
 // Routes
 app.use('/api/files', fileRoutes);
