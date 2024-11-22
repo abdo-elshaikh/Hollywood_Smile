@@ -4,14 +4,14 @@ const fsExtra = require("fs-extra");
 const multer = require("multer");
 const fileType = require('file-type');
 const sanitize = require('sanitize-filename');
-const logger = require('../utils/logger'); // Assuming you have a logger utility
+// const logger = require('../utils/logger');
 const { upload, uploadMultiple } = require('../middlewares/uploadMiddleware');
 
 // Upload single file
 const uploadFile = (req, res) => {
     upload(req, res, (err) => {
         if (err) {
-            logger.error(`Error during file upload: ${err.message}`, { method: 'uploadFile', file: req.file?.originalname });
+            // logger.error(`Error during file upload: ${err.message}`, { method: 'uploadFile', file: req.file?.originalname });
             if (err.message === "File already exists") {
                 return res.status(409).json({ error: "File already exists" });
             }
@@ -29,7 +29,7 @@ const uploadFile = (req, res) => {
 const uploadMultipleFiles = (req, res) => {
     uploadMultiple(req, res, (err) => {
         if (err) {
-            logger.error(`Error during multiple file upload: ${err.message}`, { method: 'uploadMultipleFiles' });
+            // logger.error(`Error during multiple file upload: ${err.message}`, { method: 'uploadMultipleFiles' });
             if (err.message === "File already exists") {
                 return res.status(409).json({ error: "One or more files already exist" });
             }
@@ -106,7 +106,7 @@ const deleteItem = (req, res) => {
         }
         res.json({ message: "Item deleted successfully" });
     } catch (err) {
-        logger.error(`Error deleting item: ${err.message}`, { method: 'deleteItem', item: itemName });
+        // logger.error(`Error deleting item: ${err.message}`, { method: 'deleteItem', item: itemName });
         res.status(500).json({ error: "Error deleting the item", details: err.message });
     }
 };
@@ -124,7 +124,7 @@ const createItem = async (req, res) => {
         }
         res.json({ message: `${type === "directory" ? "Directory" : "File"} created successfully` });
     } catch (error) {
-        logger.error(`Error creating item: ${error.message}`, { method: 'createItem', itemPath });
+        // logger.error(`Error creating item: ${error.message}`, { method: 'createItem', itemPath });
         res.status(500).json({ error: `Error creating the ${type}`, details: error.message });
     }
 };
@@ -157,7 +157,7 @@ const getAllFiles = (req, res) => {
         const files = getAllFilesRecursive(basePath);
         res.json({ files: files.map((file) => path.relative(basePath, file)) });
     } catch (error) {
-        logger.error(`Error fetching all files: ${error.message}`, { method: 'getAllFiles' });
+        // logger.error(`Error fetching all files: ${error.message}`, { method: 'getAllFiles' });
         res.status(500).json({ error: "Error fetching all files", details: error.message });
     }
 };
@@ -180,7 +180,7 @@ const copyFile = (req, res) => {
         fsExtra.copySync(sourcePath, destinationPath);
         res.json({ message: "File copied successfully" });
     } catch (error) {
-        logger.error(`Error copying file: ${error.message}`, { method: 'copyFile', source, destination });
+        // logger.error(`Error copying file: ${error.message}`, { method: 'copyFile', source, destination });
         res.status(500).json({ error: "Error copying file", details: error.message });
     }
 };
@@ -203,7 +203,7 @@ const moveFile = (req, res) => {
         fsExtra.moveSync(sourcePath, destinationPath);
         res.json({ message: "File moved successfully" });
     } catch (error) {
-        logger.error(`Error moving file: ${error.message}`, { method: 'moveFile', source, destination });
+        // logger.error(`Error moving file: ${error.message}`, { method: 'moveFile', source, destination });
         res.status(500).json({ error: "Error moving file", details: error.message });
     }
 };
@@ -221,7 +221,7 @@ const renameFile = (req, res) => {
         fsExtra.renameSync(oldPath, newPath);
         res.json({ message: "File renamed successfully" });
     } catch (error) {
-        logger.error(`Error renaming file: ${error.message}`, { method: 'renameFile', oldName, newName });
+        // logger.error(`Error renaming file: ${error.message}`, { method: 'renameFile', oldName, newName });
         res.status(500).json({ error: "Error renaming file", details: error.message });
     }
 };

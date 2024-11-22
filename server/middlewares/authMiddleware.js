@@ -1,6 +1,6 @@
 const config = require('../utils/config');
 const jwt = require('jsonwebtoken');
-const logger = require('../utils/logger');
+// const logger = require('../utils/logger');
 const User = require('../models/User');
 
 const protect = async (req, res, next) => {
@@ -24,7 +24,7 @@ const protect = async (req, res, next) => {
             // Proceed to the next middleware
             next();
         } catch (error) {
-            logger.error(`JWT Error: ${error.message}`);
+            // logger.error(`JWT Error: ${error.message}`);
             return res.status(401).json({ message: 'Not authorized, token failed' });
         }
     } else {

@@ -1,5 +1,5 @@
 const User = require('../models/User');
-const logger = require('../utils/logger');
+// const logger = require('../utils/logger');
 const config = require('../utils/config');
 
 
@@ -15,12 +15,15 @@ const seedAdmin = async () => {
                 isActive: true,
                 name: 'Administrator'
             });
-            logger.info('Admin user created');
+            // logger.info('Admin user created');
+            console.log('Admin user created');
         } else {
-            logger.info('Admin user already exists');
+            // logger.info('Admin user already exists');
+            console.log('Admin user already exists');
         }
     } catch (error) {
-        logger.error(`Error: ${error.message}`);
+        // logger.error(`Error: ${error.message}`);
+        console.error(`Error: ${error.message}`);
     }
 }
 

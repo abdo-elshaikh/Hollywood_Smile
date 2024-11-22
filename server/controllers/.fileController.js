@@ -4,14 +4,15 @@ const fsExtra = require("fs-extra");
 const multer = require("multer");
 const fileType = require('file-type');
 const { upload, uploadMultiple } = require('../middlewares/uploadMiddleware');
-const logger = require('../utils/logger');
+// const logger = require('../utils/logger');
 
 // Upload single file
 const uploadFile = (req, res) => {
 
     upload(req, res, (err) => {
         if (err) {
-            logger.error(`Error during file upload: ${err.message}`, { method: 'uploadFile', file: req.file?.originalname });
+            // logger.error(`Error during file upload: ${err.message}`, { method: 'uploadFile', file: req.file?.originalname });
+            
             if (err.message === "File already exists") {
                 return res.status(409).json({ error: "File already exists" });
             }
