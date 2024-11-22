@@ -17,9 +17,6 @@ const seedAdmin = async () => {
             });
             // logger.info('Admin user created');
             console.log('Admin user created');
-        } else {
-            // logger.info('Admin user already exists');
-            console.log('Admin user already exists');
         }
     } catch (error) {
         // logger.error(`Error: ${error.message}`);
