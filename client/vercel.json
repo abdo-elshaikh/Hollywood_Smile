@@ -1,0 +1,14 @@
+{
+    "buildCommand": "npm install && npm run build",
+    "outputDirectory": "dist",
+    "framework": "vite",
+    "env": {
+        "VITE_API_URL": "https://hollywoodsmile.vercel.app",
+        "VITE_API_KEY": "RdZjLTYmNuIQUhbs",
+        "VITE_DEFAULT_USER": "visitor",
+        "VITE_DEFAULT_PASSWORD": "visitor@123",
+        "VITE_APP_NAME": "Hollywood Smile",
+        "VITE_APP_DESCRIPTION": "Hollywood Smile is a web application that provides a platform for users to book appointments with dentists.",
+        "VITE_SUB_NAME": "Dr/ Mohamed Mabrouk"
+    }
+}
