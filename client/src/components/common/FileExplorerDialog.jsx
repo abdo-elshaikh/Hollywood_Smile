@@ -100,7 +100,7 @@ const FileExplorerDialog = ({ open, onClose, onSelectFile }) => {
     };
 
     const handleSelectFile = (file) => {
-        const basePath = import.meta.env.VITE_BASE_URL;
+        const basePath = import.meta.env.VITE_API_URL + "/uploads/";
         const filePath = `${basePath}${directoryPath}${file.name}`;
         onSelectFile({ ...file, path: filePath });
         showSnackbar("File selected", "success");

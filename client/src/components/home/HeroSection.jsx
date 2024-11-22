@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import Slider from 'react-slick';
 import { useClinicContext } from '../../contexts/ClinicContext';
 
-const baseUrl = import.meta.env.VITE_BASE_URL;
+const baseUrl = import.meta.env.VITE_API_URL + '/uploads/';
 const slideImages = [
     `${baseUrl}/images/slides/slide_4.jpg`,
     `${baseUrl}/images/slides/slide_5.jpg`,
