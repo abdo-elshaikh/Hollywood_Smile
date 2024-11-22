@@ -111,7 +111,7 @@ export const ClinicProvider = ({ children }) => {
     // Fetch clinic information
     const fetchClinicInfo = async () => {
         try {
-            const response = await axiosInstance.get("/clinic");
+            const response = await axiosInstance.get("/clinics");
             setClinicInfo(response.data);
         } catch (error) {
             console.error("Error fetching clinic information:", error);
@@ -131,7 +131,7 @@ export const ClinicProvider = ({ children }) => {
     // Update clinic information
     const updateClinicInfo = async (newInfo) => {
         try {
-            const response = await axiosInstance.put("/clinic", newInfo);
+            const response = await axiosInstance.put("/clinics", newInfo);
             setClinicInfo(response.data.clinic);
             return response.data;
         } catch (error) {

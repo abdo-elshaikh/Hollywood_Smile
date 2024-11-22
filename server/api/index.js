@@ -48,16 +48,20 @@ app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(Express.urlencoded({ extended: true }));
 
-// Serve static files for local or non-serverless environments
-app.use(Express.static(path.join(__dirname, 'public')));
-app.use(Express.static(path.join(__dirname, 'uploads')));
+// Serve static files
+app.use(Express.static(path.join(__dirname, '../public')));
+app.use('/uploads', Express.static(path.join(__dirname, '../uploads')));
 
-// Serve static files for serverless environments (for Netlify or similar)
-app.use('/.netlify/functions/api/public', Express.static('public'));
-app.use('/.netlify/functions/api/uploads', Express.static('uploads'));
+// Error handling middleware
+app.use((err, req, res, next) => {
+    if (err) {
+        res.status(500).json({ message: err.message });
+    } else {
+        next();
+    }
+});
 
-
-
+// Routes
 app.get('/', (req, res) => {
     res.status(200).json({ message: 'API is running' });
 });

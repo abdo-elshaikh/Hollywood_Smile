@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Clinic = require('../models/Clinic');
-const { authorize } = require('../middlewares/authMiddleware');
+const { protect } = require('../middlewares/authMiddleware');
 
 // @route   GET /api/clinic
 // @desc    Get clinic information
@@ -19,7 +19,7 @@ router.get('/', async (req, res) => {
 // @route   PUT /api/clinic
 // @desc    Update clinic information
 // @access  Protected
-router.put('/', async (req, res) => {
+router.put('/', protect, async (req, res) => {
     try {
         const clinic = await Clinic.findOne();
         if (!clinic) {
