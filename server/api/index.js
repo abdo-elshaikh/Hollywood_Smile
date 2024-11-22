@@ -5,7 +5,7 @@ const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const path = require('path');
 const connectDB = require('../config/db');
-const logger = require('../utils/logger');
+// const logger = require('../utils/logger');
 
 // Import Routes
 const userRoutes = require('../routes/userRoutes');

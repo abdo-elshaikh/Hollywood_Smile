@@ -4,7 +4,7 @@ const cors = require('cors');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const path = require('path');
-const logger = require('./utils/logger'); // Your logger
+// const logger = require('./utils/logger');
 const connectDB = require('./config/db'); // Your DB connection function
 const { notFound, errorHandler } = require('./middlewares/errorMiddleware'); // Error handling middlewares
 
@@ -57,7 +57,8 @@ app.use(errorHandler);
 if (process.env.NODE_ENV !== 'production') {
     const PORT = process.env.PORT || 5000;
     app.listen(PORT, () => {
-        logger.info(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+        // logger.info(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+        console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
     });
 }
 
