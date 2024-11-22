@@ -1,9 +1,15 @@
 const { createLogger, format, transports } = require('winston');
 const path = require('path');
+const fs = require('fs');
 const config = require('./config');
 
-// Define log directory
-const logDirectory = path.join(__dirname, '..', 'logs');
+// Define log directory, defaulting to /tmp in serverless environments
+const logDirectory = process.env.NODE_ENV === 'production' ? '/tmp/logs' : path.join(__dirname, '..', 'logs');
+
+// Ensure the log directory exists (for non-serverless environments)
+if (process.env.NODE_ENV !== 'production' && !fs.existsSync(logDirectory)) {
+    fs.mkdirSync(logDirectory, { recursive: true });
+}
 
 // Create a logger instance
 const logger = createLogger({
