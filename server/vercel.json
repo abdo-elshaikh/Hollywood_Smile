@@ -1,15 +1,13 @@
 {
     "version": 2,
+    "name": "hollywood-smile-web-server",
+    "description": "Backend server for a web application using Express.js",
+    "functions": { "api": { "runtime": "@vercel/node" } },
     "builds": [
-        {
-            "src": "index.js",
-            "use": "@vercel/node"
-        }
+        { "src": "index.js", "use": "@vercel/node" }
     ],
-    "routes": [
-        {
-            "src": "/api/(.*)",
-            "dest": "index.js"
-        }        
-    ]
+    "env": {
+        "MONGO_Db": "mongodb+srv://abdo202224:RdZjLTYmNuIQUhbs@hollywood.j2xm4.mongodb.net/?retryWrites=true&w=majority&appName=Hollywood&ssl=true",
+        "DB_NAME": "hollywood_smile_web_server"
+    }
 }
