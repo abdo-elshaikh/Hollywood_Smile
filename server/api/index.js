@@ -74,7 +74,7 @@ app.use('/offers', offersRoutes);
 app.use('/services', servicesRoutes);
 app.use('/doctors', doctorsRoutes);
 app.use('/clinics', clinicRoutes);
-app.use('/testimonies', testimonyRoutes);
+app.use('/testimonials', testimonyRoutes);
 app.use('/faqs', faqRoutes);
 app.use('/messages', messageRoutes);
 app.use('/subscribers', subscribeRoutes);
