@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const logger = require('../utils/logger');
 const config = require('../utils/config');
+const seedAdmin = require('./seed');
 
 const dbUri = config.mongodbUri;
 const dbName = config.dbName;
@@ -14,6 +15,7 @@ const connectDB = async () => {
             dbName: dbName,
         });
         logger.info('MongoDB connected successfully');
+        await seedAdmin();
     } catch (error) {
         logger.error('MongoDB connection failed:', error);
     }
