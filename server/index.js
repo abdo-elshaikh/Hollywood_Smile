@@ -39,16 +39,6 @@ const beforeAfterRoutes = require('./routes/beforeAfterRoutes');
 // Initialize Express app
 const app = Express();
 
-
-// Serve static files in production
-if (process.env.NODE_ENV === 'production') {
-    const clientBuildPath = path.join(__dirname, '../client/dist');
-    app.use(Express.static(clientBuildPath));
-    app.get('*', (req, res) => {
-        res.sendFile(path.join(clientBuildPath, 'index.html'));
-    });
-}
-
 // Middlewares for parsing requests
 app.use(cors({
     origin: config.CORS_ORIGIN || '*',
@@ -63,23 +53,75 @@ app.use(
         secret: config.SESSION_SECRET,
         resave: false,
         saveUninitialized: true,
-        cookie: { secure: false, maxAge: 60000 },
+        store: new session.MemoryStore(),
+        cookie: { maxAge: 60000, secure: process.env.NODE_ENV === 'production' },
     })
 );
 
-// Passport.js for authentication
-app.use(passport.initialize());
-app.use(passport.session());
+// Passport middleware
+// app.use(passport.initialize());
+// app.use(passport.session());
 
 // Serve static files
 app.use(Express.static(path.join(__dirname, 'public')));
 // Serve uploads directory as static folder
 app.use('/uploads', Express.static(path.join(__dirname, 'uploads')));
 
-// Call the database connection function
-connectDB();
-// Seed the admin user
-seedAdmin();
+// Connect to MongoDB
+(async () => {
+    try {
+        await connectDB();
+        // Seed the admin user
+        await seedAdmin();
+        logger.info('completed seeding admin user with MongoDB');
+    } catch (error) {
+        logger.error(`Error connecting to MongoDB: ${error.message}`);
+    }
+})
+
+
+// Handle API routes or other server-side logic here
+app.get('/', (req, res) => {
+    return res.json({ message: 'Welcome to the API server running on port 5001' });
+});
+
+// api routes should be here
+app.get('/api', (req, res) => {
+    return res.json({ message: 'API is running...' });
+});
+
+// Use custom routes with serverless routes
+app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/files', fileRoutes);
+app.use('/api/bookings', bookingRoutes);
+app.use('/api/offers', offersRoutes);
+app.use('/api/services', servicesRoutes);
+app.use('/api/doctors', doctorsRoutes);
+app.use('/api/clinics', clinicRoutes);
+app.use('/api/testimonies', testimonyRoutes);
+app.use('/api/faqs', faqRoutes);
+app.use('/api/messages', messageRoutes);
+app.use('/api/subscribes', subscribeRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/theme-settings', themeSettingsRoutes);
+app.use('/api/blogs', blogRoutes);
+app.use('/api/comments', commentRoutes);
+app.use('/api/gallery', galleryRoutes);
+app.use('/api/before-after', beforeAfterRoutes);
+
+// Serve static files in production
+if (process.env.NODE_ENV === 'production') {
+    const clientBuildPath = path.join(__dirname, '../client/dist');
+    app.use(Express.static(clientBuildPath));
+    app.get('*', (req, res) => {
+        res.sendFile(path.join(clientBuildPath, 'index.html'));
+    });
+}
+
+// Error handling middleware
+app.use(notFound);
+app.use(errorHandler);
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err) => {
@@ -99,34 +141,6 @@ process.on('SIGINT', () => {
     process.exit(0);
 });
 
-// Handle API routes or other server-side logic here
-app.get('/', (req, res) => {
-    res.send('API is running...');
-});
-
-// Routes
-app.use('/api/files', fileRoutes);
-app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/bookings', bookingRoutes);
-app.use('/api/offers', offersRoutes);
-app.use('/api/services', servicesRoutes);
-app.use('/api/doctors', doctorsRoutes);
-app.use('/api/clinic', clinicRoutes);
-app.use('/api/testimonials', testimonyRoutes);
-app.use('/api/faqs', faqRoutes);
-app.use('/api/subscribe', subscribeRoutes);
-app.use('/api/messages', messageRoutes);
-app.use('/api/notifications', notificationRoutes);
-app.use('/api/blogs', blogRoutes);
-app.use('/api/comments', commentRoutes);
-app.use('/api/theme-settings', themeSettingsRoutes);
-app.use('/api/gallery', galleryRoutes);
-app.use('/api/before-after', beforeAfterRoutes);
-
-// Error handling middleware
-app.use(notFound);
-app.use(errorHandler);
 
 // Start the server
 const PORT = config.port || 5000;
