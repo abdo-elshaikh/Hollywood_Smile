@@ -1,7 +1,10 @@
 const { createLogger, format, transports } = require('winston');
 const path = require('path');
 const fs = require('fs');
-const config = require('./config');
+const dotenv = require('dotenv');
+
+// Load environment variables from .env file
+dotenv.config();
 
 // Define log directory, defaulting to /tmp in serverless environments
 const logDirectory = process.env.NODE_ENV === 'production' ? '/tmp/logs' : path.join(__dirname, '..', 'logs');
@@ -39,7 +42,7 @@ const logger = createLogger({
 });
 
 // Add console transport for development
-if (config.NODE_ENV === 'development') {
+if (process.env.NODE_ENV === 'development') {
     logger.add(
         new transports.Console({
             format: format.combine(
