@@ -94,6 +94,11 @@ const HeaderSection = () => {
         <Box sx={{ flexGrow: 1 }}>
             <AppBar
                 position="fixed"
+                elevation={0}
+                color="transparent"
+                style={{ backdropFilter: 'blur(5px)' }}
+                className="header"
+
                 sx={{
                     transition: 'background 0.3s ease',
                     bgcolor: isScrolled ? 'background.paper' : 'transparent',

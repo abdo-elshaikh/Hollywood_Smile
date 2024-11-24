@@ -6,7 +6,7 @@ import {
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import axiosInstance from '../../services/axiosInstance';
-import fileService from '../../services/fileService';
+import { uploadImage } from '../../services/uploadImage';
 
 const TestimonialsManager = () => {
     const [testimonials, setTestimonials] = useState([]);
@@ -58,7 +58,7 @@ const TestimonialsManager = () => {
         }
     };
 
-
+    
     // Define columns for the DataGrid
     const columns = [
         { field: 'name', headerName: 'Name', width: 150 },
@@ -160,8 +160,8 @@ const TestimonialFormDialog = ({ testimonial, onClose, onSave }) => {
 
     const handleUploadImage = async (file) => {
         try {
-            const data = await fileService.uploadFile(file, '/images/testimonials');
-            setFormData({ ...formData, imgUrl: data.url });
+            const data = await uploadImage(file, '/images/testimonials');
+            setFormData({ ...formData, imgUrl: data.fullUrl });
         } catch (error) {
             console.error('Failed to upload image:', error);
         }

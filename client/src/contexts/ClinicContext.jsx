@@ -9,14 +9,14 @@ export const useClinicContext = () => useContext(ClinicContext);
 
 export const ClinicProvider = ({ children }) => {
     const [clinicInfo, setClinicInfo] = useState({
-        name: { en: "Clinic Name", ar: "اسم العيادة" },
-        subtitle: { en: "Dr. John Doe, DDS", ar: "د. جون دو, طبيب الأسنان" },
+        name: { en: "Hollywood Smile Center", ar: "هوليوود سمايل سنتر" },
+        subtitle: { en: "Dr. Mohamed Mabrouk", ar: "د. محمد مبروك" },
         description: {
-            en: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-            ar: "نص عربي للتوضيح ويحتوي على معلومات عن العيادة ووصف موجز للخدمات."
+            en: "My Clinic is a state-of-the-art dental facility located in the heart of the city.",
+            ar: "مركزي هو مركز طبي ممتاز في مدينة سمسطا."
         },
         logo: { light: "logo-light.png", dark: "logo-dark.png" },
-        address: { en: "Address", ar: "العنوان" },
+        address: { en: "Smosta - Mohamed Sliman Street Front of Co-operation Building", ar: "سمسطا - ش محمود سليمان امام بنزينة التعاون"},
         zip: "Zip Code",
         phone: "+1 (123) 456-7890",
         email: "Email@placeholder.com",

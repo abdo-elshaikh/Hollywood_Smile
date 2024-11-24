@@ -5,8 +5,6 @@ const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const path = require('path');
 const connectDB = require('../config/db');
-// const logger = require('../utils/logger');
-
 // Import Routes
 const userRoutes = require('../routes/userRoutes');
 const fileRoutes = require('../routes/fileRoutes');
@@ -26,6 +24,8 @@ const beforeAfterRoutes = require('../routes/beforeAfterRoutes');
 const notificationRoutes = require('../routes/notificationRoutes');
 const themeSettingsRoutes = require('../routes/themeSettingsRoutes');
 const authRoutes = require('../routes/authRoutes');
+const cloudinaryRoutes = require('../routes/cloudinaryRoutes');
+const supabaseRoutes = require('../routes/supabaseRoutes');
 
 // Import Middlewares
 const { notFound, errorHandler } = require('../middlewares/errorMiddleware');
@@ -63,7 +63,7 @@ app.use((err, req, res, next) => {
 
 // Routes
 app.get('/', (req, res) => {
-    res.status(200).json({ message: 'API is running' });
+    res.status(200).json({ message: 'API is running Successfully ...' });
 });
 
 app.use('/auth', authRoutes);
@@ -80,10 +80,12 @@ app.use('/messages', messageRoutes);
 app.use('/subscribers', subscribeRoutes);
 app.use('/blogs', blogRoutes);
 app.use('/comments', commentRoutes);
-app.use('/galleries', galleryRoutes);
+app.use('/gallery', galleryRoutes);
 app.use('/before-after', beforeAfterRoutes);
 app.use('/notifications', notificationRoutes);
 app.use('/theme-settings', themeSettingsRoutes);
+app.use('/cloudinary', cloudinaryRoutes);
+app.use('/supabase', supabaseRoutes);
 
 // Error Handling Middlewares
 app.use(notFound);

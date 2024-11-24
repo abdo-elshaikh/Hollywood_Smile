@@ -8,7 +8,7 @@ import {
 import { Add, Edit, Delete } from '@mui/icons-material';
 import { DataGrid } from '@mui/x-data-grid';
 import doctorService from '../../services/doctorService';
-import fileService from '../../services/fileService';
+import { uploadImage, deleteFile } from '../../services/uploadImage';
 import { useSnackbar } from '../../contexts/SnackbarProvider';
 import ConfirmationDialog from "../common/ConfirmationDialog";
 
@@ -113,11 +113,12 @@ const ManageDoctors = () => {
         const file = event.target.files[0];
         const directoryPath = 'images/doctors';
         if (file) {
-            const data = await fileService.uploadFile(file, directoryPath);
-            if (data.url && data.imageUrl) {
-                await fileService.deleteFile(directoryPath, doctorData.imageUrl.split('/').pop());
+            const data = await uploadImage(file, directoryPath);
+            if (data) {
+                const fileUrl = doctorData.imageUrl;
+                await deleteFile(fileUrl);
             }
-            setDoctorData((prev) => ({ ...prev, imageUrl: data.url }));
+            setDoctorData((prev) => ({ ...prev, imageUrl: data.fullUrl }));
             showSnackbar('Image uploaded successfully', 'success');
         } else {
             showSnackbar('Please select an image', 'error');

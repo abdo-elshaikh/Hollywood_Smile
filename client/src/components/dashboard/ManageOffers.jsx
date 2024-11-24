@@ -17,6 +17,7 @@ import {
     Switch,
     FormControlLabel,
     Checkbox,
+    CircularProgress,
     Select, MenuItem, FormControl, InputLabel
 } from "@mui/material";
 import { motion } from "framer-motion";
@@ -24,7 +25,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useSnackbar } from '../../contexts/SnackbarProvider';
 import CustomPagination from "../common/CustomPagination";
-import fileService from "../../services/fileService";
+import { uploadImage } from "../../services/uploadImage";
 import { fetchServices } from "../../services/servicesService";
 
 const ManageOffers = () => {
@@ -48,6 +49,7 @@ const ManageOffers = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [services, setServices] = useState([]);
+    const [loadingImage, setLoadingImage] = useState(false);
 
     useEffect(() => {
         fetchOffers();
@@ -86,20 +88,22 @@ const ManageOffers = () => {
         }
     };
 
-    const handleUploadImage = (file) => {
-        const directoryPath = 'images/offers';
-        fileService.uploadFile(file, directoryPath)
-            .then((data) => {
-                if (data.url && newOffer.imageUrl) {
-                    // remove old image
-                    fileService.deleteFile(directoryPath, newOffer.imageUrl.split('/').pop()).then(() => {
-                        showSnackbar('Old image deleted successfully', 'success');
-                    });
-                }
-                setNewOffer({ ...newOffer, imageUrl: data.url });
-                showSnackbar('Image uploaded successfully', 'success');
-            })
-            .catch(() => showSnackbar('Failed to upload image', 'error'));
+    const handleUploadImage = async (file) => {
+        setLoadingImage(true);
+        try {
+            const directoryPath = 'images/offers';
+            const data = await uploadImage(file, directoryPath);
+            if (data.fullUrl) {
+                setNewOffer({ ...newOffer, imageUrl: data.fullUrl });
+                showSnackbar("Image uploaded successfully", "success");
+            } else {
+                showSnackbar("Failed to upload image", "error");
+            }
+        } catch (err) {
+            showSnackbar("Failed to upload image", "error");
+        } finally {
+            setLoadingImage(false);
+        }
     };
 
     const handleChange = (e) => {
@@ -361,7 +365,19 @@ const ManageOffers = () => {
                             control={<Checkbox checked={newOffer.showInNotifications} onChange={handleCheckboxChange} name="showInNotifications" />}
                             label="Show in Notifications"
                         />
-                        <Typography variant="h6" sx={{ mt: 2 }}>Image: {newOffer.imageUrl}</Typography>
+                        {loadingImage && <CircularProgress />}
+                        <Typography variant="caption" color="textSecondary" sx={{ mt: 1 }}>
+                            Image Preview : {newOffer.imageUrl ? newOffer.imageUrl : "No Image Selected"}
+                        </Typography>
+                        {!loadingImage && (
+                            <CardMedia
+                                component="img"
+                                height="140"
+                                image={newOffer.imageUrl}
+                                alt="Offer Image"
+                                sx={{ mt: 2 }}
+                            />
+                        )}
                         <Button variant="contained" component="label" fullWidth sx={{ mt: 2 }}>
                             Upload Image
                             <input type="file" hidden onChange={(e) => handleUploadImage(e.target.files[0])} />
@@ -369,7 +385,7 @@ const ManageOffers = () => {
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={closeDialog} color="secondary">Cancel</Button>
-                        <Button type="submit" color="primary">{editOffer ? "Save" : "Create"}</Button>
+                        <Button type="submit" disabled={loadingImage} color="primary">{editOffer ? "Save" : "Create"}</Button>
                     </DialogActions>
                 </form>
             </Dialog>

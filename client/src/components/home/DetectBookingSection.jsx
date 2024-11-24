@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
 
+
 const DetectBookingSection = () => {
     const navigate = useNavigate();
     const { user } = useAuth();
@@ -51,7 +52,7 @@ const DetectBookingSection = () => {
             >
                 {t('detectBookingSection.button')}
             </Button>
-            <Typography variant="body2" sx={{ mt: 2, color: '#B03052', maxWidth: 200}}>
+            <Typography variant="body2" sx={{ mt: 2, color: '#B03052', maxWidth: 200 }}>
                 {t('detectBookingSection.additionalText')}
             </Typography>
         </Box>

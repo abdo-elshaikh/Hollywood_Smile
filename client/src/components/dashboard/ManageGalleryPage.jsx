@@ -9,7 +9,7 @@ import {
 import { Add, Edit, Delete, Cancel } from '@mui/icons-material';
 import { useSnackbar } from '../../contexts/SnackbarProvider';
 import galleryService from '../../services/galleryService';
-import fileService from '../../services/fileService';
+import { uploadImage, deleteFile } from '../../services/uploadImage';
 import { motion } from 'framer-motion';
 import { useTheme } from '@mui/material/styles';
 import { useMediaQuery } from '@mui/material';
@@ -66,11 +66,11 @@ const ManageGalleryPage = () => {
 
             try {
                 setIsLoading(true);
-                const data = await fileService.uploadFile(file, 'images/gallery');
+                const data = await uploadImage(file, 'images/gallery');
                 if (selectedItem) {
-                    await fileService.deleteFile('images/gallery', selectedItem.imageUrl.split('/').pop());
+                    await deleteFile(selectedItem.imageUrl);
                 }
-                setFormData({ ...formData, imageUrl: data.url });
+                setFormData({ ...formData, imageUrl: data.fullUrl });
                 showSnackbar('File uploaded successfully', 'success');
             } catch (error) {
                 console.error('Error uploading file:', error);

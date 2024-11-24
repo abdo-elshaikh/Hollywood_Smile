@@ -21,7 +21,7 @@ import {
 } from "@mui/material";
 import { useClinicContext } from "../../contexts/ClinicContext";
 import { useSnackbar } from "../../contexts/SnackbarProvider";
-import fileService from "../../services/fileService";
+import { uploadImage } from "../../services/uploadImage";
 import { motion } from "framer-motion";
 import {
     Add as AddIcon,
@@ -155,16 +155,24 @@ const ManageClinicPage = () => {
         }
     };
 
-    const handleUploadImage = (file, mode) => {
+    const handleUploadImage = async (file, mode) => {
         setIsUploading(true);
-        fileService.uploadFile(file, "images/clinics/logo")
-            .then((data) => {
-                setFormData((prevData) => ({ ...prevData, logo: { ...prevData.logo, [mode]: data.url } }));
-                updateClinicInfo({ ...formData, logo: { ...formData.logo, [mode]: data.url } });
-                showSnackBar("Image uploaded successfully", "success");
-            })
-            .catch((error) => showSnackBar(error.message, "error"))
-            .finally(() => setIsUploading(false));
+        try {
+            const data = await uploadImage(file, "images/clinic", "uploads");
+            setFormData((prevData) => ({
+                ...prevData,
+                logo: {
+                    ...prevData.logo,
+                    [mode]: data.fullUrl
+                }
+            }));
+            showSnackBar("Image uploaded successfully", "success");
+        } catch (error) {
+            showSnackBar("Failed to upload image", "error");
+        } finally {
+            setIsUploading(false);
+        }
+
     };
 
     const handleRemoveImage = () => {

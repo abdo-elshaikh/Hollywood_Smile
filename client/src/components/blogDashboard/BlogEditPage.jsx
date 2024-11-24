@@ -10,7 +10,7 @@ import { Delete, AddPhotoAlternate, Upload } from '@mui/icons-material';
 import { useSnackbar } from '../../contexts/SnackbarProvider';
 import { useAuth } from '../../contexts/AuthContext';
 import FileExplorerDialog from '../common/FileExplorerDialog';
-import fileService from '../../services/fileService';
+import { uploadImage } from '../../services/uploadImage';
 
 const BlogEditPage = () => {
     const { id } = useParams();
@@ -90,8 +90,8 @@ const BlogEditPage = () => {
 
     const handleUpload = async (file) => {
         try {
-            const response = await fileService.uploadFile(file, '/images/blogs/');
-            setFormData({ ...formData, imageUrl: response.url });
+            const data = await uploadImage(file, 'images/blogs/', 'uploads');
+            setFormData({ ...formData, imageUrl: data.fullUrl });
             showSnackbar('Image uploaded successfully', 'success');
         } catch (error) {
             console.error('Error uploading file:', error);

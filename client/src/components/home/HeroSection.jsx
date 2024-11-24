@@ -6,13 +6,18 @@ import { useCustomTheme } from '../../contexts/ThemeProvider';
 import { useTranslation } from 'react-i18next';
 import Slider from 'react-slick';
 import { useClinicContext } from '../../contexts/ClinicContext';
+import slide1 from '../../assets/slides/slide_1.jpg';
+import slide2 from '../../assets/slides/slide_2.jpg';
+import slide3 from '../../assets/slides/slide_3.jpg';
+import slide4 from '../../assets/slides/slide_4.jpg';
+import slide5 from '../../assets/slides/slide_5.jpg';
 
-const baseUrl = import.meta.env.VITE_API_URL + '/uploads/';
 const slideImages = [
-    `${baseUrl}/images/slides/slide_4.jpg`,
-    `${baseUrl}/images/slides/slide_5.jpg`,
-    `${baseUrl}/images/slides/slide_6.jpg`,
-    `${baseUrl}/images/slides/slide_7.jpg`,
+    slide1,
+    slide2,
+    slide3,
+    slide4,
+    slide5,
 ];
 
 const HeroSection = () => {
@@ -80,11 +85,17 @@ const HeroSection = () => {
                     fontWeight: 'bold',
                     mb: 2,
                     textShadow: '0px 4px 10px rgba(0, 0, 0, 0.5)',
+                    fontSize: { xs: '2rem', sm: '3rem' },
                 }}
             >
                 {title}
             </Typography>
-            <Typography variant="h5" sx={{ mb: 4, textShadow: '0px 3px 8px rgba(0,0,0,0.4)' }}>
+            <Typography variant="h5"
+                sx={{
+                    mb: 4,
+                    textShadow: '0px 3px 8px rgba(0,0,0,0.4)',
+                    fontSize: { xs: '1.5rem', sm: '2rem' },
+                }}>
                 {description}
             </Typography>
         </motion.div>
@@ -95,6 +106,7 @@ const HeroSection = () => {
             sx={{
                 display: 'flex',
                 justifyContent: 'center',
+                alignItems: 'center',
                 gap: 2,
                 flexDirection: { xs: 'column', sm: 'row' },
                 mt: 4,
@@ -169,16 +181,13 @@ const HeroSection = () => {
                     <Box
                         key={index}
                         sx={{
+                            position: 'relative',
+                            width: '100%',
+                            height: '90vh',
                             backgroundImage: `url(${image})`,
                             backgroundSize: 'cover',
                             backgroundPosition: 'center',
-                            minHeight: '630px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            position: 'relative',
-                            textAlign: 'center',
-                            color: '#fff',
+                            filter: isDark ? 'brightness(0.7)' : 'none',
                         }}
                     >
                         <Box
@@ -199,9 +208,10 @@ const HeroSection = () => {
                             sx={{
                                 position: 'absolute',
                                 left: '50%',
-                                bottom: '20px',
+                                bottom: { xs: '20%', sm: '5%' },
                                 transform: 'translate(-50%, -50%)',
                                 zIndex: 2,
+                                animation: `fadeIn 1s ease ${index * 0.5}s forwards`,
                             }}
                         >
                             <SlideContent

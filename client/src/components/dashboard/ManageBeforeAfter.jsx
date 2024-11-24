@@ -4,7 +4,7 @@ import {
 } from '@mui/material';
 import { Add, Edit, Save, Cancel, Delete } from '@mui/icons-material';
 import axiosInstance from '../../services/axiosInstance';
-import fileService from '../../services/fileService';
+import {uploadImage} from '../../services/uploadImage';
 import { useSnackbar } from '../../contexts/SnackbarProvider';
 import { motion } from 'framer-motion';
 
@@ -37,12 +37,12 @@ const ManageBeforeAfter = () => {
         }
     };
 
-    const uploadImage = async (file, entryCode, fileName) => {
+    const handleUploadImage = async (file, entryCode, fileName) => {
         const renamedFile = new File([file], fileName, { type: file.type });
         try {
-            const data = await fileService.uploadFile(renamedFile, `/images/before-after/${entryCode}`);
+            const data = await uploadImage(renamedFile, `images/before-after/${entryCode}`, 'uploads');
             showSnackbar('Image uploaded successfully', 'success');
-            return data.url;
+            return data.fullUrl;
         } catch (error) {
             console.error('Error uploading image:', error);
             showSnackbar('Error uploading image', 'error');
@@ -102,7 +102,7 @@ const ManageBeforeAfter = () => {
     };
 
     const handleImageUploadChange = async (id, field, file, fileName, code) => {
-        const url = await uploadImage(file, code, fileName);
+        const url = await handleUploadImage(file, code, fileName);
         if (url) handleInputChange(id, field, url);
     };
 

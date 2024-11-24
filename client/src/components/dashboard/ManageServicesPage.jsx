@@ -18,7 +18,7 @@ import {
 } from '@mui/material';
 import { Add, Edit, Delete } from '@mui/icons-material';
 import { fetchServices, createService, updateService, deleteService } from '../../services/servicesService';
-import fileService from '../../services/fileService';
+import { uploadImage } from '../../services/uploadImage';
 import { useSnackbar } from '../../contexts/SnackbarProvider';
 
 
@@ -114,9 +114,9 @@ const ManageServicesPage = () => {
     // Handle file upload
     const handleUploadImage = (file) => {
         const directoryPath = 'images/services/images';
-        fileService.uploadFile(file, directoryPath)
+        uploadImage(file, directoryPath)
             .then((data) => {
-                setFormData({ ...formData, imageUrl: data.url });
+                setFormData({ ...formData, imageUrl: data.fullUrl });
                 showSnackBar('Image uploaded successfully', 'success');
             })
             .catch(() => showSnackBar('Failed to upload image', 'error'));
@@ -125,9 +125,9 @@ const ManageServicesPage = () => {
     // Handle icon upload
     const handleUploadIcon = (file) => {
         const directoryPath = 'icons/services/icons';
-        fileService.uploadFile(file, directoryPath)
+        uploadImage(file, directoryPath)
             .then((data) => {
-                setFormData({ ...formData, icon: data.url });
+                setFormData({ ...formData, icon: data.fullUrl });
                 showSnackBar('Icon uploaded successfully', 'success');
             })
             .catch(() => showSnackBar('Failed to upload icon', 'error'));

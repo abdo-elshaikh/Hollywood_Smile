@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-// const logger = require('../utils/logger');
 const config = require('../utils/config');
 const seedAdmin = require('./seed');
 
@@ -14,8 +13,11 @@ const connectDB = async () => {
             useUnifiedTopology: true,
             dbName: dbName,
         });
-        console.log('MongoDB connected:', dbName);
+        console.log(`MongoDB connected: ${dbName}`);
+
+        // Optionally seed the admin if the database connection is successful
         await seedAdmin();
+
     } catch (error) {
         console.error('MongoDB connection error:', error);
         process.exit(1);

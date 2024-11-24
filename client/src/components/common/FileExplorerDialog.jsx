@@ -33,7 +33,7 @@ import {
     Refresh,
 } from "@mui/icons-material";
 import { useSnackbar } from "../../contexts/SnackbarProvider";
-import fileService from "../../services/fileService";
+import { uploadImage } from "../../services/uploadImage";
 import FileViewer from "./FileViewer";
 
 const FileExplorerDialog = ({ open, onClose, onSelectFile }) => {
@@ -86,9 +86,11 @@ const FileExplorerDialog = ({ open, onClose, onSelectFile }) => {
         }
         try {
             setUploading(true);
-            const response = await fileService.uploadFile(selectedFile, directoryPath);
-            setUploadProgress(Math.round((response.loaded * 100) / response.total));
-            showSnackbar("File uploaded successfully", "success");
+            const data = await uploadImage(selectedFile, directoryPath);
+            if (data) {
+                setUploadProgress(Math.round((data.loaded * 100) / data.total));
+                showSnackbar("File uploaded successfully", "success");
+            }
             await fetchItems();
         } catch (error) {
             showSnackbar(error.message, "error");
@@ -172,7 +174,7 @@ const FileExplorerDialog = ({ open, onClose, onSelectFile }) => {
                         >
                             {selectedFile ? "Upload" : "Upload File"}
                         </Button>
-                         <input id="file-input" type="file" hidden onChange={handleFileSelect} />
+                        <input id="file-input" type="file" hidden onChange={handleFileSelect} />
                     </Box>
                 </Box>
                 {uploading && <LinearProgress variant="determinate" value={uploadProgress} />}
