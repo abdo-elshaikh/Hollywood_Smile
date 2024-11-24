@@ -50,16 +50,6 @@ app.use(Express.urlencoded({ extended: true }));
 
 // Serve static files
 app.use(Express.static(path.join(__dirname, '../public')));
-app.use('/uploads', Express.static(path.join(__dirname, '../uploads')));
-
-// Error handling middleware
-app.use((err, req, res, next) => {
-    if (err) {
-        res.status(500).json({ message: err.message });
-    } else {
-        next();
-    }
-});
 
 // Routes
 app.get('/', (req, res) => {
