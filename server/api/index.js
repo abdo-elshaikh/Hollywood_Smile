@@ -24,8 +24,6 @@ const beforeAfterRoutes = require('../routes/beforeAfterRoutes');
 const notificationRoutes = require('../routes/notificationRoutes');
 const themeSettingsRoutes = require('../routes/themeSettingsRoutes');
 const authRoutes = require('../routes/authRoutes');
-const cloudinaryRoutes = require('../routes/cloudinaryRoutes');
-const supabaseRoutes = require('../routes/supabaseRoutes');
 
 // Import Middlewares
 const { notFound, errorHandler } = require('../middlewares/errorMiddleware');
