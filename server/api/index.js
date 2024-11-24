@@ -72,8 +72,6 @@ app.use('/gallery', galleryRoutes);
 app.use('/before-after', beforeAfterRoutes);
 app.use('/notifications', notificationRoutes);
 app.use('/theme-settings', themeSettingsRoutes);
-app.use('/cloudinary', cloudinaryRoutes);
-app.use('/supabase', supabaseRoutes);
 
 // Error Handling Middlewares
 app.use(notFound);
