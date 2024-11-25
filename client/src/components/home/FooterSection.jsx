@@ -126,7 +126,7 @@ const FooterSection = () => {
                     </Grid>
                 </Grid>
                 <Grid container justifyContent="center" sx={{ mt: 4 }}>
-                    <Typography variant="body2" textAlign="center">
+                <Typography variant="body2" textAlign="center">
                         &copy; {new Date().getFullYear()} All rights reserved | This template is made with <span role="img" aria-label="heart">❤️</span> by <Link href="#" target="_blank" color="inherit">Abdo Mhmd</Link>
                     </Typography>
                 </Grid>

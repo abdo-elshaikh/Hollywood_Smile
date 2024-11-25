@@ -29,7 +29,7 @@ const ScrollToTopButton = () => {
             transition={{ type: 'spring', stiffness: 500, damping: 30 }} // Spring effect
             style={{
                 position: 'fixed',
-                bottom: 50,
+                bottom: 25,
                 right: 0,
                 zIndex: 1000,
             }}
@@ -71,7 +71,7 @@ const ScrollToTopButton = () => {
                 >
                     <KeyboardArrowUpIcon
                         sx={{
-                            fontSize: 30,
+                            fontSize: 20,
                             transition: 'transform 0.2s ease-in-out',
                         }}
                     />

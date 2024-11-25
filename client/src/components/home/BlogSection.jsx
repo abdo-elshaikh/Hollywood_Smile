@@ -40,6 +40,7 @@ const BlogSection = () => {
 
       const latestBlogs = res.data.filter((blog) => blog.published).sort((a, b) => new Date(b.date) - new Date(a.date));
       const mostLikesAndLoves = await latestBlogs.sort((a, b) => (b.likes + b.loves + b.views) - (a.likes + a.loves + a.views)).slice(0, 3);
+      console.log("Most Likes and Loves:", mostLikesAndLoves);
       setBlogs(mostLikesAndLoves);
     } catch (error) {
       console.error("Error fetching blogs:", error);
@@ -50,13 +51,6 @@ const BlogSection = () => {
     fetchBlogs();
   }, []);
 
-
-  // Animation variants for Blog Cards
-  const cardVariants = {
-    initial: { opacity: 0, y: 30 },
-    animate: { opacity: 1, y: 0, transition: { duration: 0.5 } },
-    whileHover: { scale: 1.05, boxShadow: "0px 15px 30px rgba(0,0,0,0.2)" },
-  };
 
   return (
     <Box
@@ -126,6 +120,7 @@ const BlogContent = ({ blogs }) => (
             <CardMedia
               component="div"
               image={blog.imageUrl}
+              alt={blog.title}
               sx={{
                 height: 250,
                 backgroundSize: "cover",

@@ -36,7 +36,7 @@ const GallerySection = () => {
   };
 
   return (
-    <Box component="section" sx={{ py: 4, bgcolor: themeMode === "dark" ? "background.default" : "background.light" }}>
+    <Box component="section" sx={{ bgcolor: themeMode === "dark" ? "background.default" : "background.light" }}>
       <Grid container spacing={0}>
         {galleryItems.map((item) => (
           <Grid item xs={12} sm={6} md={3} key={item._id}>

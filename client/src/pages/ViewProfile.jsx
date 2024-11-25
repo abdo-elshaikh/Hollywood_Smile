@@ -165,6 +165,7 @@ const ViewProfile = () => {
                 </motion.div>
 
                 <Box sx={{ mt: 4 }}>
+                    
                     {activeTab === 0 && (
                         <Grid container spacing={4}>
                             <Grid item xs={12} md={8}>
@@ -261,14 +262,14 @@ const ViewProfile = () => {
                                     <Box key={index} sx={{ mt: 2, p: 2, border: 1, borderColor: 'grey.300', borderRadius: 2 }}>
                                         <Typography variant="body2" color="text.primary">
                                             <strong>
-                                                {isArabic ? ratings[rate.name].ar : ratings[rate.name].en}
+                                                {isArabic ? ratings[rate?.name].ar : ratings[rate?.name].en}
                                             </strong>
                                         </Typography>
                                         <Rating value={rate.stars} readOnly size="small" />
                                         <Typography variant="body2" color="text.secondary">{rate.comment}</Typography>
                                         <Divider sx={{ my: 2 }} />
                                         <Typography variant="body2" color="text.secondary">
-                                            {isArabic ? 'بواسطة' : 'By'}: {rate.user.name} 
+                                            {isArabic ? 'بواسطة' : 'By'}: {rate.user?.name} 
                                         </Typography>
                                     </Box>
                                 ))

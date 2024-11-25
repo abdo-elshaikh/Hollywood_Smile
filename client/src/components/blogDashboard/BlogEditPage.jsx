@@ -4,7 +4,7 @@ import axiosInstance from '../../services/axiosInstance';
 import {
     Box, Container, TextField, Button, Typography, Checkbox, FormControlLabel,
     FormControl, FormLabel, Grid, Divider, Paper, Stack, Switch,
-    Tooltip, IconButton
+    Tooltip, IconButton, CircularProgress
 } from '@mui/material';
 import { Delete, AddPhotoAlternate, Upload } from '@mui/icons-material';
 import { useSnackbar } from '../../contexts/SnackbarProvider';
@@ -29,6 +29,7 @@ const BlogEditPage = () => {
         date: new Date(),
     });
     const [loading, setLoading] = useState(true);
+    const [uploading, setUploading] = useState(false);
 
     useEffect(() => {
         // Fetch existing blog data by ID
@@ -89,6 +90,7 @@ const BlogEditPage = () => {
     };
 
     const handleUpload = async (file) => {
+        setUploading(true);
         try {
             const data = await uploadImage(file, 'images/blogs/', 'uploads');
             setFormData({ ...formData, imageUrl: data.fullUrl });
@@ -96,13 +98,15 @@ const BlogEditPage = () => {
         } catch (error) {
             console.error('Error uploading file:', error);
             showSnackbar('Error uploading file', 'error');
+        } finally {
+            setUploading(false);
         }
     };
 
     const categories = ['General Dentistry', 'Cosmetic Dentistry', 'Orthodontics', 'Endodontics', 'Pediatric Dentistry', 'Oral Surgery', 'Periodontics', 'others'];
     const tags = ['Dental Implants', 'Teeth Whitening', 'Invisalign', 'Root Canal', 'Dental Crowns', 'Dental Bridges', 'Dentures', 'others'];
 
-    if (loading) return <Typography>Loading...</Typography>;
+    if (loading) return <CircularProgress color='primary' />;
 
     return (
         <Box maxWidth="md">
@@ -116,17 +120,27 @@ const BlogEditPage = () => {
                 <Stack spacing={3}>
 
                     <Box textAlign="center">
-                        <img
-                            src={formData.imageUrl || 'https://via.placeholder.com/400x200'}
-                            alt="Blog"
-                            style={{
-                                width: '100%',
-                                height: '200px',
-                                objectFit: 'cover',
-                                borderRadius: '8px',
-                                border: '1px solid #ddd'
+                        <Paper
+                            sx={{
+                                width: 200,
+                                height: 200,
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                bgcolor: 'background.default',
+                                position: 'relative',
                             }}
-                        />
+                        >
+                            {uploading ? (
+                                <CircularProgress color="inherit" />
+                            ) : (
+                                <img
+                                    src={formData.imageUrl}
+                                    alt="Blog"
+                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                />
+                            )}
+                        </Paper>
                         <Stack direction="row" spacing={1} justifyContent="center" sx={{ mt: 2 }}>
                             <Button variant="outlined" color="primary" onClick={() => setOpen(true)} startIcon={<AddPhotoAlternate />}>
                                 Select Image

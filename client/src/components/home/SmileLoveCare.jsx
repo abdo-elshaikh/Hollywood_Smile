@@ -57,14 +57,12 @@ const SmileLoveCare = () => {
                 >
                     {['smile', 'love', 'care'].map((text, index) => (
                         <React.Fragment key={text}>
-                            <Grid item>
-                                
+                            <Grid item xs={12} md={3} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                                     <Typography variant="h2" sx={{ fontWeight: 600, color: '#f07167', ml: 1, fontFamily: 'Poppins' }}>
                                         {t(`SmileLoveCare.${text}`)}
                                     </Typography>
                                 </Box>
-                                
                             </Grid>
                             {
                                 index < 2 && (

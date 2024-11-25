@@ -32,7 +32,7 @@ const FAQSection = () => {
   const sortedFAQs = faqData.sort((a, b) => a.order - b.order).slice(0, 5);
 
   return (
-    <Box component={Container} sx={{ py: 8, maxWidth: "lg", minHeight: "600px" }}>
+    <Box component={Container} sx={{ maxWidth: "lg", py: 6 }}>
       <Grid container spacing={2}>
         {/* Left side: Introduction */}
         <Grid item xs={12} md={6} >

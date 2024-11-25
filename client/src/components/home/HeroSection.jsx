@@ -40,7 +40,7 @@ const HeroSection = () => {
             <Box
                 sx={{
                     position: 'absolute',
-                    bottom: '30px',
+                    bottom: '20px',
                     left: '50%',
                     transform: 'translateX(-50%)',
                     zIndex: 3,
@@ -183,11 +183,11 @@ const HeroSection = () => {
                         sx={{
                             position: 'relative',
                             width: '100%',
-                            height: '90vh',
+                            height: '85vh',
                             backgroundImage: `url(${image})`,
                             backgroundSize: 'cover',
                             backgroundPosition: 'center',
-                            filter: isDark ? 'brightness(0.7)' : 'none',
+                            
                         }}
                     >
                         <Box
@@ -208,7 +208,7 @@ const HeroSection = () => {
                             sx={{
                                 position: 'absolute',
                                 left: '50%',
-                                bottom: { xs: '20%', sm: '5%' },
+                                bottom: 0,
                                 transform: 'translate(-50%, -50%)',
                                 zIndex: 2,
                                 animation: `fadeIn 1s ease ${index * 0.5}s forwards`,

@@ -68,7 +68,7 @@ const OffersSection = () => {
         <Container
             maxWidth="lg"
             sx={{
-                py: 12,
+                py: 8,
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
@@ -83,7 +83,7 @@ const OffersSection = () => {
             <Typography variant="subtitle1" sx={{ mb: 8, color: "text.secondary", maxWidth: 700 }}>
                 {t("offersSection.description")}
             </Typography>
-            <Box component={Container} mb={8} px={5} maxWidth="lg" position="relative">
+            <Box component={Container} mb={8} px={1} maxWidth="lg" position="relative">
                 <Slider ref={sliderRef} {...adjustedSliderSettings}>
                     {offers.map((offer) => (
                         <DentalCard key={offer.id} {...offer} />

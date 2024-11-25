@@ -3,6 +3,7 @@ import React, { useEffect, useMemo } from 'react';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from './contexts/AuthContext';
+import { useClinicContext } from './contexts/ClinicContext';
 import PrivateRoute from './components/PrivateRoute';
 import AuthPage from './pages/AuthPage';
 import HomePage from './pages/HomePage';
@@ -28,6 +29,7 @@ import LoadingSpinner from './components/common/LoadingSpinner';
 import ErrorBoundary from './components/common/ErrorBoundary';
 import './styles/index.css';
 import './i18n';
+import { Box } from '@mui/material';
 
 const ScrollToTop = () => {
   const location = useLocation();
@@ -73,22 +75,18 @@ const ScrollToTop = () => {
 
 const App = () => {
   const { user } = useAuth();
-  const isLoading = user === null;
+  const { clinicInfo } = useClinicContext();
+  const isLoading = !clinicInfo;
 
-  // if (isLoading) {
-  //   return <LoadingSpinner />;
-  // }
-
-
-  useEffect(() => {
-    document.title = 'Hollywood Smile Center';
-  }, []);
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
 
   return (
-    <main>
-      <Router>
-        <ScrollToTop />
-        <ErrorBoundary>
+    <Router>
+      <ScrollToTop />
+      <ErrorBoundary>
+        <Box component="main" sx={{ overflowX: 'hidden' }}>
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/dashboard/*" element={
@@ -116,9 +114,9 @@ const App = () => {
             <Route path="/server-error" element={<Error500Page />} />
             <Route path="*" element={<Error404Page />} />
           </Routes>
-        </ErrorBoundary>
-      </Router>
-    </main>
+        </Box>
+      </ErrorBoundary>
+    </Router>
   );
 };
 

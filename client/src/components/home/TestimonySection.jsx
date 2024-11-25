@@ -13,52 +13,39 @@ import person3 from "../../assets/images/person_3.jpg";
 import person4 from "../../assets/images/person_4.jpg";
 import person5 from "../../assets/images/person_5.jpg";
 
-const newData = [
-  {
-    "name": "John Doe",
-    "position": "CEO of TechCorp",
-    "quote": "The service was excellent and the results were beyond my expectations. Highly recommended!",
-    "imgUrl": "https://via.placeholder.com/150",
-    "rating": 5,
-    "show": true
-  },
-  {
-    "name": "Jane Smith",
-    "position": "Marketing Manager at Creative Solutions",
-    "quote": "I am extremely satisfied with the quality and professionalism of the team. Will definitely come back.",
-    "imgUrl": "https://via.placeholder.com/150",
-    "rating": 4,
-    "show": true
-  },
-  {
-    "name": "Alice Johnson",
-    "position": "Freelance Designer",
-    "quote": "The experience was great, but I wish the process was a bit faster. Overall, a good service.",
-    "imgUrl": "https://via.placeholder.com/150",
-    "rating": 3,
-    "show": true
-  },
-  {
-    "name": "Bob Brown",
-    "position": "CTO of InnovateX",
-    "quote": "Amazing service and very knowledgeable staff. They really know what they are doing.",
-    "imgUrl": "https://via.placeholder.com/150",
-    "rating": 5,
-    "show": true
-  },
-  {
-    "name": "Emily White",
-    "position": "HR Specialist",
-    "quote": "Good service, but there is room for improvement in terms of follow-up.",
-    "imgUrl": "https://via.placeholder.com/150",
-    "rating": 4,
-    "show": false
-  }
-]
+const NextArrow = (props) => {
+  const { className, style, onClick } = props; // Only extract relevant props
+  return (
+    <ArrowForwardIos
+      onClick={onClick}
+      sx={{
+        ...style,
+        color: "primary.main",
+        fontSize: "2rem",
+      }}
+      className={className}
+    />
+  );
+};
+
+const PrevArrow = (props) => {
+  const { className, style, onClick } = props; // Only extract relevant props
+  return (
+    <ArrowBackIos
+      onClick={onClick}
+      sx={{
+        ...style,
+        color: "primary.main",
+        fontSize: "2rem",
+      }}
+      className={className}
+    />
+  );
+};
 
 // Testimony Section Component
 const TestimonySection = () => {
-  const [currentSlide, setCurrentSlide] = useState(0);
+  const [currentSlide, setCurrentSlide] = useState(1);
   const sliderRef = useRef(null);
   const { t, i18n } = useTranslation();
   const isArabic = i18n.language === "ar";
@@ -126,17 +113,20 @@ const TestimonySection = () => {
       <AdjustIcon
         key={i}
         sx={{
-          color: currentSlide === i ? "#f07167" : "#6d6875",
+          color: i === currentSlide ? "#f07167" : "#6d6875",
           cursor: "pointer",
           transition: "color 0.3s ease-in-out",
           fontSize: "28px",
         }}
       />
     ),
-    nextArrow: isArabic ? <ArrowBackIos sx={{ color: "primary.main", fontSize: "2rem" }} /> : <ArrowForwardIos sx={{ color: "primary.main", fontSize: "2rem" }} />,
-    prevArrow: isArabic ? <ArrowForwardIos sx={{ color: "primary.main", fontSize: "2rem" }} /> : <ArrowBackIos sx={{ color: "primary.main", fontSize: "2rem" }} />,
+    nextArrow: isArabic ? <PrevArrow /> : <NextArrow />,
+    prevArrow: isArabic ? <NextArrow /> : <PrevArrow />,
 
   };
+
+
+
 
   return (
     <Container maxWidth={'lg'} sx={{ py: 10, position: "relative" }}>
@@ -149,22 +139,23 @@ const TestimonySection = () => {
         </Typography>
       </Box>
 
-      {/* Testimony Slider */}
-      <Slider {...settings} ref={sliderRef}>
-        {cardData.map((item) => (
-          <TestimonyCard
-            key={item.id}
-            name={item.name}
-            position={item.position}
-            quote={item.quote}
-            imgUrl={item.imgUrl}
-            rating={item.rating}
-            t={t}
-            isArabic={isArabic}
-          />
-        ))}
-      </Slider>
-    </Container>
+      <Box component={Container} mb={8} px={1} maxWidth="lg" position="relative">
+        <Slider {...settings} ref={sliderRef}>
+          {cardData.map((item) => (
+            <TestimonyCard
+              key={item.id}
+              name={item.name}
+              position={item.position}
+              quote={item.quote}
+              imgUrl={item.imgUrl}
+              rating={item.rating}
+              t={t}
+              isArabic={isArabic}
+            />
+          ))}
+        </Slider>
+      </Box>
+    </Container >
   );
 
 };

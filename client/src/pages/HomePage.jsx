@@ -31,7 +31,7 @@ import { Box } from '@mui/material';
 const HomePage = () => {
   
   return (
-    <Box sx={{ overflowX: 'hidden' }}>
+    <Box >
       <HeaderSection />
       <HeroSection />
       <NotificationSection />

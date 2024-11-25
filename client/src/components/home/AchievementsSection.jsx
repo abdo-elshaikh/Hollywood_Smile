@@ -81,7 +81,10 @@ const AchievementsSection = () => {
                                         height: '100%',
                                     }}
                                 >
-                                    <CardMedia>
+                                    <CardMedia
+                                        component="div"
+                                        sx={{ height: 80, display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+                                    >
                                         {iconList[achievement.icon]}
                                     </CardMedia>
                                     <CardContent>
