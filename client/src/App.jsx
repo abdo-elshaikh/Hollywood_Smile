@@ -35,6 +35,10 @@ const ScrollToTop = () => {
   const location = useLocation();
   const { i18n } = useTranslation();
 
+  useEffect(() => {
+    i18n.changeLanguage('ar');
+  }, []);
+
   // Memoize the page titles for different languages
   const pagesTitles = useMemo(() => ({
     '/': { ar: 'الرئيسية | مركز هوليود سمايل', en: 'Home | Hollywood Smile Center' },
@@ -76,14 +80,7 @@ const ScrollToTop = () => {
 const App = () => {
   const { clinicInfo } = useClinicContext();
   const isLoading = !clinicInfo;
-  const { i18n } = useTranslation();
 
-  // set default language to arabic
-  i18n.changeLanguage('ar');
-  // Set the language direction based on the current language
-  document.dir = i18n.language === 'ar' ? 'rtl' : 'ltr';
-
-  
   if (isLoading) {
     return <LoadingSpinner />;
   }
