@@ -74,10 +74,16 @@ const ScrollToTop = () => {
 };
 
 const App = () => {
-  const { user } = useAuth();
   const { clinicInfo } = useClinicContext();
   const isLoading = !clinicInfo;
+  const { i18n } = useTranslation();
 
+  // set default language to arabic
+  i18n.changeLanguage('ar');
+  // Set the language direction based on the current language
+  document.dir = i18n.language === 'ar' ? 'rtl' : 'ltr';
+
+  
   if (isLoading) {
     return <LoadingSpinner />;
   }
