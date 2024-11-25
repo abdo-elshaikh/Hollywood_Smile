@@ -96,6 +96,10 @@
             "title": "Personalized Care",
             "description": "We take the time to understand your needs and provide personalized care."
         },
+        "slide5": {
+            "title": "Qualified Dentists",
+            "description": "Our team of experienced dentists offers a wide range of dental services."
+        },
         "bookingButton": "Make an Appointment"
     },
     "appointmentSection": {
