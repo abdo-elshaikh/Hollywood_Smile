@@ -11,6 +11,7 @@ import AboutUsPage from './pages/AboutUsPage';
 import DashboardPage from './pages/DashboardPage';
 import BlogDashboard from './pages/BlogDashboard';
 import BlogPage from './pages/BlogPage';
+import BlogPostPage from './pages/BlogPostPage';
 import BookingPage from './pages/BookingPage';
 import FaqPage from './pages/FaqPage';
 import ContactUsPage from './pages/ContactUsPage';
@@ -35,9 +36,6 @@ const ScrollToTop = () => {
   const location = useLocation();
   const { i18n } = useTranslation();
 
-  useEffect(() => {
-    i18n.changeLanguage('ar');
-  }, []);
 
   // Memoize the page titles for different languages
   const pagesTitles = useMemo(() => ({
@@ -58,15 +56,23 @@ const ScrollToTop = () => {
     '/blog-dashboard': { ar: 'لوحة التحكم | مركز هوليود سمايل', en: 'Blog Dashboard | Hollywood Smile Center' },
   }), []);
 
-  // Effect to update document title and direction based on current location and language
+  // Set default language to Arabic and manage changes
+  useEffect(() => {
+    // Get the language from localStorage or set it to Arabic ('ar') if not found
+    const lang = localStorage.getItem('language') || 'ar';
+    i18n.changeLanguage(lang);
+    localStorage.setItem('language', lang);
+
+    // Set the document direction based on the language
+    document.dir = lang === 'ar' ? 'rtl' : 'ltr';
+  }, [i18n]);
+
+  // Set the page title based on the current location
   useEffect(() => {
     const path = location.pathname;
     if (pagesTitles[path]) {
       document.title = pagesTitles[path][i18n.language];
     }
-
-    // Set the document direction based on the language
-    document.dir = i18n.language === 'ar' ? 'rtl' : 'ltr';
   }, [i18n.language, location, pagesTitles]);
 
   // Scroll to the top when the location changes
@@ -103,7 +109,8 @@ const App = () => {
             } />
             <Route path="/about-us" element={<AboutUsPage />} />
             <Route path="/auth/*" element={<AuthPage />} />
-            <Route path="/blog/*" element={<BlogPage />} />
+            <Route path="/blog" element={<BlogPage />} />
+            <Route path="/blog/:id" element={<BlogPostPage />} />
             <Route path="/booking" element={<BookingPage />} />
             <Route path="/faq" element={<FaqPage />} />
             <Route path="/contact-us" element={<ContactUsPage />} />

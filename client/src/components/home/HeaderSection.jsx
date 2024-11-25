@@ -65,8 +65,12 @@ const HeaderSection = () => {
 
     const toggleMobileMenu = () => setMobileMenuOpen(prev => !prev);
     const closeMobileMenu = () => setMobileMenuOpen(false);
-    const handleLanguageChange = (newLanguage) => {
+    const handleLanguageChange = () => {
+        const newLanguage = isArabic ? 'en' : 'ar';
         i18n.changeLanguage(newLanguage);
+        localStorage.setItem('language', newLanguage);
+        // change the direction of the body
+        document.body.dir = isArabic ? 'ltr' : 'rtl';
         closeMobileMenu();
     };
     const handleThemeToggle = () => toggleMode();
@@ -139,7 +143,7 @@ const HeaderSection = () => {
                     <MenuItems items={items} />
                     {/* Language and Theme Toggle Buttons */}
                     <Tooltip title={isArabic ? 'ترجم إلى الإنجليزية' : 'Translate to Arabic'}>
-                        <IconButton onClick={() => handleLanguageChange(isArabic ? 'en' : 'ar')}>
+                        <IconButton onClick={handleLanguageChange}>
                             <img src={isArabic ? EnglishIcon : ArabicIcon} alt={isArabic ? 'en' : 'ar'} style={{ width: 24, height: 24 }} />
                         </IconButton>
                     </Tooltip>
@@ -256,7 +260,7 @@ const HeaderSection = () => {
                                 <ListItemText align={isArabic ? 'right' : 'left'} primary={t('app.blogDashboard')} />
                             </ListItem>
 
-                            <ListItem button onClick={() => { handleLanguageChange(isArabic ? 'en' : 'ar'); }}>
+                            <ListItem button onClick={handleLanguageChange}>
                                 <ListItemIcon><Language /></ListItemIcon>
                                 <ListItemText align={isArabic ? 'right' : 'left'} primary={isArabic ? 'انجليزي' : 'Arabic'} />
                             </ListItem>

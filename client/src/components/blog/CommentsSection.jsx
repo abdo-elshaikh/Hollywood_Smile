@@ -170,13 +170,9 @@ const CommentsSection = ({ id, createNotification, toComment }) => {
                 </Box>
             </Box>
 
-            {/* Edit Comment */}
-
-
-            <Typography variant="h4" sx={{ mb: 1 }}>{t('blog.comments')}</Typography>
-
             {/* Comment List */}
             <List sx={{ bgcolor: 'background.paper', p: 2 }}>
+                <Typography variant="h4" sx={{ mb: 1 }}>{t('blog.comments')}</Typography>
                 {comments.map((comment) => (
                     <Card key={comment._id} sx={{ mb: 2, p: 2, borderRadius: 2, boxShadow: '0' }}>
                         <ListItem alignItems='flex-start' justifyContent='start'>
@@ -277,8 +273,6 @@ const CommentsSection = ({ id, createNotification, toComment }) => {
                                 sx={{ textAlign: isArabic ? 'right' : 'left' }}
                             />
                         </ListItem>
-
-                        {/* <Divider variant="inset" component="li" /> */}
 
                         {/* Replies */}
                         <Collapse in={showReplies[comment._id]} timeout={300} unmountOnExit>

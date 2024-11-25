@@ -87,7 +87,7 @@ const MainContent = ({ blogEntries, page, rowsPerPage, setPage, categories }) =>
                     '&:hover': { boxShadow: 6, transform: 'scale(1.02)' },
                     transition: 'transform 0.3s ease-in-out',
                   }}
-                  onClick={() => navigate(`/blog/post/${blog._id}`)}
+                  onClick={() => navigate(`/blog/${blog._id}`)}
                 >
                   <CardMedia
                     component="img"
@@ -112,7 +112,7 @@ const MainContent = ({ blogEntries, page, rowsPerPage, setPage, categories }) =>
                     {blog.content.length > 100 && (
                       <Button
                         size="small"
-                        onClick={() => navigate(`/blog/post/${blog._id}`)}
+                        onClick={() => navigate(`/blog/${blog._id}`)}
                         sx={{ textTransform: 'none', color: 'primary.main' }}
                       >
                         {t('blog.readMore')}

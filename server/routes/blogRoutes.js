@@ -80,10 +80,8 @@ router.post('/:id/comments', protect, async (req, res) => {
 // add a like to a blog post
 router.post('/:id/like', protect, async (req, res) => {
     try {
-        const blog = await Blog.findById(req.params.id);
+        const blog = await Blog.findByIdAndUpdate(req.params.id, { $inc: { likes: 1 } }, { new: true });
         if (!blog) return res.status(404).json({ message: 'Blog not found' });
-        blog.likes += 1;
-        await blog.save();
         res.status(200).json(blog);
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -91,12 +89,10 @@ router.post('/:id/like', protect, async (req, res) => {
 });
 
 // remove a like from a blog post
-router.delete('/:id/like', protect, async (req, res) => {
+router.delete('/:id/like',  async (req, res) => {
     try {
-        const blog = await Blog.findById(req.params.id);
+        const blog = await Blog.findByIdAndUpdate(req.params.id, { $inc: { likes: -1 } }, { new: true });
         if (!blog) return res.status(404).json({ message: 'Blog not found' });
-        blog.likes -= 1;
-        await blog.save();
         res.status(200).json(blog);
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -106,10 +102,8 @@ router.delete('/:id/like', protect, async (req, res) => {
 // add a view to a blog post
 router.post('/:id/view', protect, async (req, res) => {
     try {
-        const blog = await Blog.findById(req.params.id);
+        const blog = await Blog.findByIdAndUpdate(req.params.id, { $inc: { views: 1 } }, { new: true });
         if (!blog) return res.status(404).json({ message: 'Blog not found' });
-        blog.views += 1;
-        await blog.save();
         res.status(200).json(blog);
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -119,10 +113,8 @@ router.post('/:id/view', protect, async (req, res) => {
 // add dislike to a blog post
 router.post('/:id/dislike', protect, async (req, res) => {
     try {
-        const blog = await Blog.findById(req.params.id);
+        const blog = await Blog.findByIdAndUpdate(req.params.id, { $inc: { dislikes: 1 } }, { new: true });
         if (!blog) return res.status(404).json({ message: 'Blog not found' });
-        blog.dislikes += 1;
-        await blog.save();
         res.status(200).json(blog);
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -132,10 +124,8 @@ router.post('/:id/dislike', protect, async (req, res) => {
 // remove dislike from a blog post
 router.delete('/:id/dislike', protect, async (req, res) => {
     try {
-        const blog = await Blog.findById(req.params.id);
+        const blog = await Blog.findByIdAndUpdate(req.params.id, { $inc: { dislikes: -1 } }, { new: true });
         if (!blog) return res.status(404).json({ message: 'Blog not found' });
-        blog.dislikes -= 1;
-        await blog.save();
         res.status(200).json(blog);
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -145,15 +135,12 @@ router.delete('/:id/dislike', protect, async (req, res) => {
 // add share to a blog post
 router.post('/:id/share', protect, async (req, res) => {
     try {
-        const blog = await Blog.findById(req.params.id);
+        const blog = await Blog.findByIdAndUpdate(req.params.id, { $inc: { shares: 1 } }, { new: true });
         if (!blog) return res.status(404).json({ message: 'Blog not found' });
-        blog.shares += 1;
-        await blog.save();
         res.status(200).json(blog);
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
 });
-
 
 module.exports = router;

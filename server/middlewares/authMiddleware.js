@@ -20,7 +20,6 @@ const protect = async (req, res, next) => {
             if (!req.user) {
                 return res.status(401).json({ message: 'User not found' });
             }
-
             // Proceed to the next middleware
             next();
         } catch (error) {

@@ -1,18 +1,20 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {
-    Box, Container, Typography, TextField, Divider, Card, CardContent, Chip, CardMedia, Button, Grid, Link as MuiLink, useTheme, IconButton, Pagination
+    Box, Container, Typography, TextField, Divider, Card, CardContent,
+    Chip, CardMedia, Button, Grid, Link as MuiLink,
+    useTheme, IconButton, Pagination
 } from '@mui/material';
 import { Circle } from '@mui/icons-material';
 
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import HeaderSection from '../components/home/HeaderSection';
 import Footer from '../components/home/Footer';
 import MainHeaderPages from '../components/common/MainHeaderPages';
 import ScrollToTopButton from '../components/common/ScrollToTopButton';
 import MainContent from '../components/blog/MainContent';
-import BlogPost from '../components/blog/BlogPost';
 import blogService from '../services/blogService';
 import { useTranslation } from 'react-i18next';
+import blodVideo from '../assets/videos/blog-smile.mp4';
 
 const BlogPage = () => {
     const [page, setPage] = useState(1);
@@ -66,28 +68,17 @@ const BlogPage = () => {
     return (
         <Box sx={{ backgroundColor: 'background.default', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
             <HeaderSection />
-            <MainHeaderPages page={t('blog.page')} title={t('blog.title')} />
+            <MainHeaderPages page={t('blog.page')} title={t('blog.title')} src={blodVideo} />
 
             <Container maxWidth="xl" sx={{ mt: 4, mb: 8, display: 'flex', gap: 4, flexDirection: { xs: 'column', md: 'row' } }}>
                 {/* Main Content */}
-                <Box sx={{ flex: 1 }}>
-                    <Routes>
-                        <Route
-                            path="/"
-                            element={
-                                <MainContent
-                                    blogEntries={filteredBlogs}
-                                    page={page}
-                                    rowsPerPage={10}
-                                    setPage={setPage}
-                                    categories={Object.keys(categoryCounts)}
-                                />
-                            }
-                        />
-                        <Route path="/post/:id" element={<BlogPost />} />
-                    </Routes>
-                </Box>
-
+                <MainContent
+                    blogEntries={filteredBlogs}
+                    page={page}
+                    rowsPerPage={10}
+                    setPage={setPage}
+                    categories={Object.keys(categoryCounts)}
+                />
                 {/* Sidebar */}
                 <Box sx={{ width: { xs: '100%', md: '250px', lg: '350px' }, padding: 3, border: '1px solid', borderRadius: 2, boxShadow: theme.shadows[1] }}>
                     <Grid container spacing={2}>
