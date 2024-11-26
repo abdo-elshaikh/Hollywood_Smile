@@ -12,12 +12,15 @@ const getServices = asyncHandler(async (req, res) => {
 
 
 const getServiceById = asyncHandler(async (req, res) => {
-    const service = await Services.findById(req.params.id);
-    if (service) {
+    const serviceId = req.params.id;
+    try {
+        const service = await Services.findById(serviceId);
+        if (!service) return res.status(404).json({ message: 'Service not found' });
         res.status(200).json(service);
-    } else {
-        res.status(404).json({ message: 'Service not found' });
+    } catch (err) {
+        res.status(400).json({ message: err.message });
     }
+    
 });
 
 const createService = asyncHandler(async (req, res) => {

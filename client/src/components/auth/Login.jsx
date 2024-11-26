@@ -45,7 +45,7 @@ const Login = () => {
                 return;
             }
             showSnackbar(isArabic? "تم تسجيل الدخول بنجاح" : "Login successful", "success");
-            navigate(-1);
+            navigate('/');
         } catch (err) {
             showSnackbar(error || isArabic? "فشل تسجيل الدخول" : "Login failed", "error");
         } finally {

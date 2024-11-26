@@ -23,6 +23,7 @@ import SuccessMessage from "../components/common/SuccessMessage";
 import axiosInstance from '../services/axiosInstance';
 import MapLocationSection from '../components/home/MapLocationSection';
 import FAQSection from '../components/home/FAQSection';
+import notificationService from '../services/notificationService';
 
 // date picker
 import dayjs from 'dayjs';
@@ -39,6 +40,7 @@ const BookingPage = () => {
     const { user } = useAuth();
     const [selectedDate, setSelectedDate] = useState(dayjs());
     const [selectedTime, setSelectedTime] = useState('');
+    const [selectedService, setSelectedService] = useState({title: {en: '', ar: ''}});
     const [openDialog, setOpenDialog] = useState(false);
 
     const [currentDateTime, setCurrentDateTime] = useState({
@@ -73,6 +75,9 @@ const BookingPage = () => {
         }
         try {
             const data = await bookingService.createBooking(bookingData);
+            if (data) {
+                handleAddNotification(data._id, 'info');
+            }
             showSnackBar(isArabic ? 'تم حجز الموعد بنجاح' : 'Appointment booked successfully.', 'success');
             setSelectedDate(null);
             setSelectedTime('');
@@ -131,19 +136,28 @@ const BookingPage = () => {
     };
 
     const fetchServices = async () => {
-        try {
-            const { data } = await axiosInstance.get('/services');
-            setServices(data);
-        } catch (error) {
-            console.error('Failed to fetch services:', error);
+        if (serviceId) {
+            try {
+                const response = await axiosInstance.get(`/services/${serviceId}`);
+                console.log('response:', response.data);
+                setSelectedService(response.data);
+            } catch (error) {
+                console.error('Failed to fetch service:', error);
+            }
+        } else {
+            try {
+                const response = await axiosInstance.get('/services');
+                console.log('response:', response.data);
+                setServices(response.data);
+            } catch (error) {
+                console.error('Failed to fetch services:', error);
+            }
         }
     };
 
     useEffect(() => {
         fetchBookings();
-        if (bookingData.service === '') {
-            fetchServices();
-        }
+        fetchServices();
     }, []);
 
     const usableTime = (time) => {
@@ -194,6 +208,21 @@ const BookingPage = () => {
 
     const handleDialogClose = () => {
         setOpenDialog(false);
+    };
+
+    const handleAddNotification = async (refId = '', type = 'info') => {
+        try {
+            const notificationData = {
+                title: 'New Appointment',
+                message: type === 'info' ? 'A new appointment has been created.' : 'An error occurred while creating an appointment.',
+                type: type,
+                ref: 'OnlineBooking',
+                refId: refId,
+            };
+            await notificationService.createNotification(notificationData);
+        } catch (error) {
+            console.error('Failed to add notification:', error);
+        }
     };
 
     return (
@@ -301,10 +330,10 @@ const BookingPage = () => {
                     />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleDialogClose} color="secondary">
+                    <Button variant='contained' onClick={handleDialogClose} color="secondary">
                         {isArabic ? 'إلغاء' : 'Cancel'}
                     </Button>
-                    <Button onClick={handleSubmission} color="primary" disabled={loading}>
+                    <Button variant='outlined' onClick={handleSubmission} color="primary" disabled={loading}>
                         {isArabic ? 'حجز' : 'Book'}
                     </Button>
                 </DialogActions>
@@ -329,14 +358,14 @@ const BookingPage = () => {
 
                                     <FormControl fullWidth sx={{ my: 2, px: 8 }}>
                                         {serviceId ? (
-                                            <Typography id="service-label" variant="h6" sx={{ fontWeight: 'bold', color:'primary' }}>
-                                                {services.find((service) => service._id === serviceId)?.title[isArabic ? 'ar' : 'en']}
+                                            <Typography id="service-label" variant="h6" sx={{ fontWeight: 'bold', color: 'primary' }}>
+                                                {selectedService.title[isArabic ? 'ar' : 'en']}
                                             </Typography>
                                         ) : (
                                             <Select
                                                 id="service"
                                                 name="service"
-                                                variant='standard'
+                                                variant='outlined'
                                                 value={bookingData.service}
                                                 onChange={handleChangeInput}
                                                 displayEmpty
