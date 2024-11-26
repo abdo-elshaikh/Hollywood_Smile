@@ -1,33 +1,13 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {
-    Box,
-    Container,
-    Typography,
-    Button,
-    Grid,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    TextField,
-    Snackbar,
-    IconButton,
-    Card,
-    CardContent,
-    CardMedia,
-    Badge,
-    Divider,
-    FormControl,
-    InputLabel,
-    Select,
-    MenuItem,
+    Box, Container, Typography, Button, Grid, Dialog, DialogActions, DialogContent, DialogTitle,
+    TextField, Snackbar, IconButton, Card, CardContent, CardMedia, Badge, Divider, FormControl,
+    InputLabel, Select, MenuItem,
 } from '@mui/material';
+
 import { ThumbUp, ThumbDown, Close } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import FullCalendar from '@fullcalendar/react';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import interactionPlugin from '@fullcalendar/interaction';
 import { format } from 'date-fns';
 import HeaderSection from '../components/home/HeaderSection';
 import ScrollToTopButton from '../components/common/ScrollToTopButton';
@@ -43,7 +23,13 @@ import SuccessMessage from "../components/common/SuccessMessage";
 import axiosInstance from '../services/axiosInstance';
 import MapLocationSection from '../components/home/MapLocationSection';
 import FAQSection from '../components/home/FAQSection';
-import GallerySection from '../components/home/GallerySection';
+
+// date picker
+import dayjs from 'dayjs';
+import { DemoContainer, DemoItem } from '@mui/x-date-pickers/internals/demo';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
 const BookingPage = () => {
     const { clinicInfo } = useClinicContext();
@@ -51,18 +37,22 @@ const BookingPage = () => {
     const { t, i18n } = useTranslation();
     const isArabic = i18n.language === 'ar';
     const { user } = useAuth();
-    const [selectedDate, setSelectedDate] = useState(null);
+    const [selectedDate, setSelectedDate] = useState(dayjs());
     const [selectedTime, setSelectedTime] = useState('');
     const [openDialog, setOpenDialog] = useState(false);
+
     const [currentDateTime, setCurrentDateTime] = useState({
-        day: format(new Date(), 'eeee').toLowerCase().replace(/(monday|tuesday|wednesday|thursday|friday|saturday|sunday)/, (m) => t(`days.${m}`)),
+        day: format(new Date(), 'eeee').toLowerCase()
+            .replace(/(monday|tuesday|wednesday|thursday|friday|saturday|sunday)/, (m) => t(`days.${m}`)),
         date: format(new Date(), 'dd/MM/yyyy'),
         time: format(new Date(), 'hh:mm:ss a').toLowerCase().replace(/am|pm/g, (m) => t(`days.${m}`)),
     });
+
     const [predefinedTimeSlots, setPredefinedTimeSlots] = useState([]);
     const navigate = useNavigate();
     const isDark = mode === 'dark';
     const showSnackBar = useSnackbar();
+
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
     const [bookings, setBookings] = useState([]);
@@ -70,14 +60,8 @@ const BookingPage = () => {
     const location = useLocation();
     const serviceId = location.state?.serviceId;
     const [bookingData, setBookingData] = useState({
-        name: '',
-        email: '',
-        phone: '',
-        service: serviceId || '',
-        date: '',
-        time: '',
-        message: '',
-        user: user?._id || null,
+        name: '', email: '', phone: '', service: serviceId || '',
+        date: '', time: '', message: '', user: user?._id || null,
     });
 
     const handleSubmission = async () => {
@@ -169,18 +153,20 @@ const BookingPage = () => {
         return times.includes(time);
     };
 
-    const handleDateSelection = (info) => {
-        const date = info.startStr;
-
-        if (!info || !date || new Date(date) < new Date()) {
-            showSnackBar(isArabic ? 'يرجى تحديد موعد مستقبلي.' : 'Please select a future date.', 'warning');
+    const handleDateSelection = (date) => {
+        if (date <= new Date()) {
+            setSelectedTime('');
+            showSnackBar(isArabic ? 'لا يمكن حجز موعد في هذا التاريخ' : 'Cannot book appointment on this date', 'error');
             return;
         }
 
-        setSelectedDate(new Date(date));
-        setBookingData({ ...bookingData, date: format(date, 'yyyy-MM-dd') });
-        showSnackBar(`Date selected: ${t(`days.${format(date, 'eeee').toLowerCase()}`)}`, 'info');
-        const times = clinicInfo?.onlineTimes.find((time) => time.day.toLowerCase() === format(date, 'eeee').toLowerCase());
+        const selectedDay = format(date, 'eeee').toLowerCase();
+        showSnackBar(isArabic ? `تم اختيار اليوم : ${t(`days.${selectedDay}`)}` : `Selected Day : ${t(`days.${selectedDay}`)}`, 'info');
+        // console.log('date:', selectedDay);
+        setSelectedDate(dayjs(date));
+        setBookingData({ ...bookingData, date: date.toLocaleDateString() });
+        const times = clinicInfo?.onlineTimes.find((time) => time.day.toLowerCase() === selectedDay);
+
         if (times) {
             const from = new Date(`01/01/2000 ${times.from}`);
             const to = new Date(`01/01/2000 ${times.to}`);
@@ -196,6 +182,10 @@ const BookingPage = () => {
     };
 
     const handleTimeSelection = (time) => {
+        if (bookingData.service === '') {
+            showSnackBar(isArabic ? 'الرجاء اختيار الخدمة أولاً' : 'Please select a service first', 'error');
+            return;
+        }
         setSelectedTime(time);
         setBookingData({ ...bookingData, time });
         setOpenDialog(true);
@@ -205,32 +195,6 @@ const BookingPage = () => {
     const handleDialogClose = () => {
         setOpenDialog(false);
     };
-
-    const servicesList = useMemo(() => services.map((service) => ({
-        _id: service._id || serviceId,
-        title: {
-            en: service.title.en,
-            ar: service.title.ar,
-        },
-    })), [services, isArabic]);
-
-    const bookingList = useMemo(() => bookings.map((booking) => ({
-        _id: booking._id,
-        name: booking.name,
-        email: booking.email,
-        phone: booking.phone,
-        service: booking.service,
-        date: booking.date,
-        time: booking.time,
-        message: booking.message,
-        user: booking.user,
-    })), [bookings]);
-
-    const onlineTimesList = useMemo(() => clinicInfo?.onlineTimes.map((time) => ({
-        day: time.day,
-        from: time.from,
-        to: time.to,
-    })), [clinicInfo?.onlineTimes]);
 
     return (
         <Box>
@@ -275,6 +239,7 @@ const BookingPage = () => {
                         {isArabic ? 'احجز موعدك الآن' : 'Book your appointment now'}
                     </Typography>
                 </Box>
+
                 {/* Current Time Display */}
                 <Box
                     sx={{
@@ -295,18 +260,6 @@ const BookingPage = () => {
                 </Box>
             </Box>
 
-            <AppointmentPage
-                t={t}
-                isArabic={isArabic}
-                selectedDate={selectedDate}
-                handleDateSelection={handleDateSelection}
-                predefinedTimeSlots={predefinedTimeSlots}
-                usableTime={usableTime}
-                handleTimeSelection={handleTimeSelection}
-                bookings={bookingList}
-                clinicInfo={clinicInfo}
-                isDark={isDark}
-            />
             <Dialog open={openDialog} onClose={handleDialogClose}>
                 <DialogTitle>{isArabic ? 'حجز موعد' : 'Book Appointment'}</DialogTitle>
                 <DialogContent>
@@ -336,23 +289,6 @@ const BookingPage = () => {
                         required
                         sx={{ mb: 2 }}
                     />
-                    <FormControl fullWidth sx={{ mb: 2 }}>
-                        <InputLabel>{isArabic ? 'الخدمة' : 'Service'}</InputLabel>
-                        <Select
-                            name="service"
-                            value={serviceId || bookingData.service}
-                            onChange={handleChangeInput}
-                            fullWidth
-                            required
-                            displayEmpty
-                            disabled={serviceId}
-                        >
-                            <MenuItem value="" disabled>{isArabic ? 'اختر الخدمة' : 'Select Service'}</MenuItem>
-                            {services.map((service) => (
-                                <MenuItem key={service._id} value={service._id}>{isArabic ? service.title.ar : service.title.en}</MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
                     <TextField
                         name="message"
                         label={isArabic ? ' الشكوى (اختياري)' : 'Complaint (Optional)'}
@@ -374,18 +310,110 @@ const BookingPage = () => {
                 </DialogActions>
             </Dialog>
 
-            <Snackbar
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-                open={showSnackBar.open}
-                autoHideDuration={3000}
-                onClose={() => showSnackBar.close()}
-                message={showSnackBar.message}
-                action={
-                    <IconButton size="small" color="inherit" onClick={() => showSnackBar.close()}>
-                        <Close fontSize="small" />
-                    </IconButton>
-                }
-            />
+            <Grid container spacing={4} sx={{ py: 6, px: 1, maxWidth: 'xl' }}>
+                <Grid item xs={12} md={8}>
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 1 }}
+                    >
+                        <Box sx={{ textAlign: 'center' }}>
+                            <Grid container spacing={4}>
+                                <Grid item xs={12}>
+                                    <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
+                                        {isArabic ? serviceId ? 'حجز موعد للخدمة' : 'اختر الخدمة' : serviceId ? 'Book an appointment for service' : 'Select a service'}
+                                    </Typography>
+                                    <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'text.secondary' }}>
+                                        {isArabic ? 'اختر الخدمة التي ترغب في حجز موعد لها' : 'Select the service you want to book an appointment for'}
+                                    </Typography>
+
+                                    <FormControl fullWidth sx={{ my: 2, px: 8 }}>
+                                        {serviceId ? (
+                                            <Typography id="service-label" variant="h6" sx={{ fontWeight: 'bold', color:'primary' }}>
+                                                {services.find((service) => service._id === serviceId)?.title[isArabic ? 'ar' : 'en']}
+                                            </Typography>
+                                        ) : (
+                                            <Select
+                                                id="service"
+                                                name="service"
+                                                variant='standard'
+                                                value={bookingData.service}
+                                                onChange={handleChangeInput}
+                                                displayEmpty
+                                            >
+                                                <MenuItem value="" disabled>
+                                                    {isArabic ? 'اختر الخدمة' : 'Select Service'}
+                                                </MenuItem>
+                                                {services.map((service) => (
+                                                    <MenuItem key={service._id} value={service._id}>
+                                                        {service.title[isArabic ? 'ar' : 'en']}
+                                                    </MenuItem>
+                                                ))}
+                                            </Select>
+                                        )}
+                                    </FormControl>
+                                </Grid>
+                                {/* Date Picker */}
+                                <Grid item xs={12} md={6}>
+                                    <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
+                                        {isArabic ? 'تاريخ الحجز' : 'Booking Date'} : {selectedDate ? selectedDate.format('DD/MM/YYYY') : ''}
+                                    </Typography>
+                                    <Divider sx={{ my: 1 }} />
+                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                        <DateCalendar
+                                            defaultValue={dayjs()}
+                                            value={selectedDate}
+                                            onChange={(date) => handleDateSelection(new Date(date))}
+                                            views={['year', 'month', 'day']}
+                                            minDate={dayjs()}
+                                            maxDate={dayjs().add(1, 'week')}
+
+                                        />
+                                    </LocalizationProvider>
+                                </Grid>
+                                {/* Time */}
+                                <Grid item xs={12} md={6} sx={{ px: 2 }}>
+                                    <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
+                                        {isArabic ? 'وقت الحجز :' : 'Bookable Times :'} {selectedTime ? selectedTime : ''}
+                                    </Typography>
+                                    <Divider sx={{ my: 1 }} />
+                                    <Grid container spacing={2} sx={{ mt: 2 }}>
+                                        {predefinedTimeSlots.map((time, index) => (
+                                            <Grid item xs={6} key={index}>
+                                                <Button
+                                                    variant="contained"
+                                                    color={bookingData.time === time ? 'primary' : 'secondary'}
+                                                    sx={{ width: '100%' }}
+                                                    onClick={() => handleTimeSelection(time)} disabled={usableTime(time)}
+                                                >
+                                                    {time}
+                                                </Button>
+                                            </Grid>
+                                        ))}
+                                        {predefinedTimeSlots.length === 0 && (
+
+                                            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%' }}>
+                                                <Typography variant="h6" color="textSecondary">
+                                                    {isArabic ? 'لا توجد أوقات متاحة لهذا اليوم' : 'No available times for this day'}
+                                                </Typography>
+                                            </Box>
+                                        )}
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                        </Box>
+                    </motion.div>
+                </Grid>
+                <Grid item xs={12} md={4}>
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 1 }}
+                    >
+                        <InformationSection clinicInfo={clinicInfo} isDark={isDark} isArabic={isArabic} />
+                    </motion.div>
+                </Grid>
+            </Grid>
 
             {/* success Dialog */}
             <Dialog
@@ -398,7 +426,6 @@ const BookingPage = () => {
                 <DialogContent
                     sx={{
                         display: 'flex',
-                        flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
                     }}
@@ -413,7 +440,6 @@ const BookingPage = () => {
             </Dialog>
 
             <BeforeAfterGallery />
-            {/* <GallerySection /> */}
             <FAQSection />
             <MapLocationSection />
             <Footer />
@@ -422,172 +448,62 @@ const BookingPage = () => {
     );
 };
 
-const AppointmentPage = ({
-    isArabic,
-    t,
-    selectedDate,
-    handleDateSelection,
-    predefinedTimeSlots,
-    usableTime,
-    handleTimeSelection,
-    bookings,
-    clinicInfo,
-    isDark
-}) => (
-    <Container maxWidth="xl" sx={{ bgcolor: 'background.default', minHeight: '100vh', p: 4 }}>
-        <Grid container spacing={4}>
-            {/* Available Slots and Calendar Section */}
-            <Grid item xs={12} md={8}>
-                <Box sx={{ p: 4, bgcolor: 'background.paper', borderRadius: 2, boxShadow: 3, height: '100%' }}>
-                    {/* Available Time Slots */}
-                    <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 3, color: 'primary.main' }}>
-                        {isArabic ? 'الوقت المتاح' : 'Available Time Slots'}
-                    </Typography>
-                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 4 }}>
-                        {selectedDate ? (
-                            <Box id="available-time-slots" sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 2 }}>
-                                {predefinedTimeSlots.map((time, index) => (
-                                    <Badge
-                                        key={index}
-                                        badgeContent={usableTime(time) ? <ThumbDown color="error" /> : <ThumbUp color="success" />}
-                                        sx={{ cursor: 'pointer' }}
-                                    >
-                                        <Button
-                                            variant="outlined"
-                                            color="primary"
-                                            disabled={usableTime(time)}
-                                            onClick={() => handleTimeSelection(time)}
-                                            sx={{
-                                                minWidth: '100px',
-                                                height: '50px',
-                                                fontWeight: 'bold',
-                                                borderRadius: 2,
-                                                '&:hover': {
-                                                    borderColor: usableTime(time) ? 'error.main' : 'success.main',
-                                                    color: usableTime(time) ? 'error.main' : 'success.main',
-                                                },
-                                            }}
-                                        >
-                                            {time}
-                                        </Button>
-                                    </Badge>
-                                ))}
-                            </Box>
-                        ) : (
-                            <Typography variant="h6" sx={{ mt: 2, textAlign: 'center' }}>
-                                {isArabic ? 'يرجى تحديد تاريخ لعرض الأوقات المتاحة' : 'Please select a date to view available times.'}
-                            </Typography>
-                        )}
+const InformationSection = ({ clinicInfo, isDark, isArabic }) => {
+    const { t } = useTranslation();
+    return (
+        <Card sx={{ boxShadow: 3, bgcolor: 'background.paper' }}>
+            <CardMedia
+                component="img"
+                image={isDark ? clinicInfo?.logo.dark : clinicInfo?.logo.light}
+                caption={isArabic ? 'صورة العيادة' : 'Clinic Image'}
+                alt={isArabic ? 'صورة العيادة' : 'Clinic Image'}
+                sx={{ height: 250, objectFit: 'cover' }}
+            />
+            <CardContent>
+                <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 2 }}>
+                    {isArabic ? 'معلومات العيادة' : 'Clinic Information'}
+                </Typography>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', color: 'primary.main', mb: 1 }}>
+                    {isArabic ? 'اسم العيادة:' : 'Clinic Name:'} {isArabic ? clinicInfo?.name.ar : clinicInfo?.name.en}
+                </Typography>
+                <Typography variant="body2">{isArabic ? clinicInfo?.description.ar : clinicInfo?.description.en}</Typography>
+
+                <Divider sx={{ my: 3 }} />
+
+                <Typography variant="body1" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+                    {isArabic ? 'العنوان:' : 'Address:'} {isArabic ? clinicInfo?.address.ar : clinicInfo?.address.en}
+                </Typography>
+                <Typography variant="body1" sx={{ color: 'primary.main', mt: 1 }}>
+                    {isArabic ? 'رقم الهاتف:' : 'Phone:'} {clinicInfo?.primaryContact} / {clinicInfo?.secondaryContact}
+                </Typography>
+                <Typography variant="body1" sx={{ color: 'primary.main', mt: 1 }}>
+                    {isArabic ? 'البريد الإلكتروني:' : 'Email:'} {clinicInfo?.email}
+                </Typography>
+                <Typography variant="body1" sx={{ color: 'primary.main', mt: 1 }}>
+                    {isArabic ? 'الموقع الإلكتروني:' : 'Website:'} {clinicInfo?.website}
+                </Typography>
+
+                <Divider sx={{ my: 3 }} />
+
+                <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 2 }}>
+                    {isArabic ? 'ساعات العمل' : 'Opening Hours'}
+                </Typography>
+                {Object.keys(clinicInfo?.openHours || {}).map(day => (
+                    <Box key={day} sx={{ display: 'flex', alignItems: 'center', mb: 1, borderBottom: '1px solid', gap: 2 }}>
+
+                        <Typography variant="h6" color="primary.main">
+                            {t(`days.${day}`)}:
+                        </Typography>
+                        {/* <Box sx={{ flexGrow: 1 }} /> */}
+                        <Typography align='center' variant="body1" color="text.secondary">
+                            {clinicInfo?.openHours[day].isClosed ? t('days.closed') : `${clinicInfo?.openHours[day].from.toLowerCase().replace(/am|pm/g, (m) => t(`days.${m}`))} - ${clinicInfo?.openHours[day].to.toLowerCase().replace(/am|pm/g, (m) => t(`days.${m}`))}`}
+                        </Typography>
                     </Box>
-
-                    <Divider sx={{ my: 3 }} />
-
-                    {/* Calendar Section */}
-                    <Typography variant="h5" sx={{ fontWeight: 'bold', color: 'primary.main', mb: 2 }}>
-                        {isArabic ? 'اختر التاريخ' : 'Select Date'}
-                    </Typography>
-                    <FullCalendar
-                        plugins={[dayGridPlugin, interactionPlugin]}
-                        initialView="dayGridMonth"
-                        selectable
-                        select={handleDateSelection}
-                        events={bookings.map((booking) => ({
-                            title: isArabic ? 'محجوز' : 'Booked',
-                            start: booking.date,
-                        }))}
-                        eventColor="#f50057"
-                        eventTextColor="#fff"
-                        height="auto"
-                        locale={isArabic ? 'ar' : 'en'}
-                        headerToolbar={{
-                            left: 'prev,next today',
-                            center: 'title',
-                            right: 'dayGridMonth,timeGridWeek,timeGridDay',
-                        }}
-                        buttonText={{
-                            today: isArabic ? 'اليوم' : 'Today',
-                            month: isArabic ? 'شهر' : 'Month',
-                            week: isArabic ? 'أسبوع' : 'Week',
-                            day: isArabic ? 'يوم' : 'Day',
-                        }}
-                        eventContent={(arg) => (
-                            <Box
-                                sx={{
-                                    backgroundColor: isDark ? '#333' : '#f50057',
-                                    color: 'white',
-                                    p: 1,
-                                    borderRadius: 1,
-                                    width: '100%'
-                                }}
-                            >
-                                <Typography align={isArabic ? 'right' : 'left'} variant="body2" sx={{ fontWeight: 'bold' }}>
-                                    {arg.start} - {arg.event.title}
-                                </Typography>
-                            </Box>
-                        )}
-                    />
-                </Box>
-            </Grid>
-
-            {/* Clinic Information Sidebar */}
-            <Grid item xs={12} md={4}>
-                <Card sx={{ boxShadow: 3, bgcolor: 'background.paper' }}>
-                    <CardMedia
-                        component="img"
-                        image={isDark ? clinicInfo?.logo.dark : clinicInfo?.logo.light}
-                        alt={isArabic ? 'صورة العيادة' : 'Clinic Image'}
-                        sx={{ height: 250, objectFit: 'cover' }}
-                    />
-                    <CardContent>
-                        <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 2 }}>
-                            {isArabic ? 'معلومات العيادة' : 'Clinic Information'}
-                        </Typography>
-                        <Typography variant="body1" sx={{ fontWeight: 'bold', color: 'primary.main', mb: 1 }}>
-                            {isArabic ? 'اسم العيادة:' : 'Clinic Name:'} {isArabic ? clinicInfo?.name.ar : clinicInfo?.name.en}
-                        </Typography>
-                        <Typography variant="body2">{isArabic ? clinicInfo?.description.ar : clinicInfo?.description.en}</Typography>
-
-                        <Divider sx={{ my: 3 }} />
-
-                        <Typography variant="body1" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
-                            {isArabic ? 'العنوان:' : 'Address:'} {isArabic ? clinicInfo?.address.ar : clinicInfo?.address.en}
-                        </Typography>
-                        <Typography variant="body1" sx={{ color: 'primary.main', mt: 1 }}>
-                            {isArabic ? 'رقم الهاتف:' : 'Phone:'} {clinicInfo?.primaryContact} / {clinicInfo?.secondaryContact}
-                        </Typography>
-                        <Typography variant="body1" sx={{ color: 'primary.main', mt: 1 }}>
-                            {isArabic ? 'البريد الإلكتروني:' : 'Email:'} {clinicInfo?.email}
-                        </Typography>
-                        <Typography variant="body1" sx={{ color: 'primary.main', mt: 1 }}>
-                            {isArabic ? 'الموقع الإلكتروني:' : 'Website:'} {clinicInfo?.website}
-                        </Typography>
-
-                        <Divider sx={{ my: 3 }} />
-
-                        <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 2 }}>
-                            {isArabic ? 'ساعات العمل' : 'Opening Hours'}
-                        </Typography>
-                        {Object.keys(clinicInfo?.openHours || {}).map(day => (
-                            <Box key={day} sx={{ display: 'flex', alignItems: 'center',  mb: 1, borderBottom: '1px solid', gap: 2 }}>
-
-                                <Typography variant="h6" color="primary.main">
-                                    {t(`days.${day}`)}:
-                                </Typography>
-                                {/* <Box sx={{ flexGrow: 1 }} /> */}
-                                <Typography align='center' variant="body1" color="text.secondary">
-                                    {clinicInfo?.openHours[day].isClosed ? t('days.closed') : `${clinicInfo?.openHours[day].from.toLowerCase().replace(/am|pm/g, (m) => t(`days.${m}`))} - ${clinicInfo?.openHours[day].to.toLowerCase().replace(/am|pm/g, (m) => t(`days.${m}`))}`}
-                                </Typography>
-                            </Box>
-                        ))}
-                    </CardContent>
-                </Card>
-            </Grid>
-        </Grid>
-    </Container>
-);
-
-
-
+                ))}
+            </CardContent>
+        </Card>
+    );
+};
 
 const BeforeAfterGallery = () => {
 
@@ -637,6 +553,5 @@ const BeforeAfterGallery = () => {
         </Box>
     );
 };
-
 
 export default BookingPage;

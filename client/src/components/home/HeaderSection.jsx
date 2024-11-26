@@ -211,7 +211,9 @@ const HeaderSection = () => {
                         {user && user.role === 'admin' && (
                             <MenuItem sx={{ cursor: 'pointer' }} onClick={() => navigate('/dashboard')}>{t('app.adminDashboard')}</MenuItem>
                         )}
-                        <MenuItem sx={{ cursor: 'pointer' }} onClick={() => navigate('/blog-dashboard')}>{t('app.blogDashboard')}</MenuItem>
+                        {user && user.role !== 'visitor' && (
+                            <MenuItem sx={{ cursor: 'pointer' }} onClick={() => navigate('/blog-dashboard')}>{t('app.blogDashboard')}</MenuItem>
+                        )}
                         <MenuItem sx={{ cursor: 'pointer', color: 'red', fontWeight: 'bold' }} onClick={handleLogout}>{t('app.logout')}</MenuItem>
                     </Menu>
                 </Box>
@@ -232,7 +234,7 @@ const HeaderSection = () => {
                     <Box sx={{ width: 250 }}>
                         <List>
                             {items.map((item, index) => (
-                                <ListItem button key={index} onClick={() => { navigate(item.href); closeMobileMenu(); }}>
+                                <ListItem button="true" key={index} onClick={() => { navigate(item.href); closeMobileMenu(); }}>
                                     <ListItemIcon>{item.icon}</ListItemIcon>
                                     <ListItemText align={isArabic ? 'right' : 'left'} primary={item.label} />
                                 </ListItem>
@@ -260,19 +262,19 @@ const HeaderSection = () => {
                                 <ListItemText align={isArabic ? 'right' : 'left'} primary={t('app.blogDashboard')} />
                             </ListItem>
 
-                            <ListItem button onClick={handleLanguageChange}>
+                            <ListItem button="true" onClick={handleLanguageChange}>
                                 <ListItemIcon><Language /></ListItemIcon>
                                 <ListItemText align={isArabic ? 'right' : 'left'} primary={isArabic ? 'انجليزي' : 'Arabic'} />
                             </ListItem>
 
-                            <ListItem button onClick={handleThemeToggle}>
+                            <ListItem button="true" onClick={handleThemeToggle}>
                                 <ListItemIcon>{isDark ? <LightModeOutlined /> : <DarkModeOutlined />}</ListItemIcon>
                                 <ListItemText align={isArabic ? 'right' : 'left'} primary={
                                     isArabic && isDark ? 'الوضع النهاري' : isArabic && !isDark ? 'الوضع الليلي' : !isArabic && isDark ? 'Light Mode' : 'Dark Mode'
                                 } />
                             </ListItem>
 
-                            <ListItem button onClick={user ? handleLogout : handleLogin}>
+                            <ListItem button="true" onClick={user ? handleLogout : handleLogin}>
                                 <ListItemIcon>{user ? <Logout /> : <Login />}</ListItemIcon>
                                 <ListItemText align={isArabic ? 'right' : 'left'} primary={user ? t('app.logout') : t('app.login')} />
                             </ListItem>
