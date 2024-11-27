@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useMemo} from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Box, Grid, Typography, Card, CardContent, CardMedia, Avatar, Stack, Button, Link } from "@mui/material";
 import { Facebook, Twitter, Instagram, LinkedIn, ArrowForward as ArrowForwardIcon } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
@@ -29,11 +29,11 @@ const MeetOurDentists = () => {
   }, []);
 
   return (
-    <Box component="section" id="team" sx={{ py: 10, px: { xs: 2, md: 8 }, position: "relative" }}>
+    <Box component="section" id="team" sx={{ py: 5, px: { xs: 2, md: 8 }, position: "relative" }}>
       {/* Heading Section */}
       <Box textAlign="center" mb={5}>
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }}>
-          <Typography variant="h4" sx={{ fontWeight: 600, color: 'primary.main' }}>
+          <Typography variant="h3" sx={{ fontWeight: 600, color: 'primary.main' }}>
             {t("MeetOurDentists.title")}
           </Typography>
           <Typography
@@ -136,14 +136,11 @@ const MeetOurDentists = () => {
 
       {/* view more */}
       <Box textAlign="center" sx={{ mt: 6 }}>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => navigate("/doctors")}
-          sx={{ borderRadius: 20, textTransform: 'none' }}
-        >
-          {t("MeetOurDentists.viewMore")}
-        </Button>
+        <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 1 }}>
+          <Button variant="contained" color="primary" onClick={() => navigate("/doctors")}>
+            {t("MeetOurDentists.viewMore")}
+          </Button>
+        </motion.div>
       </Box>
     </Box>
   );

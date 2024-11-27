@@ -7,7 +7,7 @@ import {
   Card,
   CardMedia,
   CardContent,
-
+  Button,
 } from "@mui/material";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -77,14 +77,15 @@ const BlogSection = () => {
         {/* Blog Grid */}
         <BlogContent blogs={blogs} />
         {/* reade more */}
-        <Box textAlign="center" sx={{ mt: 6 }}>
-          <Typography 
-          variant="h6" 
-          component={Link}
-          to="/blog"
-          sx={{ fontWeight: "bold", color: "primary.main" }}>
-            {t("BlogSection.readMore")} ...
-          </Typography>
+        <Box textAlign="center" sx={{ mt: 4 }}>
+          <Button
+            variant="contained"
+            color="primary"
+            size="large"
+            onClick={() => navigate("/blog")}
+          >
+            {t("BlogSection.readMore")}
+          </Button>
         </Box>
       </Container>
     </Box>

@@ -218,7 +218,8 @@
         "title": "Frequently Asked",
         "subtitle": "Questions",
         "description": "Here are some frequently asked questions about our dental services in the past.",
-        "learnMore": "Learn More"
+        "learnMore": "Learn More",
+        "viewAll": "View All"
     },
     "testimonials": {
         "title": "What Our Patients Say",
@@ -502,12 +503,14 @@
         "no": "No",
         "bookingCancelled": "Booking Cancelled",
         "cancelBookingMsg": "Are you sure you want to cancel this booking?"
+        
     },
     "detectBookingSection": {
         "title": "Detect Bookings",
         "description": "Access the Detect Booking page to view and manage your bookings. Log in if you haven’t already to continue.",
         "button": "Go to Detect Booking",
-        "additionalText": "You Can't Access Bookings until you log in."
+        "loginRequired": "You Can't Access Bookings until you log in.",
+        "login": "Login"
     },
     "faqPage": {
         "title": "Frequently Asked Questions",

@@ -52,7 +52,7 @@ const FAQSection = () => {
               marginBottom: 4,
             }}
           >
-            {t("FAQSection.learnMore")}
+            {t("FAQSection.viewAll")}
           </Button>
         </Grid>
 

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Grid, Box, Link } from "@mui/material";
+import { Grid, Box, Link, Button } from "@mui/material";
 import { motion } from "framer-motion";
 import { useCustomTheme } from "../../contexts/ThemeProvider";
 import { useTranslation } from "react-i18next";
@@ -100,10 +100,21 @@ const GallerySection = () => {
         ))}
       </Grid>
       {/* view more */}
-      <Box textAlign="center" sx={{ mt: 6 }}>
-        <Link onClick={() => navigate('/gallery')} sx={{ color: "primary.main", fontSize: 18 }}>
-          {t("MeetOurDentists.viewMore")}
-        </Link>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          mt: 4,
+        }}
+      >
+        <Button
+          variant="contained"
+          color="primary"
+          endIcon={<SearchIcon sx={{ mx: 2}} />}
+          onClick={() => navigate("/gallery")}
+        >
+          {t("FAQSection.viewAll")}
+        </Button>
       </Box>
     </Box>
   );

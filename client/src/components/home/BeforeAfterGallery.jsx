@@ -124,19 +124,12 @@ const BeforeAfterGallery = () => {
     setShowAll(!showAll);
   };
 
-  const demoData = [
-    { beforeImage: '/images/before-after/ba1-before.jpg', afterImage: '/images/before-after/ba1-after.jpg', description: 'Lorem ipsum dolor sit amet' },
-    { beforeImage: '/images/before-after/ba2-before.jpg', afterImage: '/images/before-after/ba2-after.jpg', description: 'Consectetur adipiscing elit' },
-    { beforeImage: '/images/before-after/ba3-before.jpg', afterImage: '/images/before-after/ba3-after.jpg', description: 'Sed do eiusmod tempor incididunt' },
-    { beforeImage: '/images/before-after/ba4-before.jpg', afterImage: '/images/before-after/ba4-after.jpg', description: 'Ut labore et dolore magna aliqua' },
-    { beforeImage: '/images/before-after/ba5-before.jpg', afterImage: '/images/before-after/ba5-after.jpg', description: 'Ut enim ad minim veniam' },
-  ];
-
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
         const res = await axiosInstance.get('/before-after');
-        const data = res.data.length > 0 ? res.data : demoData;
+        const data = res.data;
         setData(data);
       } catch (error) {
         console.error(error);

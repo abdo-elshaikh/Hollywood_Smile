@@ -61,10 +61,10 @@ const NewsletterSection = () => {
                     textAlign: 'center',
                 }}
             >
-                <Typography variant="h4" sx={{ mb: 2, color: 'white' }}>
+                <Typography variant="h3" sx={{ mb: 2, color: 'white' }}>
                     {t('newsletterSection.title')}
                 </Typography>
-                <Typography variant="body1" sx={{ mb: 4, color: 'white' }}>
+                <Typography variant="subtitle1" sx={{ mb: 4, color: 'white' }}>
                     {t('newsletterSection.description')}
                 </Typography>
                 <Box

@@ -43,7 +43,7 @@ const AchievementsSection = () => {
 
     return (
         <>
-            <Typography variant="h4" align="center" sx={{ mb: 2, fontWeight: 'bold', color: 'primary.main' }}>
+            <Typography variant="h3" align="center" sx={{ mb: 2, fontWeight: 'bold', color: 'primary.main' }}>
                 {t('AchievementsSection.title')}
             </Typography>
             <Typography variant="body1" align="center" sx={{ mb: 4 }}>
