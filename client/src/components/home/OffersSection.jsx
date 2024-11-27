@@ -1,11 +1,11 @@
-import React, { useRef, useCallback } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { Box, Typography, Button, Container, Stack, Dialog, } from "@mui/material";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import Slider from "react-slick";
 import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
-import { useClinicContext } from "../../contexts/ClinicContext";
+import axiosInstance from '../../services/axiosInstance';
 
 // Slider settings for the offers section
 const sliderSettings = {
@@ -43,16 +43,32 @@ const PrevArrow = ({ className, style, onClick }) => (
 // OffersSection component
 const OffersSection = () => {
     const { t, i18n } = useTranslation();
-    const { clinicOffers } = useClinicContext();
     const sliderRef = useRef(null);
     const isArabic = i18n.language === "ar";
+    const [offers, setOffers] = useState([]);
 
-    const offers = clinicOffers?.map((offer) => ({
+    useEffect(() => {
+        fetchOffers();
+    }, []);
+
+    const fetchOffers = async () => {
+        try {
+            const response = await axiosInstance.get("/offers");
+            console.log(response.data, "offers");   // Check the response data
+            setOffers(response.data);
+        } catch (error) {
+            console.error("Error fetching offers:", error);
+        }
+    };
+
+
+    const offersList = offers.map((offer) => ({
         id: offer._id,
         title: isArabic ? offer.title.ar : offer.title.en,
         subtitle: isArabic ? offer.description.ar : offer.description.en,
         discount: offer.discount,
         imgSrc: offer.imageUrl,
+        serviceId: offer.service,
         contactText: t("offersSection.contact"),
         buttonText: t("offersSection.buttonText"),
     }));
@@ -85,8 +101,8 @@ const OffersSection = () => {
             </Typography>
             <Box component={Container} mb={8} px={1} maxWidth="lg" position="relative">
                 <Slider ref={sliderRef} {...adjustedSliderSettings}>
-                    {offers.map((offer) => (
-                        <DentalCard key={offer.id} {...offer} />
+                    {offersList.map((offer, index) => (
+                        <DentalCard key={index} {...offer} />
                     ))}
                 </Slider>
             </Box>
@@ -95,13 +111,12 @@ const OffersSection = () => {
 };
 
 // DentalCard component
-const DentalCard = ({ title, subtitle, discount, contactText, imgSrc, buttonText, id }) => {
-    const onButtonClick = useCallback(() => alert("Coming Soon!"), []);
+const DentalCard = ({ title, subtitle, discount, contactText, imgSrc, buttonText, id, serviceId }) => {
     const navigate = useNavigate();
 
     const getOfferClick = () => {
-        if (id) {
-            navigate(`/booking`, { state: { serviceId: id } });
+        if (serviceId) {
+            navigate(`/booking/${serviceId}`);
         } else {
             alert("Coming Soon!");
         }
@@ -165,18 +180,6 @@ const DentalCard = ({ title, subtitle, discount, contactText, imgSrc, buttonText
             )}
             <Stack spacing={2} direction="row" justifyContent="center" sx={{ mt: "auto" }}>
                 <Button
-                    variant="contained"
-                    size="small"
-                    onClick={() => alert(`Coming Soon, Please ${contactText}!`)}
-                    sx={{
-                        background: 'primary.dark',
-                        color: "#fff",
-                        "&:hover": { background: 'primary.main' },
-                    }}
-                >
-                    {contactText}
-                </Button>
-                <Button
                     variant="outlined"
                     size="small"
                     onClick={getOfferClick}
@@ -187,6 +190,18 @@ const DentalCard = ({ title, subtitle, discount, contactText, imgSrc, buttonText
                     }}
                 >
                     {buttonText}
+                </Button>
+                <Button
+                    variant="contained"
+                    size="small"
+                    sx={{
+                        background: 'primary.main',
+                        color: "#fff",
+                        "&:hover": { background: 'primary.dark' },
+                    }}
+                    onClick={getOfferClick}
+                >
+                    {contactText}
                 </Button>
             </Stack>
         </Box>

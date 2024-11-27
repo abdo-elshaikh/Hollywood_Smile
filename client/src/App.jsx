@@ -13,6 +13,7 @@ import BlogDashboard from './pages/BlogDashboard';
 import BlogPage from './pages/BlogPage';
 import BlogPostPage from './pages/BlogPostPage';
 import BookingPage from './pages/BookingPage';
+import BookingServicePage from './pages/BookingServicePage';
 import FaqPage from './pages/FaqPage';
 import ContactUsPage from './pages/ContactUsPage';
 import DoctorsPage from './pages/DoctorsPage';
@@ -111,7 +112,8 @@ const App = () => {
             <Route path="/auth/*" element={<AuthPage />} />
             <Route path="/blog" element={<BlogPage />} />
             <Route path="/blog/:id" element={<BlogPostPage />} />
-            <Route path="/booking" element={<BookingPage />} />
+            <Route path="/booking" element={<BookingServicePage />} />
+            <Route path="/booking/:id" element={<BookingPage />} />
             <Route path="/faq" element={<FaqPage />} />
             <Route path="/contact-us" element={<ContactUsPage />} />
             <Route path="/doctors" element={<DoctorsPage />} />
