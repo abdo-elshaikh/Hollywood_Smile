@@ -40,7 +40,6 @@ const BlogSection = () => {
 
       const latestBlogs = res.data.filter((blog) => blog.published).sort((a, b) => new Date(b.date) - new Date(a.date));
       const mostLikesAndLoves = await latestBlogs.sort((a, b) => (b.likes + b.loves + b.views) - (a.likes + a.loves + a.views)).slice(0, 3);
-      console.log("Most Likes and Loves:", mostLikesAndLoves);
       setBlogs(mostLikesAndLoves);
     } catch (error) {
       console.error("Error fetching blogs:", error);

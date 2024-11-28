@@ -1,11 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Typography, Button, Container, Stack } from '@mui/material';
+import React from 'react';
+import {
+    Box,
+    Typography,
+    Button,
+    Container,
+    Stack,
+    useTheme,
+    useMediaQuery,
+} from '@mui/material';
 import { motion } from 'framer-motion';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination, Autoplay } from 'swiper/modules';
+import { Navigation, Pagination, Scrollbar, A11y, EffectFade, Autoplay } from 'swiper/modules';
 import { useTranslation } from 'react-i18next';
-import { useCustomTheme } from '../../contexts/ThemeProvider';
 import { useNavigate } from 'react-router-dom';
+
 
 const baseUrl = `${import.meta.env.VITE_SUPABASE_VIEW_URL}/uploads/slides`;
 const slides = [
@@ -17,28 +25,37 @@ const slides = [
 
 const HeroSection = () => {
     const { t, i18n } = useTranslation();
-    const { mode } = useCustomTheme();
-    const isArabic = i18n.language === 'ar';
-    const isDark = mode === 'dark';
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const navigate = useNavigate();
 
-    
+    const isArabic = i18n.language === 'ar';
+    const overlayColor =
+        theme.palette.mode === 'dark'
+            ? 'rgba(0, 0, 0, 0.4)'
+            : 'rgba(255, 255, 255, 0.4)';
 
     return (
         <Box
             sx={{
                 position: 'relative',
-                height: { xs: '70vh', md: '90vh' },
+                height: { xs: '80vh', md: '90vh' },
                 width: '100%',
                 overflow: 'hidden',
             }}
         >
             <Swiper
-                modules={[Navigation, Pagination, Autoplay]}
-                pagination={{ clickable: true, dynamicBullets: true, bulletClass: 'swiper-pagination-bullet' }}
-                autoplay={{ delay: 5000, disableOnInteraction: false }}
-                loop
-                style={{ height: '100%', width: '100%' }}
+                modules={[Navigation, Pagination, Scrollbar, A11y, EffectFade, Autoplay]}
+                effect="fade"
+                slidesPerView={1}
+                pagination={{ clickable: true }}
+                scrollbar={{ draggable: true }}
+                style={{ height: '100%' }}
+                className="mySwiper"
+                autoplay={{
+                    delay: 5000,
+                    disableOnInteraction: false,
+                }}
             >
                 {slides.map((slide, index) => (
                     <SwiperSlide key={index}>
@@ -53,9 +70,9 @@ const HeroSection = () => {
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                zIndex: 0,
                             }}
                         >
+                            {/* Overlay */}
                             <Box
                                 sx={{
                                     position: 'absolute',
@@ -63,10 +80,11 @@ const HeroSection = () => {
                                     left: 0,
                                     width: '100%',
                                     height: '100%',
-                                    backgroundColor: isDark ? 'rgba(0, 0, 0, 0.3)' : 'rgba(255, 255, 255, 0.3)',
+                                    backgroundColor: overlayColor,
                                     zIndex: 0,
                                 }}
                             />
+                            {/* Content */}
                             <motion.div
                                 initial={{ opacity: 0, y: 50 }}
                                 animate={{ opacity: 1, y: 0 }}
@@ -77,33 +95,36 @@ const HeroSection = () => {
                                     sx={{
                                         zIndex: 1,
                                         textAlign: 'center',
-                                        color: isDark ? 'white' : 'black',
+                                        color: theme.palette.text.primary,
                                         position: 'absolute',
                                         bottom: { xs: '10%', md: '20%' },
                                         left: '50%',
                                         transform: 'translateX(-50%)',
-                                        width: '100%',
                                     }}
                                 >
                                     <Typography
-                                        variant="h2"
+                                        variant={isMobile ? 'h4' : 'h2'}
                                         fontWeight="bold"
-                                        color='primary'
+                                        color="primary"
                                         gutterBottom
-                                        sx={{ textTransform: 'uppercase', letterSpacing: 1.2, fontShadow: '1px 1px 4px rgba(0, 0, 0, 0.2)' }}
+                                        sx={{
+                                            textTransform: 'uppercase',
+                                            letterSpacing: 1.2,
+                                        }}
                                     >
                                         {t(`heroSection.slide${index + 1}.title`)}
                                     </Typography>
                                     <Typography
-                                        variant="h5"
-                                        color='primary.dark'
+                                        variant="body1"
                                         gutterBottom
                                         sx={{
                                             fontSize: { xs: '1rem', md: '1.2rem' },
                                             lineHeight: 1.5,
                                         }}
                                     >
-                                        {t(`heroSection.slide${index + 1}.description`)}
+                                        {t(
+                                            `heroSection.slide${index + 1}.description`
+                                        )}
                                     </Typography>
                                     <Stack
                                         direction={{ xs: 'column', md: 'row' }}
@@ -116,7 +137,6 @@ const HeroSection = () => {
                                             color="error"
                                             size="large"
                                             onClick={() => navigate('/booking')}
-                                            sx={{ mt: 3, width: '100%' }}
                                         >
                                             {isArabic ? 'احجز الآن' : 'Book Now'}
                                         </Button>
@@ -125,7 +145,6 @@ const HeroSection = () => {
                                             color="secondary"
                                             size="large"
                                             onClick={() => navigate('/contact-us')}
-                                            sx={{ mt: 3, width: '100%' }}
                                         >
                                             {isArabic ? 'تواصل معنا' : 'Contact Us'}
                                         </Button>

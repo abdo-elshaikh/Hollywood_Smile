@@ -220,7 +220,7 @@ const HeaderSection = () => {
                             ))}
                             <Divider sx={{ my: 1 }} />
                             <ListItem
-                                button
+                                button="true"
                                 sx={{ cursor: 'pointer', display: user && user?.role === 'admin' ? 'flex' : 'none' }}
                                 onClick={() => navigate('/dashboard')}
                             >
@@ -231,7 +231,7 @@ const HeaderSection = () => {
                             </ListItem>
 
                             <ListItem
-                                button
+                                button="true"
                                 sx={{ cursor: 'pointer', display: user && user?.role === 'support' ? 'flex' : 'none' }}
                                 onClick={() => navigate('/support-dashboard')}
                             >
@@ -242,7 +242,7 @@ const HeaderSection = () => {
                             </ListItem>
 
                             <ListItem
-                                button
+                                button="true"
                                 sx={{ cursor: 'pointer', display: user && user?.role === 'author' || user?.role === 'editor' ? 'flex' : 'none' }}
                                 onClick={() => navigate('/blog-dashboard')}
                             >

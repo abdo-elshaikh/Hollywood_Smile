@@ -2,15 +2,14 @@
 import React, { useEffect, useMemo } from 'react';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from './contexts/AuthContext';
 import { useClinicContext } from './contexts/ClinicContext';
 import PrivateRoute from './components/PrivateRoute';
 import AuthPage from './pages/AuthPage';
 import HomePage from './pages/HomePage';
 import AboutUsPage from './pages/AboutUsPage';
 import DashboardPage from './pages/DashboardPage';
-import BlogDashboard from './pages/BlogDashboard';
 import SupportDashboard from './pages/SupportDashboard';
+import BlogDashboard from './pages/BlogDashboard';
 import BlogPage from './pages/BlogPage';
 import BlogPostPage from './pages/BlogPostPage';
 import BookingPage from './pages/BookingPage';
@@ -29,7 +28,6 @@ import Error403Page from './pages/403Page';
 import Error500Page from './pages/500Page';
 import LoadingSpinner from './components/common/LoadingSpinner';
 import ErrorBoundary from './components/common/ErrorBoundary';
-import './styles/index.css';
 import './i18n';
 import { Box } from '@mui/material';
 

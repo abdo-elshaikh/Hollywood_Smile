@@ -54,7 +54,6 @@ const OffersSection = () => {
     const fetchOffers = async () => {
         try {
             const response = await axiosInstance.get("/offers");
-            console.log(response.data, "offers");   // Check the response data
             setOffers(response.data);
         } catch (error) {
             console.error("Error fetching offers:", error);
