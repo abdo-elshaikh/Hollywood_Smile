@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Container, Typography, Grid, Paper, List, ListItem, ListItemText, ListItemAvatar } from '@mui/material';
+import { Box, Container, Typography, Grid, Paper, List, ListItem, ListItemText, ListItemAvatar, Divider } from '@mui/material';
 import { motion } from 'framer-motion';
 import { useCustomTheme } from '../../contexts/ThemeProvider';
 import { useTranslation } from 'react-i18next';
 import { CheckCircle } from '@mui/icons-material';
 import { fetchServices } from "../../services/servicesService";
-import backgroundImage from '../../assets/images/about-2.jpg';
+import backgroundImage from '../../assets/images/m_mabrouk.jpg';
 
 
 const featurePoints = [
@@ -21,6 +21,14 @@ const featurePoints = [
         title: 'Comfortable Clinics',
         description: 'Our clinics are designed to make you feel at home during your visits.',
     },
+    {
+        title: 'Personalized Care',
+        description: 'We take the time to understand your unique needs and provide personalized care.',
+    },
+    {
+        title: 'Affordable Prices',
+        description: 'We offer high-quality dental services at affordable prices for everyone.',
+    }
 ];
 
 const tFeaturePoints = [
@@ -36,6 +44,14 @@ const tFeaturePoints = [
         "title": "رعاية مخصصة",
         "description": "نأخذ الوقت لفهم احتياجاتك الفريدة وتقديم رعاية مخصصة لك.",
     },
+    {
+        "title": "عيادات مريحة",
+        "description": "تم تصميم عياداتنا لجعلك تشعر بأنك في منزلك خلال زياراتك.",
+    },
+    {
+        "title": "أسعار معقولة",
+        "description": "نقدم خدمات طب الأسنان عالية الجودة بأسعار معقولة للجميع.",
+    }
 ]
 
 const ServicesSection = () => {
@@ -136,48 +152,36 @@ const ServicesSection = () => {
                 sx={{
                     mt: 10,
                     display: 'flex',
-                    flexWrap: 'wrap',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    background: 'linear-gradient(135deg, #3C9EE7, #34A69E)',
+                    background: 'linear-gradient(45deg, #3B969F, #2F8DF7, #2CB9BF, #2F8DF7, #3B969F)',
                     overflow: 'hidden',
                 }}
             >
-                <Grid container spacing={2} sx={{ minHeight: 700, position: 'relative' }}>
+                <Grid container >
                     {/* Image Section */}
                     <Grid
                         item
-                        xs={0}
+                        xs={12}
                         md={6}
                     >
-                        <Box
-                            component={motion.div}
-                            initial={{ opacity: 0 }}
-                            whileInView={{ opacity: 1 }}
+                        <motion.div
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
-                            transition={{ duration: 0.8 }}
-                            sx={{
-                                height: '100%',
-                                width: '100%',
-                                backgroundImage: `url(${backgroundImage})`,
-                                backgroundSize: 'cover',
-                                backgroundPosition: 'center',
-                                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
-                                overflow: 'hidden',
-                            }}
-                        />
+                            transition={{ duration: 0.6, ease: 'easeOut' }}
+                            style={{ width: '100%', height: '100%', overflow: 'hidden' }}
+                        >
+                            <img src={backgroundImage} alt="About Us" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        </motion.div>
                     </Grid>
 
                     {/* Text Section */}
                     <Grid item xs={12} md={6}>
-                        <Box
-                            sx={{
-                                p: { xs: 3, md: 4 },
-                            }}
-                        >
+                        <Box sx={{ p: 4, }}>
                             <motion.div
-                                initial={{ opacity: 0, y: 30 }}
-                                whileInView={{ opacity: 1, y: 0 }}
+                                initial={{ opacity: 0, x: 30 }}
+                                whileInView={{ opacity: 1, x: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ duration: 0.6, ease: 'easeOut' }}
                             >
@@ -185,18 +189,27 @@ const ServicesSection = () => {
                                     variant="h4"
                                     sx={{
                                         fontWeight: 700,
-                                        color: '#fff',
+                                        color: '#FC8F54',
                                         mb: 3,
                                         textAlign: isArabic ? 'right' : 'left',
-                                        fontFamily: "'Poppins', sans-serif",
+                                        fontFamily: 'Poppins',
+                                        fontSize: { xs: '2rem', sm: '2.5rem' },
+                                        fontShadow: '2px 2px 4px rgba(0, 0, 0, 0.2)',
                                     }}
                                 >
                                     {t('servicesSection.featureSection.title')}
                                 </Typography>
+                            </motion.div>
+                            <motion.div
+                                initial={{ opacity: 0, x: 30 }}
+                                whileInView={{ opacity: 1, x: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.9, ease: 'easeOut', delay: 0.2 }}
+                            >
                                 <Typography
                                     variant="body1"
                                     sx={{
-                                        color: '#fff',
+                                        color: '#FFDDAE',
                                         my: 3,
                                         textAlign: isArabic ? 'right' : 'left',
                                     }}
@@ -205,6 +218,7 @@ const ServicesSection = () => {
                                 </Typography>
                             </motion.div>
 
+                            <Divider sx={{ bgcolor: 'rgba(255, 255, 255, 0.5)', my: 3 }} />
                             <List sx={{ mt: 4 }}>
                                 <FeaturePoint features={isArabic ? tFeaturePoints : featurePoints} isArabic={isArabic} />
                             </List>
@@ -222,10 +236,10 @@ const FeaturePoint = ({ features, isArabic }) => {
             {
                 features?.map((feature, index) => (
                     <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
+                        initial={{ opacity: 0, x: 20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
-                        transition={{ duration: 0.5, delay: 0.3 }}
+                        transition={{ duration: 0.6, delay: index * 0.3 }}
                         key={index}
                     >
                         <ListItem sx={{ p: 0, mb: 3, textAlign: isArabic ? 'right' : 'left' }}>
@@ -235,7 +249,7 @@ const FeaturePoint = ({ features, isArabic }) => {
                                         color: '#fff',
                                         fontSize: 50,
                                         transition: 'color 0.3s ease-in-out',
-                                        '&:hover': { color: '#f07167' },
+                                        '&:hover': { color: '#FFDDAE' },
 
                                     }}
                                 />

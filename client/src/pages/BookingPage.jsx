@@ -39,6 +39,7 @@ const BookingPage = () => {
     const [selectedTime, setSelectedTime] = useState('');
     const [selectedService, setSelectedService] = useState({ title: { en: '', ar: '' }, description: { en: '', ar: '' }, price: 0, duration: 0, image: '' });
     const [openDialog, setOpenDialog] = useState(false);
+    const [expanded, setExpanded] = useState(true);
 
     const [currentDateTime, setCurrentDateTime] = useState({
         day: format(new Date(), 'eeee').toLowerCase()
@@ -295,6 +296,7 @@ const BookingPage = () => {
             <Container
                 sx={{
                     my: 6,
+                    p: 4,
                     backdropFilter: 'blur(8px)',
                     backgroundColor: isDark ? 'rgba(0, 0, 0, 0.5)' : 'rgba(255, 255, 255, 0.5)',
                 }}>
@@ -322,7 +324,7 @@ const BookingPage = () => {
                                 views={['year', 'month', 'day']}
                                 minDate={dayjs()}
                                 maxDate={dayjs().add(1, 'week')}
-                                sx={{ mt: 2 }}
+                                sx={{ mt: 2, width: '100%', height: '100%' }}
                                 disablePast
                             />
                         </LocalizationProvider>
@@ -335,7 +337,7 @@ const BookingPage = () => {
                         <Divider sx={{ my: 1 }} />
                         <Grid container spacing={2} sx={{ mt: 2 }}>
                             {predefinedTimeSlots.map((time, index) => (
-                                <Grid item xs={6} key={index}>
+                                <Grid item xs={4} key={index}>
                                     <Button
                                         variant="contained"
                                         color={bookingData.time === time ? 'primary' : 'secondary'}
@@ -358,18 +360,18 @@ const BookingPage = () => {
                     {/* service */}
                     <Grid item xs={12} md={4}>
                         <Accordion
-                            expanded={true}
-                            elevation={0}
+                            expanded={expanded}
                             square
                             disableGutters
+                            elevation={0}
+                            onChange={() => setExpanded(!expanded)}
                             sx={{ backgroundColor: isDark ? 'rgba(0, 0, 0, 0.5)' : 'rgba(255, 255, 255, 0.5)', backdropFilter: 'blur(8px)', color: isDark ? 'white' : 'dark.main' }}
                         >
                             <AccordionSummary
                                 expandIcon={<ExpandMoreIcon />}
-                                aria-expanded={true}
                                 aria-controls="panel1a-content"
                                 id="panel1a-header"
-
+                                elevation={0}
                             >
                                 <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
                                     {isArabic ? 'الخدمة المحددة' : 'Selected Service'}
@@ -384,20 +386,26 @@ const BookingPage = () => {
                                     <Typography variant="body1">
                                         {isArabic ? selectedService.description.ar : selectedService.description.en}
                                     </Typography>
-                                    <Typography variant="body1" sx={{ color: 'primary.main' }}>
-                                        {selectedService.price} {t('currency')}
+                                    <Typography variant="body1" sx={{ color: 'color.error' }}>
+                                        {isArabic ? 'تاريخ الحجز' : 'Booking Date'} : {selectedDate ? selectedDate.format('DD/MM/YYYY') : ''}
+                                    </Typography>
+                                    <Typography variant="body1" sx={{ color: 'info' }}>
+                                        {isArabic ? 'وقت الحجز' : 'Booking Time'} : {selectedTime}
                                     </Typography>
                                 </Box>
                             </AccordionDetails>
                         </Accordion>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            onClick={handleClick}
-                            sx={{ mt: 2, width: '100%' }}
-                        >
-                            {isArabic ? 'احجز الآن' : 'Book Now'}
-                        </Button>
+                        <Box sx={{ mt: 2 }}>
+                            <Button
+                                variant="contained"
+                                color="error"
+                                onClick={handleClick}
+                                fullWidth
+                                disabled={loading}
+                            >
+                                {isArabic ? 'استكمل البيانات للحجز' : 'Complete Booking Data'}
+                            </Button>
+                        </Box>
                     </Grid>
                 </Grid>
             </Container>

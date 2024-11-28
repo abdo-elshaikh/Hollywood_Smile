@@ -503,7 +503,6 @@
         "no": "No",
         "bookingCancelled": "Booking Cancelled",
         "cancelBookingMsg": "Are you sure you want to cancel this booking?"
-        
     },
     "detectBookingSection": {
         "title": "Detect Bookings",

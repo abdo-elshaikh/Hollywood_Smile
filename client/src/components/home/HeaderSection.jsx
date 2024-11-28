@@ -21,7 +21,7 @@ import {
 } from '@mui/material';
 import {
     DarkModeOutlined, LightModeOutlined, Menu as MenuIcon,
-    Notifications, Message, Settings, Language, Logout, Login,
+    Settings, Language, Logout, Login,
     SettingsApplications, AccountCircle, RssFeed,
     Info, People, PhotoLibrary, ContactMail, Call,
     Home, LocalOffer, BookOnline, Medication, MedicalInformation, Handyman, DriveFileMove
@@ -30,6 +30,9 @@ import { motion } from 'framer-motion';
 import { useCustomTheme } from '../../contexts/ThemeProvider';
 import EnglishIcon from '../../assets/flags/english.svg';
 import ArabicIcon from '../../assets/flags/arabic.svg';
+import darkIcon from '../../assets/dark-mode.png';
+import lightIcon from '../../assets/light-mode.png';
+import settingsIcon from '../../assets/settings.png';
 import { useTranslation } from 'react-i18next';
 import { useClinicContext } from '../../contexts/ClinicContext';
 import { useNavigate } from 'react-router-dom';
@@ -50,7 +53,7 @@ const HeaderSection = () => {
 
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [adminMenuOpen, setAdminMenuOpen] = useState(false);
-    const [adminMenuAnchor, setAdminMenuAnchor] = useState(null); // State for menu anchor
+    const [adminMenuAnchor, setAdminMenuAnchor] = useState(null);
     const [isScrolled, setIsScrolled] = useState(false);
 
     const isArabic = i18n.language === 'ar';
@@ -98,8 +101,9 @@ const HeaderSection = () => {
 
     const handleLogout = () => {
         logout();
-        navigate('/auth/login');
+        // navigate('/auth/login');
         closeMobileMenu();
+        setAdminMenuAnchor(null);
     };
 
     return (
@@ -116,40 +120,36 @@ const HeaderSection = () => {
             }}
         >
             <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Link href="/" underline="none" sx={{ display: 'flex', alignItems: 'center', padding: 1 }}>
-                    {clinicInfo.logo && (
-                        <Avatar
-                            src={clinicInfo.logo[isDark ? 'dark' : 'light']}
-                            alt={clinicInfo?.name.en}
-                            sx={{
-                                width: 60,
-                                height: 60,
-                                objectFit: 'contain',
-                            }}
-                        />
-                    )}
-                    <Box sx={{ ml: 1, mr: 1, display: { md: 'none', lg: 'block' } }}>
-                        <Typography variant="h6" component="h1" sx={{ fontWeight: 'bold' }}>
-                            {clinicInfo.name[isArabic ? 'ar' : 'en']}
-                        </Typography>
-                        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                            {clinicInfo.subtitle[isArabic ? 'ar' : 'en']}
-                        </Typography>
-                    </Box>
-                </Link>
-
                 {/* Desktop Menu */}
-                <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 3, alignItems: 'center' }}>
+                <Box sx={{ display: 'flex', gap: 3, alignItems: 'center' }}>
+                    <Box
+                        onClick={() => navigate('/')}
+                        sx={{ display: 'flex', alignItems: 'center', gap: 2, cursor: 'pointer' }}
+                    >
+                        <Avatar
+                            src={isDark ? clinicInfo?.logo.dark : clinicInfo?.logo.light}
+                            alt={clinicInfo?.name.en}
+                            sx={{ width: 50, height: 50 }}
+                        />
+                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                            <Typography variant="h6" color='primary' fontWeight="bold">{isArabic ? clinicInfo?.name.ar : clinicInfo?.name.en}</Typography>
+                            <Typography variant="body2" color="text.secondary" >
+                                {isArabic ? clinicInfo?.subtitle.ar : clinicInfo?.subtitle.en}
+                            </Typography>
+                        </Box>
+                    </Box>
                     <MenuItems items={items} />
-                    {/* Language and Theme Toggle Buttons */}
+                </Box>
+                {/* Language and Theme Toggle Buttons */}
+                <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 2, alignItems: 'center', flexShrink: 0 }}>
                     <Tooltip title={isArabic ? 'ترجم إلى الإنجليزية' : 'Translate to Arabic'}>
                         <IconButton onClick={handleLanguageChange}>
-                            <img src={isArabic ? EnglishIcon : ArabicIcon} alt={isArabic ? 'en' : 'ar'} style={{ width: 24, height: 24 }} />
+                            <img src={isArabic ? EnglishIcon : ArabicIcon} alt={isArabic ? 'en' : 'ar'} style={{ width: 28, height: 28 }} />
                         </IconButton>
                     </Tooltip>
                     <Tooltip title={isDark ? (isArabic ? 'الوضع النهاري' : 'Light Mode') : (isArabic ? 'الوضع الليلى' : 'Dark Mode')}>
                         <IconButton onClick={handleThemeToggle} aria-label="Toggle theme">
-                            {isDark ? <LightModeOutlined /> : <DarkModeOutlined />}
+                            <img src={isDark ? lightIcon : darkIcon} alt={isDark ? 'light' : 'dark'} style={{ width: 28, height: 28 }} />
                         </IconButton>
                     </Tooltip>
                     {/* Login/Logout Button */}
@@ -191,32 +191,13 @@ const HeaderSection = () => {
                     {user && user?.role !== 'visitor' && (
                         <Tooltip title={t('app.adminMenu')}>
                             <IconButton onClick={handleAdminMenuClick}>
-                                <Settings />
+                                <img src={settingsIcon} alt="admin" style={{ width: 28, height: 28 }} />
                             </IconButton>
                         </Tooltip>
                     )}
-                    {/* admin menu */}
-                    <Menu
-                        anchorEl={adminMenuAnchor}
-                        open={adminMenuOpen}
-                        onClose={closeAdminMenu}
-                        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-                        PaperProps={{
-                            style: {
-                                minWidth: 150,
-                            },
-                        }}
-                    >
-                        {user && user.role === 'admin' && (
-                            <MenuItem sx={{ cursor: 'pointer' }} onClick={() => navigate('/dashboard')}>{t('app.adminDashboard')}</MenuItem>
-                        )}
-                        {user && user.role !== 'visitor' && (
-                            <MenuItem sx={{ cursor: 'pointer' }} onClick={() => navigate('/blog-dashboard')}>{t('app.blogDashboard')}</MenuItem>
-                        )}
-                        <MenuItem sx={{ cursor: 'pointer', color: 'red', fontWeight: 'bold' }} onClick={handleLogout}>{t('app.logout')}</MenuItem>
-                    </Menu>
+
                 </Box>
+
                 {/* Mobile Menu */}
                 <IconButton
                     sx={{ display: { xs: 'flex', md: 'none' } }}
@@ -242,7 +223,7 @@ const HeaderSection = () => {
                             <Divider sx={{ my: 1 }} />
                             <ListItem
                                 button
-                                sx={{ cursor: 'pointer', display: user?.role !== 'admin' && 'none' }}
+                                sx={{ cursor: 'pointer', display: user && user?.role === 'admin' ? 'flex' : 'none' }}
                                 onClick={() => navigate('/dashboard')}
                             >
                                 <ListItemIcon>
@@ -253,7 +234,7 @@ const HeaderSection = () => {
 
                             <ListItem
                                 button
-                                sx={{ cursor: 'pointer', display: user?.role === 'visitor' && 'none' }}
+                                sx={{ cursor: 'pointer', display: user && user?.role !== 'visitor' ? 'flex' : 'none' }}
                                 onClick={() => navigate('/blog-dashboard')}
                             >
                                 <ListItemIcon>
@@ -281,13 +262,37 @@ const HeaderSection = () => {
                         </List>
                     </Box>
                 </Drawer>
+
+                {/* admin menu */}
+                <Menu
+                    anchorEl={adminMenuAnchor}
+                    open={adminMenuOpen}
+                    onClose={closeAdminMenu}
+                    anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                    transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                    PaperProps={{
+                        style: {
+                            minWidth: 150,
+                        },
+                    }}
+                >
+                    {user && user.role === 'admin' && (
+                        <MenuItem sx={{ cursor: 'pointer' }} onClick={() => navigate('/dashboard')}>{t('app.adminDashboard')}</MenuItem>
+                    )}
+                    {user && user.role === 'suport' && (
+                        <MenuItem sx={{ cursor: 'pointer' }} onClick={() => navigate('/support-dashboard')}>{t('app.supportDashboard')}</MenuItem>
+                    )}
+                    {user && user.role !== 'visitor' && (
+                        <MenuItem sx={{ cursor: 'pointer' }} onClick={() => navigate('/blog-dashboard')}>{t('app.blogDashboard')}</MenuItem>
+                    )}
+                    <MenuItem sx={{ cursor: 'pointer', color: 'red', fontWeight: 'bold' }} onClick={handleLogout}>{t('app.logout')}</MenuItem>
+                </Menu>
             </Toolbar>
         </AppBar>
     );
 };
 
 const MenuItems = ({ items }) => {
-    const { t } = useTranslation();
     const navigate = useNavigate();
 
     const onClick = (href) => {
@@ -295,40 +300,42 @@ const MenuItems = ({ items }) => {
     };
 
     return (
-        items.map((item, index) => (
-            <motion.div key={index} whileHover={{ scale: 1.05 }} transition={{ type: 'spring', stiffness: 300, damping: 12 }}>
-                <Link
-                    onClick={() => onClick(item.href)}
-                    underline="none"
-                    sx={{
-                        fontSize: 18,
-                        fontWeight: 'bold',
-                        color: 'inherit',
-                        position: 'relative',
-                        cursor: 'pointer',
-                        '&:after': {
-                            content: '""',
-                            position: 'absolute',
-                            width: '100%',
-                            transform: 'scaleX(0)',
-                            height: '5px',
-                            bottom: -5,
-                            left: 0,
-                            zIndex: -1,
-                            backgroundColor: 'secondary.dark',
-                            transformOrigin: 'bottom right',
-                            transition: 'transform 0.25s ease-out',
-                        },
-                        '&:hover:after': {
-                            transform: 'scaleX(1)',
-                            transformOrigin: 'bottom left',
-                        },
-                    }}
-                >
-                    {item.label}
-                </Link>
-            </motion.div>
-        ))
+        <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 3, alignItems: 'center', flexGrow: 1, justifyContent: 'space-between' }}>
+            {items.map((item, index) => (
+                <motion.div key={index} whileHover={{ scale: 1.05 }} transition={{ type: 'spring', stiffness: 300, damping: 12 }}>
+                    <Link
+                        onClick={() => onClick(item.href)}
+                        underline="none"
+                        sx={{
+                            fontSize: 18,
+                            fontWeight: 'bold',
+                            color: 'inherit',
+                            position: 'relative',
+                            cursor: 'pointer',
+                            '&:after': {
+                                content: '""',
+                                position: 'absolute',
+                                width: '100%',
+                                transform: 'scaleX(0)',
+                                height: '5px',
+                                bottom: -5,
+                                left: 0,
+                                zIndex: -1,
+                                backgroundColor: 'secondary.dark',
+                                transformOrigin: 'bottom right',
+                                transition: 'transform 0.25s ease-out',
+                            },
+                            '&:hover:after': {
+                                transform: 'scaleX(1)',
+                                transformOrigin: 'bottom left',
+                            },
+                        }}
+                    >
+                        {item.label}
+                    </Link>
+                </motion.div>
+            ))}
+        </Box>
     );
 };
 

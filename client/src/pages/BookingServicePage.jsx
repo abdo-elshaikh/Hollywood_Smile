@@ -1,25 +1,27 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Typography, Container, Paper, Grid, Button, CircularProgress } from '@mui/material';
+import { Box, Typography, Container, Paper, Grid, Button, CircularProgress, useTheme, useMediaQuery } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import { format } from 'date-fns';
 import { useCustomTheme } from '../contexts/ThemeProvider';
-import { useSnackbar } from '../contexts/SnackbarProvider';
 import HeaderSection from '../components/home/HeaderSection';
 import ScrollToTopButton from '../components/common/ScrollToTopButton';
 import Footer from '../components/home/Footer';
 import axiosInstance from '../services/axiosInstance';
-import onlineBookingVideo from '../assets/videos/onlineBooking.mp4';
+import onlineBookingVideo from '../assets/videos/childern_smile.mp4';
+import onlineBokkingSmall from '../assets/videos/Little_Girl.mp4';
 
 const BookingServicePage = () => {
     const { t, i18n } = useTranslation();
     const { mode } = useCustomTheme();
     const [services, setServices] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [background, setBackground] = useState(onlineBookingVideo);
+
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
     const isDark = mode === 'dark';
-    const showSnackBar = useSnackbar();
     const navigate = useNavigate();
     const isArabic = i18n.language === 'ar';
 
@@ -38,6 +40,10 @@ const BookingServicePage = () => {
         fetchServices();
     }, []);
 
+    useEffect(() => {
+        setBackground(isMobile ? onlineBokkingSmall : onlineBookingVideo);
+    }, [isMobile]);
+
     const selectService = (id) => {
         navigate(`/booking/${id}`);
     };
@@ -55,61 +61,100 @@ const BookingServicePage = () => {
                     color: isDark ? 'white' : 'dark.main',
                     minHeight: '100vh',
                     py: 10,
+                    position: 'relative',
+                    zIndex: 1,
                 }}
             >
-                <Container maxWidth="md">
-                    <Grid container justifyContent="center" sx={{ mb: 4, backdropFilter: 'blur(10px)', p: 4 }}>
-                        <Grid item xs={12} md={6}>
-                            <Typography variant="h4" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
-                                {isArabic ? ' الحجز الأونلاين هنا' : 'Book your Online Appointment Here'}
-                            </Typography>
-                        </Grid>
-                        <Grid item xs={12} md={6}>
-                            <Typography variant="body1" sx={{ color: 'text.secondary' }}>
-                                {isArabic ? 'اختر الخدمة التي ترغب في حجزها' : 'Select the service you want to book'}
-                            </Typography>
-                        </Grid>
-                    </Grid>
+                <Container maxWidth="lg">
+                    <Box
+                        sx={{
+                            textAlign: 'center',
+                            mb: 6,
+                            backdropFilter: 'blur(10px)',
+                            py: 4,
+                            backgroundColor: isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.4)',
+                            borderRadius: 2,
+                        }}
+                    >
+                        <Typography
+                            variant={isMobile ? 'h5' : 'h3'}
+                            sx={{
+                                fontWeight: 'bold',
+                                color: 'primary.main',
+                                mb: 2,
+                            }}
+                        >
+                            {isArabic ? 'احجز الخدمة المناسبة لك' : 'Book the service that suits you'}
+                        </Typography>
+                        <Typography
+                            variant="body1"
+                            sx={{ color: 'text.secondary', fontSize: isMobile ? '1rem' : '1.2rem' }}
+                        >
+                            {isArabic ? 'اختر الخدمة التي ترغب في حجزها' : 'Choose the service you want to book'}
+                        </Typography>
+                    </Box>
 
                     {loading ? (
                         <Grid container justifyContent="center">
-                            <CircularProgress />
+                            <CircularProgress color="secondary" />
+                            <Typography variant="body1" sx={{ mt: 2 }}>
+                                {isArabic ? 'جارٍ تحميل الخدمات...' : 'Loading services...'}
+                            </Typography>
                         </Grid>
                     ) : (
-                        services.map((service) => (
-                            <Box
-                                component={Paper}
-                                key={service._id}
-                                sx={{
-                                    display: 'flex',
-                                    flexDirection: isArabic ? 'row-reverse' : 'row',
-                                    justifyContent: 'space-between',
-                                    alignItems: 'center',
-                                    mb: 2,
-                                    p: 2,
-                                    gap: 2,
-                                }}
-                            >
-                                <Typography variant="body1" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
-                                    {isArabic ? service.title.ar : service.title.en}
-                                </Typography>
-                                {/* <Typography variant="body1">
-                                    {isArabic ? service.description.ar : service.description.en}
-                                </Typography> */}
-                                <Typography variant="body1">
-                                    {service.price} {t('currency')}
-                                </Typography>
-                                
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    onClick={() => selectService(service._id)}
-                                    sx={{ ml: 2 }}
-                                >
-                                    {isArabic ? 'احجز الان' : 'Book Now'}
-                                </Button>
-                            </Box>
-                        ))
+                        <Grid container spacing={3}>
+                            {services.map((service) => (
+                                <Grid item xs={12} key={service._id}>
+                                    <Paper
+                                        elevation={3}
+                                        sx={{
+                                            p: 3,
+                                            borderRadius: 2,
+                                            display: { xs: 'block', md: 'flex' },
+                                            alignItems: 'center',
+                                            justifyContent: 'space-between',
+                                            alignContent: 'center',
+                                            transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                                            '&:hover': {
+                                                transform: 'scale(1.02)',
+                                                boxShadow: 6,
+                                                cursor: 'pointer',
+                                            },
+                                        }}
+                                    >
+                                        <Typography
+                                            variant="h6"
+                                            sx={{
+                                                fontWeight: 'bold',
+                                                color: 'primary.main',
+                                                mb: 1,
+                                            }}
+                                        >
+                                            {isArabic ? service.title.ar : service.title.en}
+                                        </Typography>
+                                        <Typography
+                                            variant="body2"
+                                            sx={{ color: 'text.secondary', mb: 2 }}
+                                        >
+                                            {(isArabic ? service.description.ar : service.description.en).slice(0, 100)}...
+                                        </Typography>
+                                        <Button
+                                            variant="contained"
+                                            color="primary"
+                                            onClick={() => selectService(service._id)}
+                                            sx={{
+                                                fontWeight: 'bold',
+                                                fontSize: '1rem',
+                                                py: 1,
+                                                px: 4,
+                                            }}
+                                        >
+                                            {isArabic ? 'احجز الآن' : 'Book Now'}
+                                        </Button>
+                                    </Paper>
+                                </Grid>
+                            ))}
+                        </Grid>
                     )}
                 </Container>
             </Box>
@@ -120,16 +165,15 @@ const BookingServicePage = () => {
                 playsInline
                 style={{
                     position: 'fixed',
-                    right: 0,
                     top: 0,
+                    left: 0,
                     minWidth: '100%',
                     minHeight: '100%',
                     zIndex: -1,
                     objectFit: 'cover',
-                    opacity: 0.7,
                 }}
             >
-                <source src={onlineBookingVideo} type="video/mp4" />
+                <source src={background} type="video/mp4" />
             </video>
             <ScrollToTopButton />
             <Footer />

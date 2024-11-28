@@ -173,14 +173,15 @@ const AppointmentSection = () => {
     return (
         <Container
             maxWidth="lg"
+            elevation={4}
             sx={{
                 my: 5,
                 color: 'text.primary',
                 background: isDark
                     ? 'linear-gradient(135deg, #F95454, #F97373, #FFB6A6)'
                     : 'linear-gradient(45deg, #E1F5FE, #BBDEFB, #BBDEFB)',
-                borderRadius: 2,
-                boxShadow: 2,
+                // borderRadius: 2,
+                // boxShadow: 1,
                 p: 4,
             }}
         >
