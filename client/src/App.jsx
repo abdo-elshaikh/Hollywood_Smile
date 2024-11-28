@@ -24,7 +24,6 @@ import ServicesPage from './pages/ServicesPage';
 import ViewProfile from './pages/ViewProfile';
 import ClientBookings from './pages/ClientBookings';
 import Error404Page from './pages/404Page';
-import UnauthorizedPage from './pages/UnauthorizedPage';
 import NotFoundPage from './pages/NotFoundPage';
 import Error403Page from './pages/403Page';
 import Error500Page from './pages/500Page';
@@ -59,7 +58,6 @@ const ScrollToTop = () => {
     '/support-dashboard': { ar: 'لوحة التحكم | مركز هوليود سمايل', en: 'Support Dashboard | Hollywood Smile Center' },
   }), []);
 
-  // Set default language to Arabic and manage changes
   useEffect(() => {
     // Get the language from localStorage or set it to Arabic ('ar') if not found
     const lang = localStorage.getItem('language') || 'ar';
