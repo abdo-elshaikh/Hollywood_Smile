@@ -59,7 +59,6 @@ const HeaderSection = () => {
     const isArabic = i18n.language === 'ar';
     const isDark = mode === 'dark';
 
-    // Handle scroll event to adjust header styles
     useEffect(() => {
         const handleScroll = () => setIsScrolled(window.scrollY > 50);
         window.addEventListener('scroll', handleScroll);
@@ -72,7 +71,6 @@ const HeaderSection = () => {
         const newLanguage = isArabic ? 'en' : 'ar';
         i18n.changeLanguage(newLanguage);
         localStorage.setItem('language', newLanguage);
-        // change the direction of the body
         document.body.dir = isArabic ? 'ltr' : 'rtl';
         closeMobileMenu();
     };
@@ -234,7 +232,18 @@ const HeaderSection = () => {
 
                             <ListItem
                                 button
-                                sx={{ cursor: 'pointer', display: user && user?.role !== 'visitor' ? 'flex' : 'none' }}
+                                sx={{ cursor: 'pointer', display: user && user?.role === 'support' ? 'flex' : 'none' }}
+                                onClick={() => navigate('/support-dashboard')}
+                            >
+                                <ListItemIcon>
+                                    <SettingsApplications />
+                                </ListItemIcon>
+                                <ListItemText align={isArabic ? 'right' : 'left'} primary={t('app.dashboard')} />
+                            </ListItem>
+
+                            <ListItem
+                                button
+                                sx={{ cursor: 'pointer', display: user && user?.role === 'author' || user?.role === 'editor' ? 'flex' : 'none' }}
                                 onClick={() => navigate('/blog-dashboard')}
                             >
                                 <ListItemIcon>
@@ -279,7 +288,7 @@ const HeaderSection = () => {
                     {user && user.role === 'admin' && (
                         <MenuItem sx={{ cursor: 'pointer' }} onClick={() => navigate('/dashboard')}>{t('app.adminDashboard')}</MenuItem>
                     )}
-                    {user && user.role === 'suport' && (
+                    {user && user.role === 'support' && (
                         <MenuItem sx={{ cursor: 'pointer' }} onClick={() => navigate('/support-dashboard')}>{t('app.supportDashboard')}</MenuItem>
                     )}
                     {user && user.role !== 'visitor' && (

@@ -10,6 +10,7 @@ import HomePage from './pages/HomePage';
 import AboutUsPage from './pages/AboutUsPage';
 import DashboardPage from './pages/DashboardPage';
 import BlogDashboard from './pages/BlogDashboard';
+import SupportDashboard from './pages/SupportDashboard';
 import BlogPage from './pages/BlogPage';
 import BlogPostPage from './pages/BlogPostPage';
 import BookingPage from './pages/BookingPage';
@@ -55,6 +56,7 @@ const ScrollToTop = () => {
     '/server-error': { ar: 'خطأ في الخادم | مركز هوليود سمايل', en: 'Server Error | Hollywood Smile Center' },
     '/dashboard': { ar: 'لوحة التحكم | مركز هوليود سمايل', en: 'Dashboard | Hollywood Smile Center' },
     '/blog-dashboard': { ar: 'لوحة التحكم | مركز هوليود سمايل', en: 'Blog Dashboard | Hollywood Smile Center' },
+    '/support-dashboard': { ar: 'لوحة التحكم | مركز هوليود سمايل', en: 'Support Dashboard | Hollywood Smile Center' },
   }), []);
 
   // Set default language to Arabic and manage changes
@@ -104,6 +106,9 @@ const App = () => {
             } />
             <Route path="/blog-dashboard/*" element={
               <PrivateRoute element={<BlogDashboard />} requiredRoles={['admin', 'editor', 'author']} />
+            } />
+            <Route path="/support-dashboard/*" element={
+              <PrivateRoute element={<SupportDashboard />} requiredRoles={['admin', 'support']} />
             } />
             <Route path="/detect-booking" element={
               <PrivateRoute element={<ClientBookings />} requiredRoles={['visitor']} />

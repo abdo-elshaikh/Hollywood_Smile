@@ -70,18 +70,17 @@ const BookingPage = () => {
         }
         try {
             const data = await bookingService.createBooking(bookingData);
-            if (data) {
-                handleAddNotification(data._id, 'info');
+            if (data.success) {
+                showSnackBar(isArabic ? 'تم حجز الموعد بنجاح' : 'Appointment booked successfully.', 'success');
+                setOpenDialog(false);
+                setSuccess(true);
+            } else {
+                showSnackBar(isArabic ? 'حدث خطأ أثناء الحجز' : 'Error occurred during booking.', 'error');
             }
-            showSnackBar(isArabic ? 'تم حجز الموعد بنجاح' : 'Appointment booked successfully.', 'success');
-            setSelectedDate(null);
-            setSelectedTime('');
-            setPredefinedTimeSlots([]);
-            setOpenDialog(false);
-            fetchBookings();
-            setSuccess(true);
+            await handleAddNotification(data._id, 'info');
         } catch (error) {
-            showSnackBar(isArabic ? 'حدث خطأ أثناء الحجز' : 'Error occurred during booking.', 'error');
+            handleAddNotification(null, 'error');
+            showSnackBar(error?.response?.data?.message || 'Failed to book appointment.', 'error');
         } finally {
             setLoading(false);
         }
@@ -89,6 +88,7 @@ const BookingPage = () => {
     const handleSuccessClose = () => {
         setSuccess(false);
     };
+
     useEffect(() => {
         if (success) {
             setTimeout(() => {
@@ -184,13 +184,13 @@ const BookingPage = () => {
         setOpenDialog(false);
     };
 
-    const handleAddNotification = async (refId = '', type = 'info') => {
+    const handleAddNotification = async (refId = null, type = 'info') => {
         try {
             const notificationData = {
                 title: 'New Appointment',
                 message: type === 'info' ? 'A new appointment has been created.' : 'An error occurred while creating an appointment.',
                 type: type,
-                ref: 'OnlineBooking',
+                ref: 'booking',
                 refId: refId,
             };
             await notificationService.createNotification(notificationData);

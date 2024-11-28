@@ -91,27 +91,29 @@ const AppointmentSection = () => {
 
         try {
             const data = await bookingService.createBooking(bookingData);
-            if (data) {
-                handleAddNotification(data?._id, 'info');
+            if (data.success) {
+                showSnackbar(isArabic ? 'تم حجز الموعد بنجاح' : 'Appointment booked successfully', 'success');
+                setIsSuccess(true);
+            } else {
+                showSnackbar(isArabic ? 'حدث خطأ أثناء حجز الموعد' : 'An error occurred while creating an appointment', 'error');
             }
-            showSnackbar(isArabic ? 'تم حجز الموعد بنجاح' : 'Appointment booked successfully', 'success');
-            setIsSuccess(true);
+            await handleAddNotification(data._id, 'info');
         } catch (error) {
             console.error('Failed to create booking:', error);
             showSnackbar(isArabic ? 'حدث خطأ أثناء حجز الموعد' : 'An error occurred while creating an appointment', 'error');
-            handleAddNotification('', 'error');
+            handleAddNotification(null, 'error');
         } finally {
             setLoading(false);
         }
     };
 
-    const handleAddNotification = async (refId = '', type = 'info') => {
+    const handleAddNotification = async (refId = null, type = 'info') => {
         try {
             const notificationData = {
                 title: 'New Appointment',
                 message: type === 'info' ? 'A new appointment has been created.' : 'An error occurred while creating an appointment.',
                 type: type,
-                ref: 'OnlineBooking',
+                ref: 'booking',
                 refId: refId,
             };
             await notificationService.createNotification(notificationData);
@@ -180,8 +182,6 @@ const AppointmentSection = () => {
                 background: isDark
                     ? 'linear-gradient(135deg, #F95454, #F97373, #FFB6A6)'
                     : 'linear-gradient(45deg, #E1F5FE, #BBDEFB, #BBDEFB)',
-                // borderRadius: 2,
-                // boxShadow: 1,
                 p: 4,
             }}
         >

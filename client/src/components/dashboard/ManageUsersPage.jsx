@@ -142,12 +142,12 @@ const ManageUsersPage = () => {
 
   // Columns Configuration for DataGrid
   const columns = [
-    { field: "name", headerName: "Name", flex: 1 },
-    { field: "email", headerName: "Email", flex: 1 },
+    { field: "name", headerName: "Name", width: 150 },
+    { field: "email", headerName: "Email", width: 200 },
     {
       field: "role",
       headerName: "Role",
-      flex: 1,
+      width: 150,
       editable: true,
       renderCell: (params) => (
         <Select
@@ -159,13 +159,14 @@ const ManageUsersPage = () => {
           <MenuItem value="visitor">Visitor</MenuItem>
           <MenuItem value="editor">Editor</MenuItem>
           <MenuItem value="author">Author</MenuItem>
+          <MenuItem value="support">Support</MenuItem>
         </Select>
       ),
     },
     {
       field: "isActive",
       headerName: "Status",
-      flex: 1,
+      width: 120,
       renderCell: (params) => (
         <Switch
           // size="small"
@@ -178,7 +179,7 @@ const ManageUsersPage = () => {
     {
       field: "actions",
       headerName: "Actions",
-      flex: 1,
+      width: 120,
       renderCell: (params) => (
         <>
           <IconButton
