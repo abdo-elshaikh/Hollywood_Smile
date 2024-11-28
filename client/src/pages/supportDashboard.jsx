@@ -11,6 +11,8 @@ import {
     Button,
     useTheme,
     useMediaQuery,
+    Tooltip,
+    CircularProgress
 } from '@mui/material';
 import { Refresh, BarChart, BookOnline } from '@mui/icons-material';
 import ManageBookingsPage from '../components/dashboard/ManageBookingsPage';
@@ -39,6 +41,8 @@ const SupportDashboard = () => {
             setBookings(data.data);
         } catch (error) {
             showSnackbar(error?.response?.data?.message || "Error fetching bookings.", "error");
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -61,9 +65,6 @@ const SupportDashboard = () => {
 
     const cancelledThisWeek = bookingsThisWeek.filter((booking) => booking.status === 'Cancelled').length;
     const cancelledLastWeek = bookingsLastWeek.filter((booking) => booking.status === 'Cancelled').length;
-
-    const cancelledThisWeekPercentage = (cancelledThisWeek / totalThisWeek) * 100;
-    const cancelledLastWeekPercentage = (cancelledLastWeek / totalLastWeek) * 100;
 
     const completedThisWeek = bookingsThisWeek.filter((booking) => booking.status === 'Completed').length;
     const completedLastWeek = bookingsLastWeek.filter((booking) => booking.status === 'Completed').length;
@@ -132,7 +133,7 @@ const SupportDashboard = () => {
                         <CardHeader
                             avatar={<BookOnline fontSize="large" color="info" />}
                             title="Pending Bookings"
-                            subheader={`${completedThisWeek} completed This Week | ${cancelledLastWeek} completed Last Week`}
+                            subheader={`${completedThisWeek} completed This Week | ${completedLastWeek} completed Last Week`}
                             sx={{ textAlign: 'center' }}
                         />
                         <CardContent sx={{ textAlign: 'center' }}>
