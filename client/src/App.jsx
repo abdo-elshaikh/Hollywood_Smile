@@ -107,11 +107,11 @@ const App = () => {
             <Route path="/blog-dashboard/*" element={
               <PrivateRoute element={<BlogDashboard />} requiredRoles={['admin', 'editor', 'author']} />
             } />
-            <Route path="/support-dashboard/*" element={
+            <Route path="/support-dashboard" element={
               <PrivateRoute element={<SupportDashboard />} requiredRoles={['admin', 'support']} />
             } />
             <Route path="/detect-booking" element={
-              <PrivateRoute element={<ClientBookings />} requiredRoles={['visitor']} />
+              <PrivateRoute element={<ClientBookings />} requiredRoles={['visitor', 'admin']} />
             } />
             <Route path="/about-us" element={<AboutUsPage />} />
             <Route path="/auth/*" element={<AuthPage />} />

@@ -11,9 +11,5 @@
             "src": "/(.*)",
             "dest": "/api/index.js"
         }
-    ],
-    "env": {
-        "MONGO_Db": "mongodb+srv://abdo202224:RdZjLTYmNuIQUhbs@hollywood.j2xm4.mongodb.net/?retryWrites=true&w=majority&appName=Hollywood&ssl=true",
-        "DB_NAME": "hollywood_smile_web_server"
-    }
+    ]
 }
