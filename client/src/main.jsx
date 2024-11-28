@@ -7,6 +7,7 @@ import { ClinicProvider } from './contexts/ClinicContext';
 import SnackbarProvider from './contexts/SnackbarProvider';
 import AuthProvider from './contexts/AuthContext';
 import { CssBaseline } from '@mui/material';
+import { Analytics } from '@vercel/analytics/next';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import 'swiper/css';
@@ -26,6 +27,7 @@ root.render(
       <CustomThemeProvider>
         <ClinicProvider>
           <SnackbarProvider>
+            <Analytics />
             <CssBaseline />
             <App />
           </SnackbarProvider>
