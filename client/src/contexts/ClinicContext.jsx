@@ -16,7 +16,7 @@ export const ClinicProvider = ({ children }) => {
             ar: "مركزي هو مركز طبي ممتاز في مدينة سمسطا."
         },
         logo: { light: "logo-light.png", dark: "logo-dark.png" },
-        address: { en: "Smosta - Mohamed Sliman Street Front of Co-operation Building", ar: "سمسطا - ش محمود سليمان امام بنزينة التعاون"},
+        address: { en: "Smosta - Mohamed Sliman Street Front of Co-operation Building", ar: "سمسطا - ش محمود سليمان امام بنزينة التعاون" },
         zip: "Zip Code",
         phone: "+1 (123) 456-7890",
         email: "Email@placeholder.com",
