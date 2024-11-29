@@ -47,8 +47,8 @@ const HomePage = () => {
       <GallerySection />
       <BlogSection />
       <ContactSection />
-      <SmileLoveCare />
       <BeforeAfterGallery />
+      <SmileLoveCare />
       <MapLocationSection />
       <Footer />
       <ScrollToTopButton />

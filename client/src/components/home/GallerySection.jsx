@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Grid, Box, Link, Button } from "@mui/material";
+import { Grid, Box, Link, Button, Tooltip } from "@mui/material";
 import { motion } from "framer-motion";
 import { useCustomTheme } from "../../contexts/ThemeProvider";
 import { useTranslation } from "react-i18next";
@@ -59,6 +59,7 @@ const GallerySection = () => {
                   backgroundPosition: "center",
                   overflow: "hidden",
                 }}
+                onClick={() => navigate(`/gallery/${item._id}`)}
               >
                 {/* Hover Overlay with Rotate Icon */}
                 <Box
@@ -91,7 +92,9 @@ const GallerySection = () => {
                       bgcolor: "rgba(255, 255, 255, 0.2)",
                     }}
                   >
-                    📸
+                    <Tooltip title={isRTL ? "عرض التفاصيل" : "View Details"} arrow>
+                      <SearchIcon sx={{ color: "white", fontSize: 40 }} />
+                    </Tooltip>
                   </Box>
                 </Box>
               </Box>
@@ -104,18 +107,30 @@ const GallerySection = () => {
         sx={{
           display: "flex",
           justifyContent: "center",
-          mt: 4,
+          mt: 6,
         }}
       >
         <Button
           variant="contained"
-          color="primary"
-          endIcon={<SearchIcon sx={{ mx: 2}} />}
           onClick={() => navigate("/gallery")}
+          sx={{
+            px: 4,
+            py: 1.5,
+            fontSize: "1rem",
+            fontWeight: "bold",
+            textTransform: "uppercase",
+            borderRadius: 50,
+            background: "linear-gradient(90deg, #2196F3, #21CBF3)",
+            "&:hover": {
+              background: "linear-gradient(90deg, #21CBF3, #2196F3)",
+            },
+          }}
+          endIcon={<SearchIcon sx={{ mx: 2 }} />}
         >
-          {t("FAQSection.viewAll")}
+          {isRTL ? "عرض المزيد" : "View More"}
         </Button>
       </Box>
+
     </Box>
   );
 };

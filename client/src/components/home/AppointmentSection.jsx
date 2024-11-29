@@ -287,11 +287,9 @@ const AppointmentSection = () => {
                                 <form onSubmit={handleSubmit}>
                                     <Typography variant="h5" mb={2} sx={{ fontWeight: 'bold', textAlign: 'center' }}>{t('appointmentSection.booking.title')}</Typography>
                                     <FormControl fullWidth variant="outlined" sx={{ mb: 2 }}>
-                                        <InputLabel id="service-label">{t('appointmentSection.booking.service')}</InputLabel>
                                         <Select
                                             fullWidth
                                             size="small"
-                                            labelId="service-label"
                                             id="service"
                                             name="service"
                                             value={formData.service}
@@ -340,11 +338,9 @@ const AppointmentSection = () => {
                                         InputLabelProps={{ shrink: true }}
                                     />
                                     <FormControl fullWidth variant="outlined" sx={{ mb: 2 }}>
-                                        <InputLabel id="time-label">{t('appointmentSection.booking.time')}</InputLabel>
                                         <Select
                                             fullWidth
                                             size="small"
-                                            labelId="time-label"
                                             id="time"
                                             name="time"
                                             value={formData.time}

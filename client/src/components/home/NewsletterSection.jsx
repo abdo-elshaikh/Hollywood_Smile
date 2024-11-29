@@ -90,19 +90,20 @@ const NewsletterSection = () => {
                             backgroundColor: 'background.paper',
                             borderRadius: isArabic ? '0 20px 20px 0' : '20px 0 0 20px',
                             '& .MuiOutlinedInput-root fieldset': {
-                                border: 'none',
+                                border: '1px solid white',
+                                borderRadius: isArabic ? '0 20px 20px 0' : '20px 0 0 20px',
                             },
                         }}
                     />
                     <Button
                         type="submit"
                         variant="outlined"
-                        endIcon={<ArrowForwardIcon />}
                         sx={{
                             borderRadius: isArabic ? '20px 0 0 20px' : '0 20px 20px 0',
                             backgroundColor: 'transparent',
                             border: '1px solid white',
                             color: 'white',
+                            fontWeight: 'bold',
                             transition: 'background-color 0.3s ease',
                             '&:hover': {
                                 backgroundColor: 'primary.dark',

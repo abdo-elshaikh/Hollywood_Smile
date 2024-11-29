@@ -1,49 +1,15 @@
-import React, { useRef, useEffect, useState } from "react";
-import { Box, Typography, Button, Container, Stack, Dialog, } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { Box, Typography, Button, Container, Stack, Grid } from "@mui/material";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import Slider from "react-slick";
-import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
+import { Navigation, Pagination, Autoplay, EffectCoverflow } from 'swiper/modules';
+import { Swiper, SwiperSlide } from 'swiper/react';
 import axiosInstance from '../../services/axiosInstance';
-
-// Slider settings for the offers section
-const sliderSettings = {
-    dots: true,
-    infinite: true,
-    speed: 600,
-    slidesToShow: 3,
-    slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 4000,
-    pauseOnHover: true,
-    cssEase: "ease-in-out",
-    responsive: [
-        { breakpoint: 1024, settings: { slidesToShow: 2 } },
-        { breakpoint: 600, settings: { slidesToShow: 1 } },
-    ],
-};
-
-// Custom arrow components
-const NextArrow = ({ className, style, onClick }) => (
-    <ArrowForwardIos
-        className={className}
-        style={{ ...style, color: "#1976d2", fontSize: "2rem" }}
-        onClick={onClick}
-    />
-);
-const PrevArrow = ({ className, style, onClick }) => (
-    <ArrowBackIos
-        className={className}
-        style={{ ...style, color: "#1976d2", fontSize: "2rem" }}
-        onClick={onClick}
-    />
-);
 
 // OffersSection component
 const OffersSection = () => {
     const { t, i18n } = useTranslation();
-    const sliderRef = useRef(null);
     const isArabic = i18n.language === "ar";
     const [offers, setOffers] = useState([]);
 
@@ -60,7 +26,6 @@ const OffersSection = () => {
         }
     };
 
-
     const offersList = offers.map((offer) => ({
         id: offer._id,
         title: isArabic ? offer.title.ar : offer.title.en,
@@ -72,13 +37,6 @@ const OffersSection = () => {
         buttonText: t("offersSection.buttonText"),
     }));
 
-    const adjustedSliderSettings = {
-        ...sliderSettings,
-        rtl: isArabic,
-        nextArrow: isArabic ? <PrevArrow /> : <NextArrow />,
-        prevArrow: isArabic ? <NextArrow /> : <PrevArrow />,
-    };
-
     return (
         <Container
             maxWidth="lg"
@@ -87,7 +45,7 @@ const OffersSection = () => {
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
-                textAlign: "center",
+                textAlign: isArabic ? "right" : "left", // Adjust for RTL
             }}
         >
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
@@ -98,13 +56,32 @@ const OffersSection = () => {
             <Typography variant="subtitle1" sx={{ mb: 8, color: "text.secondary", maxWidth: 700 }}>
                 {t("offersSection.description")}
             </Typography>
-            <Box component={Container} mb={8} px={1} maxWidth="lg" position="relative">
-                <Slider ref={sliderRef} {...adjustedSliderSettings}>
-                    {offersList.map((offer, index) => (
-                        <DentalCard key={index} {...offer} />
+
+            {/* Swiper with responsive settings */}
+            <Grid container spacing={2} justifyContent="center">
+                <Swiper
+                    modules={[Navigation, Pagination, Autoplay, EffectCoverflow]}
+                    effect="coverflow"
+                    autoplay={{ delay: 3000, disableOnInteraction: false }}
+                    spaceBetween={10}
+                    slidesPerView="auto"
+                    navigation
+                    pagination={{ clickable: true }}
+                    loop
+                    breakpoints={{
+                        320: { slidesPerView: 1 },
+                        600: { slidesPerView: 2 },
+                        900: { slidesPerView: 3 },
+                    }}
+                    dir={isArabic ? "rtl" : "ltr"}
+                >
+                    {offersList.map((offer) => (
+                        <SwiperSlide key={offer.id}>
+                            <DentalCard {...offer} />
+                        </SwiperSlide>
                     ))}
-                </Slider>
-            </Box>
+                </Swiper>
+            </Grid>
         </Container>
     );
 };
@@ -119,19 +96,19 @@ const DentalCard = ({ title, subtitle, discount, contactText, imgSrc, buttonText
         } else {
             alert("Coming Soon!");
         }
-    }
+    };
 
     return (
         <Box
             component={motion.div}
-            whileHover={{ scale: 1 }}
+            whileHover={{ scale: 1.05 }}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             sx={{
                 backgroundColor: "background.paper",
                 border: `1px solid divider`,
-                boxShadow: "0 4px 20px rgba(0, 0, 0, 0.5)",
+                boxShadow: "0 4px 20px rgba(0, 0, 0, 0.2)",
                 position: "relative",
                 display: "flex",
                 flexDirection: "column",
@@ -139,6 +116,8 @@ const DentalCard = ({ title, subtitle, discount, contactText, imgSrc, buttonText
                 m: 3,
                 p: 2,
                 overflow: "hidden",
+                borderRadius: 2,
+                mb: 8,
             }}
         >
             <Box
@@ -172,12 +151,13 @@ const DentalCard = ({ title, subtitle, discount, contactText, imgSrc, buttonText
                         top: 20,
                         right: 20,
                         zIndex: 1,
+                        boxShadow: "0 4px 20px rgba(0, 0, 0, 0.2)",
                     }}
                 >
                     {discount}
                 </Box>
             )}
-            <Stack spacing={2} direction="row" justifyContent="center" sx={{ mt: "auto" }}>
+            <Stack spacing={2} direction="column" justifyContent="center" sx={{ mt: 2 }}>
                 <Button
                     variant="outlined"
                     size="small"
