@@ -234,7 +234,7 @@ const MeetOurDentists = () => {
             },
           }}
         >
-          {isRTL ? "عرض المزيد" : "View More"}
+          {isArabic ? "عرض المزيد" : "View More"}
         </Button>
       </Box>
     </Box>
