@@ -6,7 +6,7 @@ dotenv.config();
 
 module.exports = {
   port: process.env.PORT || 5000,
-  mongodbUri: process.env.MONGO_Db || 'mongodb+srv://abdo202224:RdZjLTYmNuIQUhbs@hollywood.j2xm4.mongodb.net/?retryWrites=true&w=majority&appName=Hollywood&ssl=true' || 'mongodb://localhost:27017/hollywood_smile_web_server',
+  mongodbUri: process.env.MONGO_Db || 'mongodb://localhost:27017',
   dbName: process.env.DB_NAME || 'hollywood_smile_web_server',
   sessionSecret: process.env.SESSION_SECRET || 'your_secret_key',
   JWT_SECRET: process.env.JWT_SECRET || 'your_jwt_secret',
