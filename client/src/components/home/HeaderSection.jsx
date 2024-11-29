@@ -24,7 +24,8 @@ import {
     Settings, Language, Logout, Login,
     SettingsApplications, AccountCircle, RssFeed,
     Info, People, PhotoLibrary, ContactMail, Call,
-    Home, LocalOffer, BookOnline, Medication, MedicalInformation, Handyman, DriveFileMove
+    Home, LocalOffer, BookOnline, Medication,
+    MedicalInformation, Handyman, DriveFileMove
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import { useCustomTheme } from '../../contexts/ThemeProvider';
@@ -130,7 +131,13 @@ const HeaderSection = () => {
                             sx={{ width: 50, height: 50 }}
                         />
                         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                            <Typography variant="h6" color='primary' fontWeight="bold">{isArabic ? clinicInfo?.name.ar : clinicInfo?.name.en}</Typography>
+                            <Typography
+                                color='primary'
+                                fontWeight="bold"
+                                sx={{ fontSize: 18, lineHeight: 1.2, letterSpacing: 1 }}
+                            >
+                                {isArabic ? clinicInfo?.name.ar : clinicInfo?.name.en}
+                            </Typography>
                             <Typography variant="body2" color="text.secondary" >
                                 {isArabic ? clinicInfo?.subtitle.ar : clinicInfo?.subtitle.en}
                             </Typography>
@@ -138,6 +145,7 @@ const HeaderSection = () => {
                     </Box>
                     <MenuItems items={items} />
                 </Box>
+
                 {/* Language and Theme Toggle Buttons */}
                 <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 2, alignItems: 'center', flexShrink: 0 }}>
                     <Tooltip title={isArabic ? 'ترجم إلى الإنجليزية' : 'Translate to Arabic'}>
@@ -309,14 +317,21 @@ const MenuItems = ({ items }) => {
     };
 
     return (
-        <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 3, alignItems: 'center', flexGrow: 1, justifyContent: 'space-between' }}>
+        <Box sx={{
+            display: { xs: 'none', md: 'flex' },
+            gap: 3,
+            alignItems: 'center',
+            flexGrow: 1,
+            justifyContent: 'space-between'
+        }}
+        >
             {items.map((item, index) => (
                 <motion.div key={index} whileHover={{ scale: 1.05 }} transition={{ type: 'spring', stiffness: 300, damping: 12 }}>
                     <Link
                         onClick={() => onClick(item.href)}
                         underline="none"
                         sx={{
-                            fontSize: 18,
+                            fontSize: 14,
                             fontWeight: 'bold',
                             color: 'inherit',
                             position: 'relative',
