@@ -210,23 +210,32 @@ const MeetOurDentists = () => {
         </Typography>
       </motion.div>
 
-      {/* View More Section */}
-      <Box textAlign="center" mt={8}>
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1 }}
+      {/* view more */}
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          mt: 6,
+        }}
+      >
+        <Button
+          variant="contained"
+          onClick={() => navigate("/doctors")}
+          sx={{
+            px: 4,
+            py: 1.5,
+            fontSize: "1rem",
+            fontWeight: "bold",
+            textTransform: "uppercase",
+            borderRadius: 50,
+            background: "linear-gradient(90deg, #2196F3, #21CBF3)",
+            "&:hover": {
+              background: "linear-gradient(90deg, #21CBF3, #2196F3)",
+            },
+          }}
         >
-          <Button
-            variant="contained"
-            color="primary"
-            endIcon={<ArrowForwardIcon />}
-            onClick={() => navigate("/doctors")}
-          >
-            {t("MeetOurDentists.viewMore")}
-          </Button>
-        </motion.div>
+          {isRTL ? "عرض المزيد" : "View More"}
+        </Button>
       </Box>
     </Box>
   );
