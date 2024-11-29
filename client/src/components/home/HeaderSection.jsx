@@ -331,7 +331,7 @@ const MenuItems = ({ items }) => {
                         onClick={() => onClick(item.href)}
                         underline="none"
                         sx={{
-                            fontSize: 14,
+                            fontSize: 18,
                             fontWeight: 'bold',
                             color: 'inherit',
                             position: 'relative',

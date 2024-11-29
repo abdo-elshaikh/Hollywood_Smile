@@ -42,14 +42,21 @@ const HeroSection = () => {
         >
             <Swiper
                 modules={[Navigation, Pagination, Scrollbar, A11y, EffectFade, Autoplay]}
+                centeredSlides
+                loop
                 effect="fade"
-                pagination={{ clickable: true }}
-                scrollbar={{ draggable: true }}
+                pagination={{
+                    clickable: true,
+                    dynamicBullets: true,
+                }}
+                scrollbar={{
+                    draggable: true,
+                }}
                 autoplay={{
-                    delay: 5000,
-                    disableOnInteraction: false,
+                    delay: 6000,
                 }}
                 style={{ height: '100%' }}
+                className="mySwiper"
             >
                 {slides.map((slide, index) => (
                     <SwiperSlide key={index}>
@@ -71,14 +78,14 @@ const HeroSection = () => {
                         >
                             <Container
                                 maxWidth="md"
-                                sx={{ 
+                                sx={{
                                     zIndex: 1,
                                     position: 'relative',
                                     display: 'flex',
                                     flexDirection: 'column',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                 }}
+                                }}
                             >
                                 <motion.div
                                     initial={{ opacity: 0 }}
