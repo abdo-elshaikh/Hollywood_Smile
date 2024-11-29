@@ -93,42 +93,40 @@ const App = () => {
   return (
     <Router>
       <ScrollToTop />
-      <ErrorBoundary>
-        <Box component="main" sx={{ overflowX: 'hidden' }}>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/dashboard/*" element={
-              <PrivateRoute element={<DashboardPage />} requiredRoles={['admin']} />
-            } />
-            <Route path="/blog-dashboard/*" element={
-              <PrivateRoute element={<BlogDashboard />} requiredRoles={['admin', 'editor', 'author']} />
-            } />
-            <Route path="/support-dashboard" element={
-              <PrivateRoute element={<SupportDashboard />} requiredRoles={['admin', 'support']} />
-            } />
-            <Route path="/detect-booking" element={
-              <PrivateRoute element={<ClientBookings />} requiredRoles={['visitor', 'admin']} />
-            } />
-            <Route path="/about-us" element={<AboutUsPage />} />
-            <Route path="/auth/*" element={<AuthPage />} />
-            <Route path="/blog" element={<BlogPage />} />
-            <Route path="/blog/:id" element={<BlogPostPage />} />
-            <Route path="/booking" element={<BookingServicePage />} />
-            <Route path="/booking/:id" element={<BookingPage />} />
-            <Route path="/faq" element={<FaqPage />} />
-            <Route path="/contact-us" element={<ContactUsPage />} />
-            <Route path="/doctors" element={<DoctorsPage />} />
-            <Route path="/gallery" element={<GalleryPage />} />
-            <Route path="/gallery/:id" element={<ImageDetailsPage />} />
-            <Route path="/services" element={<ServicesPage />} />
-            <Route path="/doctors/:id" element={<ViewProfile />} />
-            <Route path="/not-found" element={<NotFoundPage />} />
-            <Route path="/unauthorized" element={<Error403Page />} />
-            <Route path="/server-error" element={<Error500Page />} />
-            <Route path="*" element={<Error404Page />} />
-          </Routes>
-        </Box>
-      </ErrorBoundary>
+      <Box component="main" sx={{ overflowX: 'hidden' }}>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/dashboard/*" element={
+            <PrivateRoute element={<DashboardPage />} requiredRoles={['admin']} />
+          } />
+          <Route path="/blog-dashboard/*" element={
+            <PrivateRoute element={<BlogDashboard />} requiredRoles={['admin', 'editor', 'author']} />
+          } />
+          <Route path="/support-dashboard" element={
+            <PrivateRoute element={<SupportDashboard />} requiredRoles={['admin', 'support']} />
+          } />
+          <Route path="/detect-booking" element={
+            <PrivateRoute element={<ClientBookings />} requiredRoles={['visitor', 'admin']} />
+          } />
+          <Route path="/about-us" element={<AboutUsPage />} />
+          <Route path="/auth/*" element={<AuthPage />} />
+          <Route path="/blog" element={<BlogPage />} />
+          <Route path="/blog/:id" element={<BlogPostPage />} />
+          <Route path="/booking" element={<BookingServicePage />} />
+          <Route path="/booking/:id" element={<BookingPage />} />
+          <Route path="/faq" element={<FaqPage />} />
+          <Route path="/contact-us" element={<ContactUsPage />} />
+          <Route path="/doctors" element={<DoctorsPage />} />
+          <Route path="/gallery" element={<GalleryPage />} />
+          <Route path="/gallery/:id" element={<ImageDetailsPage />} />
+          <Route path="/services" element={<ServicesPage />} />
+          <Route path="/doctors/:id" element={<ViewProfile />} />
+          <Route path="/not-found" element={<NotFoundPage />} />
+          <Route path="/unauthorized" element={<Error403Page />} />
+          <Route path="/server-error" element={<Error500Page />} />
+          <Route path="*" element={<Error404Page />} />
+        </Routes>
+      </Box>
     </Router>
   );
 };
