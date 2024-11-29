@@ -5,10 +5,11 @@ const Gallery = require('../models/Gallery'); // Import the Gallery model
 
 // Create a new gallery item
 router.post('/', async (req, res) => {
+    console.log(req.body);
     try {
-        const galleryItem = new Gallery(req.body);
-        const savedItem = await galleryItem.save();
-        res.status(201).json(savedItem);
+        const newGalleryItem = await Gallery.create(req.body);
+        if (!newGalleryItem) return res.status(400).json({ error: 'Error creating item' });
+        res.status(201).json(newGalleryItem);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
