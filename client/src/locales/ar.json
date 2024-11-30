@@ -580,6 +580,13 @@
         "changePasswordError": "فشل تغيير كلمة المرور. يرجى المحاولة مرة أخرى في وقت لاحق.",
         "changePasswordFillrequired": "الرجاء تعبئة جميع الحقول المطلوبة.",
         "updateProfile": "تحديث الملف الشخصي",
-        "uploadImage": "تحميل الصورة"
+        "uploadImage": "تحميل الصورة",
+        "deleteAccount": "حذف الحساب",
+        "deleteAccountWarning": "هل أنت متأكد من أنك تريد حذف حسابك؟ لا يمكن التراجع عن هذا الإجراء.",
+        "deleteAccountSuccess": "تم حذف الحساب بنجاح.",
+        "deleteAccountButton": "حذف الحساب",
+        "profileDescription": "قم بتحديث معلوماتك الشخصية والإعدادات.",
+        "imageUploadSuccess": "تم تحميل الصورة بنجاح.",
+        "changeImage": "تغيير الصورة"
     }
 }

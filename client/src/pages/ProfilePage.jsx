@@ -22,7 +22,6 @@ import { useCustomTheme } from "../contexts/ThemeProvider";
 import HeaderSection from "../components/home/HeaderSection";
 import Footer from "../components/home/Footer";
 import ScrollToTopButton from "../components/common/ScrollToTopButton";
-import GallerySection from "../components/home/GallerySection";
 import { getUserProfile, updateUserProfile, changePassword } from "../services/authService";
 import { uploadImage } from "../services/uploadImage";
 
@@ -50,14 +49,12 @@ const ProfilePage = () => {
     });
 
     const [loading, setLoading] = useState(false);
-    const [imageFile, setImageFile] = useState(null);
-    const [imagePreview, setImagePreview] = useState(null);
+    const [imageUri, setImageUri] = useState('');
 
     useEffect(() => {
         const fetchUserData = async () => {
             try {
                 const data = await getUserProfile();
-                console.log(data, 'data');
                 setUserInfo(data);
             } catch (error) {
                 showSnackbar(t("profile.errorFetchData"), "error");
@@ -77,10 +74,22 @@ const ProfilePage = () => {
     };
 
     const handleProfileUpdate = async () => {
-        console.log(userInfo, 'userInfo');
+        const requiredFields = ["name", "phone", "address", 'avatarUrl'];
+        if (requiredFields.some((field) => !userInfo[field])) {
+            showSnackbar(t("profile.fillrequired"), "error");
+            return;
+        }
+
+        const data = {
+            name: userInfo.name,
+            phone: userInfo.phone,
+            address: userInfo.address,
+            avatarUrl: imageUri || userInfo.avatarUrl,
+        }
+        
         try {
             setLoading(true);
-            const data = await updateUserProfile(userInfo);
+            const data = await updateUserProfile(data);
             if (data.user) {
                 setUserInfo(data.user);
                 showSnackbar(t("profile.successUpdate"), "success");
@@ -115,12 +124,15 @@ const ProfilePage = () => {
         }
     };
 
-    const handleImageUpload = async () => {
+    const handleImageUpload = async (e) => {
+        e.preventDefault();
+        const image = e.target.files[0];
+        if (!image) return;
         try {
             setLoading(true);
-            const data = await uploadImage(imageFile, `avatars/users/${user.username}`);
+            const data = await uploadImage(image, `avatars/users/${user.username}`);
             if (data.fullUrl) {
-                setUserInfo({ ...userInfo, avatarUrl: data.fullUrl });
+                setImageUri(data.fullUrl);
                 showSnackbar(t("profile.imageUploadSuccess"), "success");
             } else {
                 showSnackbar(t("profile.imageUploadError"), "error");
@@ -132,17 +144,6 @@ const ProfilePage = () => {
         }
     };
 
-    const handleFileChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            setImageFile(file);
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setImagePreview(reader.result);
-            };
-            reader.readAsDataURL(file);
-        }
-    };
 
     return (
         <Box>
@@ -155,7 +156,7 @@ const ProfilePage = () => {
                     color: "text.primary",
                     height: "350px",
                     borderRadius: "0 0 50% 50% / 0 0 15% 15%",
-                    boxShadow: 4,
+                    boxShadow: 6,
                     position: "relative",
                     overflow: "hidden",
                 }}
@@ -183,87 +184,80 @@ const ProfilePage = () => {
                     </Typography>
                 </Box>
             </Box>
-            <Grid container spacing={2} sx={{ px: 4, mt: { xs: -12, md: 0 }, mb: 8, maxWidth: 'xl', mx: 'auto' }}>
+            <Grid container spacing={2} sx={{ px: 4, mt: -12, mb: 8, maxWidth: 'xl', mx: 'auto', }}>
                 {/* Profile Header */}
-                <Grid item xs={12} md={4}>
+                <Grid item xs={12}>
                     <Paper
                         elevation={5}
                         sx={{
                             p: 2,
-                            textAlign: "center",
                             borderRadius: 4,
                             background: isDark ? "#2b2b2b" : "#ffffff",
                         }}
                     >
-                        <Avatar
-                            src={imagePreview || userInfo.avatarUrl}
-                            alt={userInfo.username}
-                            onClick={() => document.getElementById("fileInput").click()}
+                        <Grid container spacing={4}
                             sx={{
-                                width: 150,
-                                height: 150,
-                                mx: "auto",
-                                mb: 2,
-                                border: "3px solid",
-                                borderColor: isDark ? "#FFD700" : "#4CAF50",
-                                cursor: "pointer",
-                                position: "relative",
-                                "&:hover::after": {
-                                    content: `"${t("profile.changeImage")}"`,
-                                    alignItems: "center",
-                                    display: "flex",
-                                    justifyContent: "center",
-                                    position: "absolute",
-                                    bottom: 0,
-                                    left: 0,
-                                    width: "100%",
-                                    height: "100%",
-                                    background: "rgba(0,0,0,0.4)",
-                                    color: "#fff",
-                                    fontSize: "12px",
-                                    textAlign: "center",
-                                    borderRadius: "50%",
-                                },
+                                alignItems: "center",
+                                color: isDark ? "#FFD700" : "#4CAF50",
                             }}
-                        />
-                        <input
-                            type="file"
-                            accept="image/*"
-                            onChange={handleFileChange}
-                            style={{ display: "none" }}
-                            id="fileInput"
-                        />
-                        <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                            {userInfo.name || userInfo.username}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                            {userInfo.role}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                            {userInfo.email}
-                        </Typography>
-
-
-                        <Stack direction="column" spacing={2} sx={{ mt: 2 }}>
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                startIcon={<UploadFile />}
-                                onClick={handleImageUpload}
-                                disabled={!imageFile || loading}
-                            >
-                                {t("profile.uploadImage")}
-                            </Button>
-                            <Button
-                                variant="outlined"
-                                color="primary"
-                                startIcon={<EditIcon />}
-                                onClick={handleProfileUpdate}
-                                disabled={loading}
-                            >
-                                {t("profile.editProfile")}
-                            </Button>
-                        </Stack>
+                        >
+                            <Grid item xs={12} md={3}>
+                                <Avatar
+                                    src={imageUri || userInfo.avatarUrl}
+                                    alt={userInfo.username}
+                                    onClick={() => document.getElementById("fileInput").click()}
+                                    sx={{
+                                        width: 200,
+                                        height: 200,
+                                        mx: "auto",
+                                        border: "3px solid",
+                                        borderColor: isDark ? "#FFD700" : "#4CAF50",
+                                        cursor: "pointer",
+                                        position: "relative",
+                                        "&:hover::after": {
+                                            content: `"${t("profile.changeImage")}"`,
+                                            alignItems: "center",
+                                            display: "flex",
+                                            justifyContent: "center",
+                                            position: "absolute",
+                                            bottom: 0,
+                                            left: 0,
+                                            width: "100%",
+                                            height: "100%",
+                                            background: "rgba(0,0,0,0.4)",
+                                            color: "#fff",
+                                            fontSize: "12px",
+                                            textAlign: "center",
+                                            borderRadius: "50%",
+                                        },
+                                    }}
+                                />
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleImageUpload}
+                                    style={{ display: "none" }}
+                                    id="fileInput"
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={8} >
+                                <Box sx={{ position: 'relative', mt: { xs: 0, md: 10 }, textAlign: { xs: 'center', md: 'start' } }}>
+                                    <Typography variant="h4" sx={{ fontWeight: "bold" }}>
+                                        {userInfo.name}
+                                    </Typography>
+                                    <Typography variant="h6" sx={{ color: "text.secondary" }}>
+                                        {userInfo.role}
+                                    </Typography>
+                                    <Typography variant="body1" sx={{color: 'text.primary' }}>
+                                        {userInfo.email}
+                                    </Typography>
+                                    <Divider sx={{ mt: 2 }} />
+                                    <Typography variant="body1" sx={{ mt: 2 }}>
+                                        {t("profile.profileDescription")}
+                                    </Typography>
+                                </Box>
+                            </Grid>
+                        </Grid>
                     </Paper>
                 </Grid>
                 {/* Profile Information */}
@@ -307,7 +301,6 @@ const ProfilePage = () => {
                             <Button
                                 variant="contained"
                                 color="primary"
-                                startIcon={<SaveIcon sx={{ mx: 2 }} />}
                                 sx={{ mt: 2 }}
                                 onClick={handleProfileUpdate}
                                 disabled={loading}
@@ -356,7 +349,6 @@ const ProfilePage = () => {
                             <Button
                                 variant="contained"
                                 color="secondary"
-                                startIcon={<LockIcon sx={{ mx: 2 }} />}
                                 sx={{ mt: 2 }}
                                 onClick={handlePasswordUpdate}
                                 disabled={loading}
@@ -366,11 +358,40 @@ const ProfilePage = () => {
                         </Grid>
                     </Paper>
                 </Grid>
-            </Grid>
-            <GallerySection />
+                <Grid item xs={12} md={4}>
+                    <Paper
+                        elevation={5}
+                        sx={{
+                            p: 4,
+                            borderRadius: 4,
+                            background: isDark ? "#2b2b2b" : "#ffffff",
+                            height: "100%",
+                        }}
+                    >
+                        <Typography
+                            variant="h5"
+                            sx={{ fontWeight: "bold", mb: 2, color: "primary.main" }}
+                        >
+                            {t("profile.deleteAccount")}
+                        </Typography>
+                        <Divider sx={{ mb: 2 }} />
+                        <Typography variant="body2" color="text.secondary">
+                            {t("profile.deleteAccountWarning")}
+                        </Typography>
+                        <Button
+                            variant="contained"
+                            color="error"
+                            sx={{ mt: 2 }}
+                            onClick={() => showSnackbar(t("profile.deleteAccountSuccess"), "success")}
+                        >
+                            {t("profile.deleteAccountButton")}
+                        </Button>
+                    </Paper>
+                </Grid>
+            </Grid >
             <Footer />
             <ScrollToTopButton />
-        </Box>
+        </Box >
     );
 };
 

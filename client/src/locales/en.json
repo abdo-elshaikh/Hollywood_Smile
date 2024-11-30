@@ -579,6 +579,13 @@
         "changePasswordSuccess": "Password changed successfully.",
         "changePasswordError": "Failed to change password. Please try again later.",
         "updateProfile": "Update Profile",
-        "uploadImage": "Upload Image"
+        "uploadImage": "Upload Image",
+        "deleteAccount": "Delete Account",
+        "deleteAccountWarning": "Are you sure you want to delete your account? This action cannot be undone.",
+        "deleteAccountSuccess": "Account deleted successfully.",
+        "deleteAccountButton": "Delete Account",
+        "profileDescription": "Update your profile information and settings.",
+        "imageUploadSuccess": "Image uploaded successfully.",
+        "changeImage": "Change Image"
     }
 }

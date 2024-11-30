@@ -44,7 +44,6 @@ const getUserProfile = async () => {
 const updateUserProfile = async (userData) => {
     try {
         const response = await axiosInstance.put('/auth/profile', userData);
-        console.log(response, 'response');
         return response.data;
     } catch (error) {
         return error.response.data;
