@@ -21,12 +21,13 @@ import { useTranslation } from 'react-i18next';
 
 const BlogPost = ({ id }) => {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [blog, setBlog] = useState(null);
   const [likeCount, setLikeCount] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
   const [disLikeCount, setDisLikeCount] = useState(0);
   const [isDisLiked, setIsDisLiked] = useState(false);
+  const isArabic = i18n.language === 'ar';
 
   useEffect(() => {
     fetchBlogData();
@@ -95,7 +96,7 @@ const BlogPost = ({ id }) => {
         onClick={handleBack}
         sx={{ mb: 3 }}
       >
-        Back
+        {isArabic ? 'العودة' : 'Back'}
       </Button>
 
       <Grid container spacing={3}>
@@ -148,7 +149,9 @@ const BlogPost = ({ id }) => {
 
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 4, mb: 3 }}>
 
-              <Typography>{blog.views} Views</Typography>
+              <Typography>
+                {blog.views} {isArabic ? 'مشاهدة' : 'Views'}
+              </Typography>
             </Box>
 
             {/* Comments Button */}
@@ -159,7 +162,7 @@ const BlogPost = ({ id }) => {
               onClick={handleToComments}
               startIcon={<Comment sx={{ mr: 2, ml: 2 }} />}
             >
-              Comments ({blog.comments.length})
+              {isArabic ? 'تعليقات' : 'Comments'} ({blog.comments.length})
             </Button>
           </Paper>
         </Grid>
