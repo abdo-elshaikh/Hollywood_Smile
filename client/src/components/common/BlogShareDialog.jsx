@@ -5,12 +5,15 @@ import InstagramIcon from '@mui/icons-material/Instagram';
 import ShareIcon from '@mui/icons-material/Share';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { useSnackbar } from '../../contexts/SnackbarProvider';
+import { useTranslation } from 'react-i18next';
 
 const BlogShareDialog = ({ blog }) => {
   const [open, setOpen] = useState(false);
+  const { t, i18n } = useTranslation();
   const showSnackbar = useSnackbar();
   const encodedUrl = encodeURIComponent(window.location.href);
   const encodedTitle = encodeURIComponent(blog.title);
+  const isArabic = i18n.language === 'ar';
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -27,7 +30,9 @@ const BlogShareDialog = ({ blog }) => {
       </IconButton>
 
       <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
-        <DialogTitle sx={{ textAlign: 'center', fontWeight: 'bold', fontSize: '1.5rem' }}>{blog.title}</DialogTitle>
+        <DialogTitle sx={{ textAlign: 'center', fontWeight: 'bold', fontSize: '1.5rem' }}>
+          {isArabic ? 'مشاركة': 'Sahe'} {blog.title}
+        </DialogTitle>
         <DialogContent>
           <Typography variant="body1" component="p" paragraph>
             {blog.content || blog.description}
@@ -35,6 +40,7 @@ const BlogShareDialog = ({ blog }) => {
         </DialogContent>
 
         <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mt: 2 }}>
+          {/* Facebook */}
           <IconButton
             component="a"
             href={`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`}
@@ -43,6 +49,8 @@ const BlogShareDialog = ({ blog }) => {
           >
             <Facebook />
           </IconButton>
+          
+          {/* LinkedIn */}
           <IconButton
             component="a"
             href={`https://www.linkedin.com/shareArticle?mini=true&url=${encodedUrl}&title=${encodedTitle}`}
@@ -51,6 +59,8 @@ const BlogShareDialog = ({ blog }) => {
           >
             <LinkedIn />
           </IconButton>
+
+          {/* WhatsApp */}
           <IconButton
             component="a"
             href={`https://api.whatsapp.com/send?text=${encodedTitle}%20${encodedUrl}`}
@@ -59,14 +69,18 @@ const BlogShareDialog = ({ blog }) => {
           >
             <WhatsApp />
           </IconButton>
+
+          {/* Instagram */}
           <IconButton
             component="a"
-            href={`https://www.instagram.com/`}
+            href="https://www.instagram.com/"
             target="_blank"
             color="primary"
           >
             <InstagramIcon />
           </IconButton>
+
+          {/* Copy Link */}
           <IconButton onClick={handleCopyLink} color="primary">
             <ContentCopyIcon />
           </IconButton>
@@ -74,7 +88,7 @@ const BlogShareDialog = ({ blog }) => {
 
         <DialogActions>
           <Button onClick={handleClose} color="primary">
-            Close
+            {isArabic ? "الغاء" : "Close"}
           </Button>
         </DialogActions>
       </Dialog>
