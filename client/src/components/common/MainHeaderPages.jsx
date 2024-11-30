@@ -1,22 +1,47 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Box, Container, Typography, Breadcrumbs, Link } from '@mui/material';
+import { Box, Container, Typography, Breadcrumbs, Link, useMediaQuery } from '@mui/material';
 import { useCustomTheme } from '../../contexts/ThemeProvider';
 import { useTranslation } from 'react-i18next';
-import bgVideo from '../../assets/videos/main-header.mp4';
-import smileVideo from '../../assets/videos/childern_smile.mp4';
-import girlSmileVideo from '../../assets/videos/girl_smile.mp4';
-import girlSmilVideo from '../../assets/videos/happy_Positive.mp4';
 
+// Video imports
+import girlSmileVideo from '../../assets/videos/girl_smile.mp4';
+import happyPositiveVideo from '../../assets/videos/happy_Positive.mp4';
+
+// Reusable Breadcrumbs Component
+const Breadcrumb = ({ page, homeLabel }) => (
+    <Breadcrumbs
+        aria-label="breadcrumb"
+        sx={{
+            color: 'white',
+            mb: 2,
+            fontSize: '0.9rem',
+            '& .MuiLink-root': {
+                fontWeight: 500,
+                textDecoration: 'none',
+                '&:hover': { color: '#ffd700' },
+            },
+        }}
+    >
+        <Link color="inherit" href="/">
+            {homeLabel}
+        </Link>
+        <Typography color="inherit" sx={{ fontWeight: 600 }}>
+            {page}
+        </Typography>
+    </Breadcrumbs>
+);
+
+// Main Header Component
 const MainHeaderPages = ({ page, title, src = girlSmileVideo }) => {
     const { mode } = useCustomTheme();
     const { t, i18n } = useTranslation();
     const isDark = mode === 'dark';
-    const isArabic = i18n.language === 'ar';
+    const isMobile = useMediaQuery((theme) => theme.breakpoints.down('md'));  // Mobile/Tablet detection
 
     useEffect(() => {
         const video = document.querySelector('video');
-        video.currentTime = 0;
+        if (video) video.currentTime = 0;
     }, [src]);
 
     return (
@@ -26,23 +51,21 @@ const MainHeaderPages = ({ page, title, src = girlSmileVideo }) => {
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
-                height: '90vh',
-                color: 'white',
-                backgroundAttachment: 'fixed',
-                clipPath: 'polygon(0 0, 100% 0, 100% 75%, 0 100%)',
-                mb: 2,
+                height: '70vh',
+                backgroundColor: 'transparent',
+                mb: 4,
             }}
         >
-            {/* Video Background with Motion */}
+            {/* Background Video with Soft Blur */}
             <motion.video
                 initial={{ opacity: 0 }}
-                animate={{ opacity: 0.8 }}
+                animate={{ opacity: 1 }}
                 transition={{ duration: 1.5 }}
                 autoPlay
                 loop
                 muted
                 playsInline
-                src={isDark ? girlSmilVideo : src}
+                src={isDark ? happyPositiveVideo : src}
                 style={{
                     position: 'absolute',
                     top: 0,
@@ -51,10 +74,12 @@ const MainHeaderPages = ({ page, title, src = girlSmileVideo }) => {
                     height: '100%',
                     objectFit: 'cover',
                     zIndex: 0,
+                    filter: 'blur(1px)',
+                    minHeight: '100%',
                 }}
             />
 
-            {/* Dark Gradient Overlay for Readability */}
+            {/* Soft Gradient Overlay */}
             <Box
                 sx={{
                     position: 'absolute',
@@ -62,45 +87,42 @@ const MainHeaderPages = ({ page, title, src = girlSmileVideo }) => {
                     left: 0,
                     width: '100%',
                     height: '100%',
-                    background: 'linear-gradient(180deg, rgba(0, 0, 0, 0.1) 10%, rgba(0, 0, 0, 0.2) 90%)',
+                    background: 'linear-gradient(180deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.7) 100%)',
                     zIndex: 1,
                 }}
             />
 
-            {/* Content Container */}
+            {/* Content Area */}
             <Container
                 sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    textAlign: 'center',
                     position: 'relative',
                     zIndex: 2,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    textAlign: 'center',
                     px: 3,
+                    py: 4,
                 }}
             >
                 {/* Breadcrumbs */}
-                <Breadcrumbs aria-label="breadcrumb" sx={{ color: 'white', mb: 2 }}>
-                    <Link color="inherit" href="/" sx={{ '&:hover': { color: '#ffd700' } }}>
-                        {t('app.home')}
-                    </Link>
-                    <Typography color="inherit">{page}</Typography>
-                </Breadcrumbs>
+                <Breadcrumb page={page} homeLabel={t('app.home')} />
 
-                {/* Title with Animation */}
+                {/* Title with Smooth Animation */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 1, delay: 0.5 }}
                 >
                     <Typography
-                        variant="h2"
+                        variant="h3"
                         sx={{
-                            fontWeight: 'bold',
-                            fontSize: { xs: '2.5rem', md: '4rem' },
-                            textShadow: '0px 4px 12px rgba(0, 0, 0, 0.8)',
-                            mb: 1,
+                            fontWeight: 600,
+                            fontSize: { xs: '2.5rem', sm: '3rem', md: '4rem' }, // Responsive font size
+                            color: 'white',
+                            lineHeight: 1.2,
+                            textShadow: '0 4px 12px rgba(0, 0, 0, 0.8)',
+                            mb: 2,
                         }}
                     >
                         {title}

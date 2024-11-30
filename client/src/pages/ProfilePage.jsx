@@ -74,22 +74,12 @@ const ProfilePage = () => {
     };
 
     const handleProfileUpdate = async () => {
-        const requiredFields = ["name", "phone", "address", 'avatarUrl'];
-        if (requiredFields.some((field) => !userInfo[field])) {
-            showSnackbar(t("profile.fillrequired"), "error");
-            return;
+        if (imageUri) {
+            userInfo.avatarUrl = imageUri;
         }
-
-        const data = {
-            name: userInfo.name,
-            phone: userInfo.phone,
-            address: userInfo.address,
-            avatarUrl: imageUri || userInfo.avatarUrl,
-        }
-        
         try {
             setLoading(true);
-            const data = await updateUserProfile(data);
+            const data = await updateUserProfile(userInfo);
             if (data.user) {
                 setUserInfo(data.user);
                 showSnackbar(t("profile.successUpdate"), "success");
@@ -248,7 +238,7 @@ const ProfilePage = () => {
                                     <Typography variant="h6" sx={{ color: "text.secondary" }}>
                                         {userInfo.role}
                                     </Typography>
-                                    <Typography variant="body1" sx={{color: 'text.primary' }}>
+                                    <Typography variant="body1" sx={{ color: 'text.primary' }}>
                                         {userInfo.email}
                                     </Typography>
                                     <Divider sx={{ mt: 2 }} />

@@ -87,7 +87,7 @@ const BlogPost = ({ id }) => {
   if (!blog) return <LoadingSpinner />;
 
   return (
-    <Box sx={{ mx: 'auto', mt: 4, px: 1 }}>
+    <Box sx={{ mx: 'auto', px: 1 }}>
       {/* Back Button */}
       <Button
         variant="outlined"
@@ -100,7 +100,7 @@ const BlogPost = ({ id }) => {
 
       <Grid container spacing={3}>
         {/* Main Blog Content */}
-        <Grid item xs={12} md={8}>
+        <Grid item xs={12} >
           <Paper elevation={2} sx={{ p: 3 }}>
             <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 2 }}>
               {blog.title}
@@ -131,7 +131,7 @@ const BlogPost = ({ id }) => {
         </Grid>
 
         {/* Blog Actions and Details */}
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} >
           <Paper elevation={3} sx={{ p: 3 }}>
             {/* Like and Dislike */}
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
