@@ -552,5 +552,33 @@
         "contactInfo": "Contact Information",
         "location": "Location",
         "specialOffers": "Special Offers"
+    },
+    "profile": {
+        "title": "Profile",
+        "subtitle": "Manage your profile information and settings.",
+        "profileInformation": "Profile Information",
+        "profileInformationDescription": "Update your profile information and settings.",
+        "changePassword": "Change Password",
+        "changePasswordDescription": "Change your password to keep your account secure.",
+        "username": "Username",
+        "email": "Email",
+        "phone": "Phone",
+        "role": "Role",
+        "password": "Password",
+        "confirmPassword": "Confirm Password",
+        "name": "Name",
+        "address": "Address",
+        "currentPassword": "Current Password",
+        "newPassword": "New Password",
+        "confirmNewPassword": "Confirm New Password",
+        "errorFetchData": "Error fetching user data. Please try again later.",
+        "successUpdate": "Profile updated successfully.",
+        "faildUpdate": "Failed to update profile. Please try again later.",
+        "fillrequired": "Please fill in all required fields.",
+        "passwordNotMatch": "Passwords do not match.",
+        "changePasswordSuccess": "Password changed successfully.",
+        "changePasswordError": "Failed to change password. Please try again later.",
+        "updateProfile": "Update Profile",
+        "uploadImage": "Upload Image"
     }
 }

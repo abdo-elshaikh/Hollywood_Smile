@@ -44,15 +44,16 @@ const getUserProfile = async () => {
 const updateUserProfile = async (userData) => {
     try {
         const response = await axiosInstance.put('/auth/profile', userData);
+        console.log(response, 'response');
         return response.data;
     } catch (error) {
         return error.response.data;
     }
 }
 
-const changePassword = async (password) => {
+const changePassword = async (currentPassword, newPassword) => {
     try {
-        const response = await axiosInstance.put('/auth/change-password', password);
+        const response = await axiosInstance.put('/auth/change-password', { currentPassword, newPassword });
         return response.data;
     } catch (error) {
         return error.response.data;

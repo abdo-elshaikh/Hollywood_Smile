@@ -260,6 +260,11 @@ const HeaderSection = () => {
                                 <ListItemText align={isArabic ? 'right' : 'left'} primary={t('app.blogDashboard')} />
                             </ListItem>
 
+                            <ListItem button="true" onClick={() => navigate('/profile')}>
+                                <ListItemIcon><AccountCircle /></ListItemIcon>
+                                <ListItemText align={isArabic ? 'right' : 'left'} primary={t('app.profile')} />
+                            </ListItem>
+
                             <ListItem button="true" onClick={handleLanguageChange}>
                                 <ListItemIcon><Language /></ListItemIcon>
                                 <ListItemText align={isArabic ? 'right' : 'left'} primary={isArabic ? 'انجليزي' : 'Arabic'} />
@@ -302,6 +307,8 @@ const HeaderSection = () => {
                     {user && user.role !== 'visitor' && (
                         <MenuItem sx={{ cursor: 'pointer' }} onClick={() => navigate('/blog-dashboard')}>{t('app.blogDashboard')}</MenuItem>
                     )}
+                    <Divider />
+                    <MenuItem sx={{ cursor: 'pointer' }} onClick={() => navigate('/profile')}>{t('app.profile')}</MenuItem>
                     <MenuItem sx={{ cursor: 'pointer', color: 'red', fontWeight: 'bold' }} onClick={handleLogout}>{t('app.logout')}</MenuItem>
                 </Menu>
             </Toolbar>

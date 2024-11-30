@@ -9,7 +9,7 @@ const UserSchema = new mongoose.Schema(
         name: { type: String, default: 'Anonymous' },
         role: { type: String, enum: ['admin', 'visitor', 'editor', 'author', 'support'], default: 'visitor' },
         isActive: { type: Boolean, default: true },
-        avatarUrl: { type: String, default: 'https://via.placeholder.com/150' },
+        avatarUrl: { type: String, default: '' },
         phone: { type: String, default: 'Not available' },
         address: { type: String, default: 'Not available' },        
     },

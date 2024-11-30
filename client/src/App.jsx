@@ -21,6 +21,7 @@ import GalleryPage from './pages/GalleryPage';
 import ImageDetailsPage from './pages/ImageDetailsPage';
 import ServicesPage from './pages/ServicesPage';
 import ViewProfile from './pages/ViewProfile';
+import ProfilePage from './pages/ProfilePage';
 import ClientBookings from './pages/ClientBookings';
 import Error404Page from './pages/404Page';
 import NotFoundPage from './pages/NotFoundPage';
@@ -46,6 +47,7 @@ const ScrollToTop = () => {
     '/faq': { ar: 'الأسئلة الشائعة | مركز هوليود سمايل', en: 'FAQ | Hollywood Smile Center' },
     '/contact-us': { ar: 'اتصل بنا | مركز هوليود سمايل', en: 'Contact Us | Hollywood Smile Center' },
     '/doctors': { ar: 'الأطباء | مركز هوليود سمايل', en: 'Doctors | Hollywood Smile Center' },
+    '/profile': { ar: 'الملف الشخصي | مركز هوليود سمايل', en: 'Profile | Hollywood Smile Center' },
     '/gallery': { ar: 'المعرض | مركز هوليود سمايل', en: 'Gallery | Hollywood Smile Center' },
     '/services': { ar: 'الخدمات | مركز هوليود سمايل', en: 'Services | Hollywood Smile Center' },
     '/not-found': { ar: 'الصفحة غير موجودة | مركز هوليود سمايل', en: 'Page Not Found | Hollywood Smile Center' },
@@ -104,6 +106,9 @@ const App = () => {
           } />
           <Route path="/support-dashboard" element={
             <PrivateRoute element={<SupportDashboard />} requiredRoles={['admin', 'support']} />
+          } />
+          <Route path="/profile" element={
+            <PrivateRoute element={<ProfilePage />} requiredRoles={['visitor', 'admin', 'support', 'editor', 'author']} />
           } />
           <Route path="/detect-booking" element={
             <PrivateRoute element={<ClientBookings />} requiredRoles={['visitor', 'admin']} />

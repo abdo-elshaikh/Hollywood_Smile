@@ -78,40 +78,32 @@ const getUserProfile = async (req, res) => {
 // @access  Private
 const updateUserProfile = async (req, res) => {
     try {
-        const user = await User.findById(req.user._id);
-
-        if (user) {
-            user.name = req.body.name || user.name;
-            user.email = req.body.email || user.email;
-            user.avatarUrl = req.body.avatarUrl || user.avatarUrl;
-
-            if (req.body.password) {
-                user.password = req.body.password;
-            }
-
-            const updatedUser = await user.save();
-            const token = generateToken(updatedUser._id);
-
-            res.status(200).json({ token, user: updatedUser });
+        const updatedUser = await User.findByIdAndUpdate(req.user._id, req.body, { new: true });
+        if (!updatedUser) {
+            res.status(404).json({ error: 'User not found' });
+        } else {
+            res.status(200).json({ user: updatedUser, message: 'Profile updated successfully! ' });
         }
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ error: error.message });
     }
 };
 
 const changePassword = async (req, res) => {
     try {
-        const updatedUser = await User.findById(req.user._id);
-        if (updatedUser) {
-            updatedUser.password = req.body.password;
-            const user = await updatedUser.save();
-            const token = generateToken(user._id);
-            res.status(200).json({ token, user, message: 'Password changed successfully! ' });
+        const user = await User.findById(req.user._id);
+        if (!user) {
+            res.status(404).json({ error: 'User not found' });
         } else {
-            res.status(404).json({ message: 'User not found' });
+            if (!(await user.matchPassword(req.body.currentPassword))) {
+                return res.status(401).json({ message: 'Invalid password' });
+            }
+            user.password = req.body.newPassword;
+            await user.save();
+            res.status(200).json({ message: 'Password changed successfully' });
         }
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ error: error.message });
     }
 };
 
