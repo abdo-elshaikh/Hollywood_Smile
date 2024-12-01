@@ -4,16 +4,11 @@ import {
     Toolbar,
     IconButton,
     Typography,
-    Tooltip,
-    Badge,
     Box,
     useTheme,
+    useMediaQuery,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import SettingsIcon from "@mui/icons-material/Settings";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import MessageIcon from "@mui/icons-material/Message";
-import ThemeToggleButton from "../common/ThemeToggleButton";
 import MessagePopupMenu from "../common/MessagePopupMenu";
 import NotificationPopupMenu from "../common/NotificationPopupMenu";
 import SettingsMenu from "../common/SettingsMenu";
@@ -22,6 +17,7 @@ import { useAuth } from "../../contexts/AuthContext";
 const Header = ({ onToggleDrawer, sidebarWidth }) => {
     const { user } = useAuth();
     const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
 
     return (
@@ -45,7 +41,7 @@ const Header = ({ onToggleDrawer, sidebarWidth }) => {
                     edge="start"
                     color="inherit"
                     onClick={onToggleDrawer}
-                    sx={{ display: { xs: "block", md: "none" } }}
+                    sx={{ display: isMobile ? "block" : "none" }}
                 >
                     <MenuIcon />
                 </IconButton>
@@ -58,7 +54,7 @@ const Header = ({ onToggleDrawer, sidebarWidth }) => {
                         fontWeight: "bold",
                     }}
                 >
-                    Welcome back, {user?.name || "Guest"}!
+                    Welcome back, <strong style={{ color: theme.palette.primary.main }}>{user.name}</strong>! 🎉
                 </Typography>
 
                 <Box sx={{ display: "flex", alignItems: "center" }}>

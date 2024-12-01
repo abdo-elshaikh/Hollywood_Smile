@@ -19,10 +19,12 @@ import {
     Checkbox,
     Switch
 } from "@mui/material";
+import ClearIcon from "@mui/icons-material/Clear";
 import { useClinicContext } from "../../contexts/ClinicContext";
 import { useSnackbar } from "../../contexts/SnackbarProvider";
 import { uploadImage } from "../../services/uploadImage";
 import { motion } from "framer-motion";
+import dayjs from 'dayjs';
 import {
     Add as AddIcon,
     Delete as DeleteIcon,
@@ -58,7 +60,7 @@ const ManageClinicPage = () => {
     const [achievement, setAchievement] = useState({ label: { en: "", ar: "" }, description: { en: "", ar: "" }, number: "", icon: "" });
     const [openHours, setOpenHours] = useState({});
     const [onlineTimes, setOnlineTimes] = useState([]);
-    const [selectedDay, setSelectedDay] = useState("");
+    const [selectedDay, setSelectedDay] = useState({ day: "", from: "", to: "" });
     const [socialLinks, setSocialLinks] = useState({
         facebook: "",
         twitter: "",
@@ -108,31 +110,25 @@ const ManageClinicPage = () => {
         }
     };
 
-    const handleAddAchievement = () => {
-        if (!achievement.label.en || !achievement.label.ar || !achievement.number || !achievement.icon) {
+    const handleAddOrEditAchievement = async () => {
+        if (!achievement.label.en || !achievement.label.ar || !achievement.description.en || !achievement.description.ar || !achievement.number || !achievement.icon) {
             showSnackBar("All fields are required!", "error");
             return;
         }
 
-        const updatedAchievements = [...formData.achievements, achievement];
+        const updatedAchievements = formData.achievements.filter((ach) => ach.label.en !== achievement.label.en);
+        updatedAchievements.push(achievement);
         setFormData((prevData) => ({ ...prevData, achievements: updatedAchievements }));
-        updateClinicInfo({ ...formData, achievements: updatedAchievements });
-        setAchievement({ label: { en: "", ar: "" }, number: "", icon: "" });
-        showSnackBar("Achievement added successfully!", "success");
+        try {
+            await updateClinicInfo({ ...formData, achievements: updatedAchievements });
+            showSnackBar("Achievement added successfully!", "success");
+        } catch (error) {
+            showSnackBar("Failed to add achievement", "error");
+        } finally {
+            setAchievement({ label: { en: "", ar: "" }, description: { en: "", ar: "" }, number: "", icon: "" });
+        }
     };
 
-    const handleEditAchievement = () => {
-        const updatedAchievements = formData.achievements.map((ach) => {
-            if (ach.label.en === achievement.label.en) {
-                return achievement;
-            }
-            return ach;
-        });
-        setFormData((prevData) => ({ ...prevData, achievements: updatedAchievements }));
-        updateClinicInfo({ ...formData, achievements: updatedAchievements });
-        setAchievement({ label: { en: "", ar: "" }, number: "", icon: "" });
-        showSnackBar("Achievement updated successfully!", "info");
-    };
 
     const handleRemoveAchievement = (index) => {
         const updatedAchievements = formData.achievements.filter((_, i) => i !== index);
@@ -193,44 +189,36 @@ const ManageClinicPage = () => {
         setFormData((prevData) => ({ ...prevData, openHours: { ...prevData.openHours, [day]: updatedOpenHours } }));
     };
 
-    const handleOnlineTimeChange = (e) => {
-        const { name, value } = e.target;
-        setOnlineTimes((prev) => ({ ...prev, [name]: value }));
-    };
-
-    const handleAddOrEditOnlineTime = () => {
-        if (!onlineTimes.day || !onlineTimes.from || !onlineTimes.to) {
+    const handleAddOrEditOnlineTime = async () => {
+        if (!selectedDay.day || !selectedDay.from || !selectedDay.to) {
             showSnackBar("All fields are required!", "error");
             return;
         }
 
-        const updatedOnlineTimes = formData.onlineTimes.map((time) => {
-            if (time.day === onlineTimes.day) {
-                return onlineTimes;
-            }
-            return time;
-        });
-
-        if (!formData.onlineTimes.some((time) => time.day === onlineTimes.day)) {
-            updatedOnlineTimes.push(onlineTimes);
+        const updatedOnlineTimes = onlineTimes.filter((time) => time.day !== selectedDay.day);
+        updatedOnlineTimes.push(selectedDay);
+        setOnlineTimes(updatedOnlineTimes);
+        setFormData((prevData) => ({ ...prevData, onlineTimes: updatedOnlineTimes }));
+        try {
+            await updateClinicInfo({ ...formData, onlineTimes: updatedOnlineTimes });
+            showSnackBar("Online time added successfully!", "success");
+        } catch (error) {
+            showSnackBar("Failed to add online time", "error");
+        } finally {
+            setSelectedDay({ day: "", from: "", to: "" });
         }
-
-        setFormData((prevData) => ({ ...prevData, onlineTimes: updatedOnlineTimes }));
-        updateClinicInfo({ ...formData, onlineTimes: updatedOnlineTimes });
-        setOnlineTimes({ day: "", from: "", to: "" });
-        showSnackBar("Online time added successfully!", "success");
     };
 
-    const handleDeleteOnlineTime = (day) => {
-        const updatedOnlineTimes = formData.onlineTimes.filter((time) => time.day !== day);
+    const handleDeleteOnlineTime = async (time) => {
+        const updatedOnlineTimes = onlineTimes.filter((t) => t.day !== time.day);
+        setOnlineTimes(updatedOnlineTimes);
         setFormData((prevData) => ({ ...prevData, onlineTimes: updatedOnlineTimes }));
-        updateClinicInfo({ ...formData, onlineTimes: updatedOnlineTimes });
-        showSnackBar("Online time removed successfully!", "info");
-    };
-
-    const handleEditOnlineTime = (time) => {
-        setOnlineTimes(time);
-        setSelectedDay(time.day);
+        try {
+            await updateClinicInfo({ ...formData, onlineTimes: updatedOnlineTimes });
+            showSnackBar("Online time deleted successfully!", "info");
+        } catch (error) {
+            showSnackBar("Failed to delete online time", "error");
+        }
     };
 
     const inputFields = [
@@ -262,81 +250,117 @@ const ManageClinicPage = () => {
     ];
 
     return (
-        <Box sx={{ p: 4 }}
+        <Box sx={{ p: 1 }}
         >
-            <Typography variant="h4" align="center" sx={{ fontWeight: "bold", mb: 2 }}>
-                Manage Clinic Information
-            </Typography>
+            <Tabs
+                value={activeTab}
+                onChange={(e, newValue) => setActiveTab(newValue)}
+                variant="scrollable"
+                scrollButtons="auto"
+                sx={{ backgroundColor: "background.default", mb: 2 }}
+            >
+                <Tab label="Clinic Info" />
+                <Tab label="Social Links" />
+                <Tab label="Open Hours" />
+                <Tab label="Online Times" />
+                <Tab label="Achievements" />
+            </Tabs>
 
-            <AppBar component="div" position="static" sx={{ mb: 4 }}>
-                <Tabs
-                    value={activeTab}
-                    onChange={(e, newValue) => setActiveTab(newValue)}
-                    centered
-                    variant="fullWidth"
-                    sx={{ backgroundColor: "background.default" }}
-                >
-                    <Tab label="Clinic Info" />
-                    <Tab label="Social Links" />
-                    <Tab label="Open Hours" />
-                    <Tab label="Online Times" />
-                    <Tab label="Achievements" />
-                </Tabs>
-            </AppBar>
-
-            <form onSubmit={handleSubmit}>
-                {/* upload Logo */}
-
+            <Box component="form" onSubmit={handleSubmit}>
                 {/* clinic main informations */}
                 {
                     activeTab === 0 && (
-                        <Grid container spacing={2}>
-                            <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'space-evenly', alignItems: 'center' }}>
-                                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                    <Typography variant="h6" sx={{ mr: 2 }}>Light Logo</Typography>
-                                    <Avatar
-                                        src={formData.logo.light}
-                                        alt="clinic logo light"
-                                        sx={{ width: 100, height: 100, bgcolor: "#ffff", border: '2px solid #333', mb: 2, cursor: "pointer" }}
-                                        htmlFor="upload-logo-light"
-                                        onClick={() => document.getElementById("upload-logo-light").click()}
-                                    />
-                                    <IconButton onClick={handleRemoveImage} sx={{ ml: 2 }}>
-                                        <DeleteIcon />
-                                    </IconButton>
-                                    <input
-                                        type="file"
-                                        id="upload-logo-light"
-                                        hidden
-                                        accept="image/*"
-                                        onChange={(event) => handleUploadImage(event.target.files[0], 'light')}
-                                        style={{ display: "none" }}
-                                    />
-                                </Box>
-
-                                <Box style={{ border: "1px solid #ccc", width: 0, height: 100 }} />
-                                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                    <Typography variant="h6" sx={{ mr: 2 }}>Dark Logo</Typography>
-                                    <Avatar
-                                        src={formData.logo.dark}
-                                        alt="clinic logo dark"
-                                        sx={{ width: 100, height: 100, bgcolor: "#333", border: '2px solid #f5f5f5', mb: 2, cursor: "pointer" }}
-                                        htmlFor="upload-logo-dark"
-                                        onClick={() => document.getElementById("upload-logo-dark").click()}
-                                    />
-                                    <IconButton onClick={handleRemoveImage} sx={{ ml: 2 }}>
-                                        <DeleteIcon />
-                                    </IconButton>
-                                    <input
-                                        type="file"
-                                        id="upload-logo-dark"
-                                        hidden
-                                        accept="image/*"
-                                        onChange={(event) => handleUploadImage(event.target.files[0], 'dark')}
-                                        style={{ display: "none" }}
-                                    />
-                                </Box>
+                        <Grid container spacing={3}>
+                            <Grid item xs={12}>
+                                <Grid container spacing={3}>
+                                    {/* Light Logo Section */}
+                                    <Grid item xs={12} sm={6}>
+                                        <Box
+                                            sx={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: { xs: 'center', sm: 'flex-start' },
+                                                gap: 2,
+                                                mb: 2,
+                                                p: 2,
+                                                bgcolor: 'background.default',
+                                                borderRadius: 2,
+                                                boxShadow: 1,
+                                            }}
+                                        >
+                                            <Typography variant="h6" sx={{ whiteSpace: 'nowrap' }}>Light Logo</Typography>
+                                            <Avatar
+                                                src={formData.logo.light}
+                                                alt="clinic logo light"
+                                                sx={{
+                                                    width: 100,
+                                                    height: 100,
+                                                    bgcolor: "#f5f5f5",
+                                                    border: '2px solid #333',
+                                                    cursor: "pointer",
+                                                    transition: 'transform 0.2s',
+                                                    "&:hover": { transform: 'scale(1.1)' },
+                                                }}
+                                                onClick={() => document.getElementById("upload-logo-light").click()}
+                                            />
+                                            <IconButton onClick={() => handleRemoveImage('light')}>
+                                                <DeleteIcon color="error" />
+                                            </IconButton>
+                                            <input
+                                                type="file"
+                                                id="upload-logo-light"
+                                                hidden
+                                                accept="image/*"
+                                                onChange={(event) => handleUploadImage(event.target.files[0], 'light')}
+                                            />
+                                        </Box>
+                                    </Grid>
+                                    {/* Dark Logo Section */}
+                                    <Grid item xs={12} sm={6}>
+                                        <Box
+                                            sx={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: { xs: 'center', sm: 'flex-start' },
+                                                gap: 2,
+                                                mb: 2,
+                                                p: 2,
+                                                bgcolor: 'background.default',
+                                                borderRadius: 2,
+                                                boxShadow: 1,
+                                            }}
+                                        >
+                                            <Typography variant="h6" sx={{ whiteSpace: 'nowrap' }}>Dark Logo</Typography>
+                                            <Avatar
+                                                src={formData.logo.dark}
+                                                alt="clinic logo dark"
+                                                sx={{
+                                                    width: 100,
+                                                    height: 100,
+                                                    bgcolor: "#333",
+                                                    border: '2px solid #f5f5f5',
+                                                    cursor: "pointer",
+                                                    transition: 'transform 0.2s',
+                                                    "&:hover": { transform: 'scale(1.1)' },
+                                                }}
+                                                onClick={() => document.getElementById("upload-logo-dark").click()}
+                                            />
+                                            <IconButton onClick={() => handleRemoveImage('dark')}>
+                                                <DeleteIcon color="error" />
+                                            </IconButton>
+                                            <input
+                                                type="file"
+                                                id="upload-logo-dark"
+                                                hidden
+                                                accept="image/*"
+                                                onChange={(event) => handleUploadImage(event.target.files[0], 'dark')}
+                                            />
+                                        </Box>
+                                    </Grid>
+                                </Grid>
                             </Grid>
+
+                            {/* Dynamic Input Fields */}
                             {inputFields.map((field, index) => (
                                 <Grid item xs={12} sm={6} key={index}>
                                     <TextField
@@ -346,13 +370,20 @@ const ManageClinicPage = () => {
                                         value={field.value}
                                         onChange={field.onChange}
                                         variant="outlined"
+                                        InputProps={{
+                                            style: { borderRadius: 8 },
+                                        }}
+                                        sx={{
+                                            "& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline": {
+                                                borderColor: "#1976d2",
+                                            },
+                                        }}
                                     />
                                 </Grid>
                             ))}
                         </Grid>
                     )
                 }
-
                 {/* clinic social links */}
                 {
                     activeTab === 1 && (
@@ -381,31 +412,69 @@ const ManageClinicPage = () => {
                 {/* clinic open hours */}
                 {
                     activeTab === 2 && (
-                        <List>
+                        <Grid container spacing={3} sx={{ mt: 2 }}>
                             {days.map((day) => (
-                                <ListItem key={day}>
-                                    <ListItemText primary={day.charAt(0).toUpperCase() + day.slice(1)} />
-                                    <Switch
-                                        checked={!formData.openHours[day]?.isClosed}
-                                        onChange={() => toggleDayOpen(day)}
-                                    />
-                                    <TextField
-                                        disabled={formData.openHours[day]?.isClosed}
-                                        label="Open"
-                                        // type="time"
-                                        value={formData.openHours[day]?.from || ""}
-                                        onChange={(e) => handleOpenHourChange(day, "from", e.target.value)}
-                                    />
-                                    <TextField
-                                        disabled={formData.openHours[day]?.isClosed}
-                                        label="Close"
-                                        // type="time"
-                                        value={formData.openHours[day]?.to || ""}
-                                        onChange={(e) => handleOpenHourChange(day, "to", e.target.value)}
-                                    />
-                                </ListItem>
+                                <Grid item xs={12} sm={6} md={4} key={day}>
+                                    <Box
+                                        sx={{
+                                            p: 2,
+                                            borderRadius: 2,
+                                            boxShadow: 3,
+                                            bgcolor: "background.default",
+                                            border: "1px solid #ddd",
+
+                                        }}
+                                    >
+                                        <Box
+                                            sx={{
+                                                display: "flex",
+                                                justifyContent: "space-between",
+                                                alignItems: "center",
+                                                mb: 2,
+                                            }}
+                                        >
+                                            <Typography variant="h6" sx={{ textTransform: "capitalize" }}>
+                                                {day}
+                                            </Typography>
+                                            <Switch
+                                                checked={!formData.openHours[day]?.isClosed}
+                                                onChange={() => toggleDayOpen(day)}
+                                                color="primary"
+                                            />
+                                        </Box>
+                                        <Box
+                                            sx={{
+                                                display: "flex",
+                                                gap: 2,
+                                                flexDirection: { xs: "column", sm: "row" },
+                                                alignItems: "center",
+                                            }}
+                                        >
+                                            <TextField
+                                                disabled={formData.openHours[day]?.isClosed}
+                                                label="Open"
+                                                value={formData.openHours[day]?.from}
+                                                onChange={(e) => handleOpenHourChange(day, "from", e.target.value)}
+                                                InputLabelProps={{
+                                                    shrink: true,
+                                                }}
+                                                fullWidth
+                                            />
+                                            <TextField
+                                                disabled={formData.openHours[day]?.isClosed}
+                                                label="Close"
+                                                value={formData.openHours[day]?.to}
+                                                onChange={(e) => handleOpenHourChange(day, "to", e.target.value)}
+                                                InputLabelProps={{
+                                                    shrink: true,
+                                                }}
+                                                fullWidth
+                                            />
+                                        </Box>
+                                    </Box>
+                                </Grid>
                             ))}
-                        </List>
+                        </Grid>
                     )
                 }
 
@@ -414,21 +483,37 @@ const ManageClinicPage = () => {
                     activeTab === 3 && (
                         <Box>
                             <Typography variant="h6" sx={{ mb: 2 }}>
-                                Add Online Time
+                                {dayjs().format('dddd')} Online Time
                             </Typography>
-                            <Grid container spacing={2} sx={{ mb: 2, borderBottom: "1px solid #ccc", p: 2, backgroundColor: "background.paper" }}>
+                            <Grid
+                                container
+                                spacing={2}
+                                sx={{
+                                    mb: 2,
+                                    borderBottom: "1px solid #ccc",
+                                    p: 2,
+                                    borderRadius: 1,
+                                    backgroundColor: "background.paper",
+                                    boxShadow: 1,
+                                }}
+                            >
                                 <Grid item xs={12} sm={4}>
                                     <Select
-                                        label="Day"
                                         displayEmpty
                                         name="day"
-                                        value={onlineTimes.day}
-                                        onChange={handleOnlineTimeChange}
+                                        value={selectedDay.day}
+                                        onChange={(e) => setSelectedDay({ ...selectedDay, day: e.target.value })}
                                         fullWidth
                                     >
-                                        <MenuItem value=""><em>Select Day</em></MenuItem>
+                                        <MenuItem value="">
+                                            <em>Select Day</em>
+                                        </MenuItem>
                                         {days.map((day, index) => (
-                                            <MenuItem key={index} value={day}>
+                                            <MenuItem
+                                                key={index}
+                                                value={day}
+                                                disabled={onlineTimes.some((time) => time.day === day)}
+                                            >
                                                 {day.charAt(0).toUpperCase() + day.slice(1)}
                                             </MenuItem>
                                         ))}
@@ -438,8 +523,8 @@ const ManageClinicPage = () => {
                                     <TextField
                                         label="From"
                                         name="from"
-                                        value={onlineTimes.from}
-                                        onChange={handleOnlineTimeChange}
+                                        value={selectedDay.from}
+                                        onChange={(e) => setSelectedDay({ ...selectedDay, from: e.target.value })}
                                         fullWidth
                                     />
                                 </Grid>
@@ -447,39 +532,85 @@ const ManageClinicPage = () => {
                                     <TextField
                                         label="To"
                                         name="to"
-                                        value={onlineTimes.to}
-                                        onChange={handleOnlineTimeChange}
+                                        value={selectedDay.to}
+                                        onChange={(e) => setSelectedDay({ ...selectedDay, to: e.target.value })}
                                         fullWidth
                                     />
                                 </Grid>
-                                <Grid item xs={12}>
-                                    <Button
-                                        variant="contained"
-                                        color="primary"
-                                        startIcon={<AddIcon />}
-                                        onClick={handleAddOrEditOnlineTime}
-                                        fullWidth
+                                <Grid item xs={12} sx={{ mt: 2 }}>
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            gap: 2,
+                                            justifyContent: "flex-end",
+                                            alignItems: "center",
+                                            flexDirection: { xs: "column", sm: "row" },
+                                        }}
                                     >
-                                        Add Online Time
-                                    </Button>
+                                        <Button
+                                            variant="contained"
+                                            color="primary"
+                                            startIcon={<AddIcon />}
+                                            onClick={handleAddOrEditOnlineTime}
+                                            sx={{
+                                                py: 1,
+                                                fontSize: "1rem",
+                                            }}
+                                        >
+                                            {selectedDay.day ? "Edit Online Time" : "Add Online Time"}
+                                        </Button>
+                                        <Button
+                                            variant="contained"
+                                            color="secondary"
+                                            startIcon={<DeleteIcon />}
+                                            onClick={() => setSelectedDay({ day: "", from: "", to: "" })}
+                                            sx={{
+                                                py: 1,
+                                                fontSize: "1rem",
+                                            }}
+                                            disabled={!selectedDay.day}
+                                        >
+                                            Clear
+                                        </Button>
+                                    </Box>
                                 </Grid>
                             </Grid>
-                            <Typography variant="h6" sx={{ mt: 2, mb: 2 }}>
+                            <Typography variant="h6" sx={{ mt: 3, mb: 2 }}>
                                 Online Times
                             </Typography>
                             <Grid container spacing={2}>
                                 {formData.onlineTimes.map((time, index) => (
                                     <Grid item xs={12} key={index}>
-                                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                            <Typography>
-                                                {time.day.charAt(0).toUpperCase() + time.day.slice(1)}: {time.from} - {time.to}
+                                        <Box
+                                            sx={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                                justifyContent: "space-between",
+                                                flexDirection: { xs: "column", sm: "row" },
+                                                border: "1px solid #ddd",
+                                                borderRadius: 1,
+                                                p: 2,
+                                                backgroundColor: "background.default",
+                                                overflow: "hidden",
+                                            }}
+                                        >
+                                            <Typography variant="body1" sx={{ mb: { xs: 1, sm: 0 } }}>
+                                                <strong>{time.day.charAt(0).toUpperCase() + time.day.slice(1)}</strong>: {time.from} - {time.to}
                                             </Typography>
-                                            <Box sx={{ display: 'flex', gap: 2 }}>
+                                            <Box
+                                                sx={{
+                                                    display: "flex",
+                                                    gap: 1,
+                                                    flexDirection: { xs: "column", sm: "row" },
+                                                    width: { xs: "100%", sm: "auto" },
+                                                }}
+                                            >
                                                 <Button
                                                     variant="contained"
                                                     color="secondary"
                                                     startIcon={<DeleteIcon />}
-                                                    onClick={() => handleDeleteOnlineTime(time.day)}
+                                                    onClick={() => handleDeleteOnlineTime(time)}
+                                                    fullWidth
                                                 >
                                                     Delete
                                                 </Button>
@@ -487,7 +618,8 @@ const ManageClinicPage = () => {
                                                     variant="contained"
                                                     color="primary"
                                                     startIcon={<EditIcon />}
-                                                    onClick={() => handleEditOnlineTime(time)}
+                                                    onClick={() => setSelectedDay(time)}
+                                                    fullWidth
                                                 >
                                                     Edit
                                                 </Button>
@@ -507,7 +639,17 @@ const ManageClinicPage = () => {
                             <Typography variant="h6" sx={{ mb: 2 }}>
                                 Add Achievement
                             </Typography>
-                            <Grid container spacing={2}>
+                            <Grid
+                                container
+                                spacing={2}
+                                sx={{
+                                    mb: 2,
+                                    p: 2,
+                                    borderRadius: 1,
+                                    backgroundColor: "background.paper",
+                                    boxShadow: 1,
+                                }}
+                            >
                                 <Grid item xs={12} sm={6}>
                                     <TextField
                                         label="Label (English)"
@@ -548,6 +690,7 @@ const ManageClinicPage = () => {
                                     <TextField
                                         label="Number"
                                         name="number"
+                                        type="number"
                                         value={achievement.number}
                                         onChange={handleAchievementChange}
                                         fullWidth
@@ -560,42 +703,117 @@ const ManageClinicPage = () => {
                                         value={achievement.icon}
                                         onChange={handleAchievementChange}
                                         fullWidth
+                                        displayEmpty
                                     >
+                                        <MenuItem value="">
+                                            <em>Select Icon</em>
+                                        </MenuItem>
                                         {iconList.map((option, index) => (
                                             <MenuItem key={index} value={option.label}>
-                                                <Avatar sx={{ mr: 1 }}>{option.icon}</Avatar> | {option.label}
+                                                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                                                    <Avatar>{option.icon}</Avatar>
+                                                    {option.label}
+                                                </Box>
                                             </MenuItem>
                                         ))}
                                     </Select>
                                 </Grid>
-                                <Grid item xs={12}>
-                                    <Button
-                                        variant="contained"
-                                        color="primary"
-                                        startIcon={<AddIcon />}
-                                        onClick={handleAddAchievement}
-                                        fullWidth
+                                <Grid item xs={12} sx={{ mt: 2 }}>
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            gap: 2,
+                                            justifyContent: "flex-end",
+                                            alignItems: "center",
+                                            flexDirection: { xs: "column", sm: "row" },
+                                        }}
                                     >
-                                        Add Achievement
-                                    </Button>
+                                        <Button
+                                            variant="contained"
+                                            color="primary"
+                                            startIcon={<AddIcon />}
+                                            onClick={handleAddOrEditAchievement}
+                                            sx={{
+                                                py: 1,
+                                                fontSize: "1rem",
+                                            }}
+                                        >
+                                            {achievement.label.en ? "Edit Achievement" : "Add Achievement"}
+                                        </Button>
+                                        <Button
+                                            variant="contained"
+                                            color="secondary"
+                                            startIcon={<ClearIcon />}
+                                            onClick={() => setAchievement({ label: { en: "", ar: "" }, description: { en: "", ar: "" }, number: "", icon: "" })}
+                                            sx={{
+                                                py: 1,
+                                                fontSize: "1rem",
+                                            }}
+                                            disabled={!achievement.label.en}
+                                        >
+                                            Clear
+                                        </Button>
+                                    </Box>
                                 </Grid>
                             </Grid>
 
                             <Typography variant="h6" sx={{ mt: 4 }}>
                                 Achievements
                             </Typography>
-                            <List>
+                            <List
+                                sx={{
+                                    maxHeight: 300,
+                                    overflowY: "auto",
+                                    border: "1px solid #ddd",
+                                    borderRadius: 1,
+                                    p: 1,
+                                    backgroundColor: "background.default",
+                                }}
+                            >
                                 {formData.achievements.map((ach, index) => (
-                                    <ListItem key={index}>
-                                        <ListItemText primary={`${ach.label.en} - ${ach.label.ar}`} secondary={ach.number} />
-                                        <ListItemSecondaryAction>
-                                            <IconButton edge="end" onClick={() => handleRemoveAchievement(index)}>
+                                    <ListItem
+                                        key={index}
+                                        sx={{
+                                            display: "flex",
+                                            flexDirection: { xs: "column", sm: "row" },
+                                            alignItems: "flex-start",
+                                            gap: 2,
+                                            p: 1,
+                                            mb: 1,
+                                            border: "1px solid #ccc",
+                                            borderRadius: 1,
+                                        }}
+                                    >
+                                        <ListItemText
+                                            primary={
+                                                <Typography variant="body1" fontWeight="bold">
+                                                    {ach.label.en} - {ach.label.ar}
+                                                </Typography>
+                                            }
+                                            secondary={`Number: ${ach.number}`}
+                                        />
+                                        <Box
+                                            sx={{
+                                                display: "flex",
+                                                gap: 1,
+                                                justifyContent: "flex-end",
+                                            }}
+                                        >
+                                            <IconButton
+                                                edge="end"
+                                                color="error"
+                                                onClick={() => handleRemoveAchievement(index)}
+                                            >
                                                 <DeleteIcon />
                                             </IconButton>
-                                            <IconButton edge="end" onClick={() => setAchievement(ach)}>
+                                            <IconButton
+                                                edge="end"
+                                                color="primary"
+                                                onClick={() => setAchievement(ach)}
+                                            >
                                                 <EditIcon />
                                             </IconButton>
-                                        </ListItemSecondaryAction>
+                                        </Box>
                                     </ListItem>
                                 ))}
                             </List>
@@ -608,7 +826,7 @@ const ManageClinicPage = () => {
                         Save Changes
                     </Button>
                 </Box>
-            </form >
+            </Box >
         </Box >
     );
 };

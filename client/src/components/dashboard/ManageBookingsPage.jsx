@@ -11,12 +11,29 @@ import {
   Chip,
   Paper,
   useMediaQuery,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  MenuItem,
+  Select,
+  Menu,
+  MenuList,
+  ListItemIcon,
+  ListItemText,
+  Divider,
+  Stack,
+  List,
+  ListItem,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
 } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import { Visibility, Delete, Done, Cancel } from "@mui/icons-material";
+import { Delete, Done, Cancel, Edit, Send, MoreVert, ExpandMore } from "@mui/icons-material";
 import bookingService from "../../services/bookingService";
 import { useSnackbar } from "../../contexts/SnackbarProvider";
-import ConfirmationDialog from "../common/ConfirmationDialog";
 import SendSMS from "../SendSMS";
 import { useTheme } from "@mui/material/styles";
 
@@ -25,14 +42,34 @@ const ManageBookingsPage = () => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("All");
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  const [bookingIdToDelete, setBookingIdToDelete] = useState(null);
   const [loadingDelete, setLoadingDelete] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState(null);
+  const [ConfirmDialog, setConfirmDialog] = useState(false);
+  const [loadingConfirm, setLoadingConfirm] = useState(false);
+  const [contextMenu, setContextMenu] = useState(null);
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const showSnackbar = useSnackbar();
   const statuses = ["All", "Pending", "Confirmed", "In Progress", "Completed", "Cancelled"];
+
+  const bookStatusColor = (status) => {
+    switch (status) {
+      case "In Progress":
+        return "secondary";
+      case "Cancelled":
+        return "error";
+      case "Pending":
+        return "warning";
+      case "Confirmed":
+        return "info";
+      case "Completed":
+        return "success";
+      default:
+        return "default";
+    }
+  };
 
   useEffect(() => {
     fetchBookings();
@@ -54,22 +91,6 @@ const ManageBookingsPage = () => {
     setActiveTab(newValue);
   };
 
-  const bookStatusColor = (status) => {
-    switch (status) {
-      case "In Progress":
-        return "secondary";
-      case "Cancelled":
-        return "error";
-      case "Pending":
-        return "warning";
-      case "Confirmed":
-        return "info";
-      case "Completed":
-        return "success";
-      default:
-        return "default";
-    }
-  };
 
   const handleChangeStatus = async (id, currentStatus) => {
     const newStatus = currentStatus === "Cancelled" ? null : getNewStatus(currentStatus);
@@ -97,43 +118,80 @@ const ManageBookingsPage = () => {
   const handleDeleteBooking = async () => {
     setLoadingDelete(true);
     try {
-      await bookingService.deleteBooking(bookingIdToDelete);
-      setBookings((prev) => prev.filter((booking) => booking._id !== bookingIdToDelete));
+      await bookingService.deleteBooking(selectedBooking.id);
+      setBookings((prev) => prev.filter((booking) => booking._id !== selectedBooking.id));
+      fetchBookings();
       showSnackbar("Booking deleted successfully.", "success");
     } catch (error) {
       showSnackbar("Failed to delete booking.", "error");
     } finally {
       setOpenDeleteDialog(false);
-      setBookingIdToDelete(null);
+      setSelectedBooking(null);
       setLoadingDelete(false);
     }
   };
 
-  const filteredBookings =
-    activeTab === "All" ? bookings : bookings.filter((booking) => booking.status === activeTab);
+  const handleConfirmBooking = async () => {
+    selectedBooking.status = "Confirmed";
+    setLoadingConfirm(true);
+    try {
+      await bookingService.updateBooking(selectedBooking.id, selectedBooking);
+      fetchBookings();
+      showSnackbar("Booking confirmed successfully.", "success");
+    } catch (error) {
+      showSnackbar("Failed to confirm booking.", "error");
+    } finally {
+      setConfirmDialog(false);
+      setSelectedBooking(null);
+      setLoadingConfirm(false);
+    }
+  };
+
+  const getNewStatus = (currentStatus) => {
+    switch (currentStatus) {
+      case "Pending":
+        return "Confirmed";
+      case "Confirmed":
+        return "In Progress";
+      case "In Progress":
+        return "Completed";
+      default:
+        return null;
+    }
+  };
+
+  const handleContextMenu = (event, booking) => {
+    console.log(event);
+    console.log(booking);
+    event.preventDefault();
+    setSelectedBooking(booking);
+    setContextMenu({
+      mouseX: event.clientX - 2,
+      mouseY: event.clientY - 4,
+    });
+  };
+
+  const handleCloseContextMenu = () => {
+    setContextMenu(null);
+  };
+
+  const filteredBookings = activeTab === "All" ? bookings : bookings.filter((booking) => booking.status === activeTab);
 
   const columns = [
+    {
+      field: "actions", headerName: "#", width: 50, renderCell: (params) => (
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <IconButton onClick={(event) => handleContextMenu(event, params.row)}>
+            <MoreVert />
+          </IconButton>
+        </Box>
+      )
+    },
     { field: "code", headerName: "ID", hide: true, width: 100 },
-    { field: "name", headerName: "Name", width: 200 },
-    { field: "phone", headerName: "Phone", width: 150 },
-    {
-      field: "date",
-      width: 150,
-      headerName: "Preferred Date",
-      renderCell: (params) => (
-        <Typography variant="body2">{new Date(params.value).toLocaleDateString()}</Typography>
-      ),
-    },
-    {
-      field: "time",
-      width: 150,
-      headerName: "Preferred Time",
-      renderCell: (params) => <Typography variant="body2">{params.value}</Typography>,
-    },
     {
       field: "status",
       headerName: "Status",
-      width: 150,
+      width: 120,
       renderCell: (params) => (
         <Chip
           label={params.value}
@@ -143,67 +201,22 @@ const ManageBookingsPage = () => {
         />
       ),
     },
+    { field: "name", headerName: "Name", width: 150 },
+    { field: "phone", headerName: "Phone", width: 120 },
+    ,
     {
-      field: "actions",
-      width: isMobile ? 300 : 400,
-      headerName: "Actions",
-      renderCell: (params) => {
-        const currentStatus = params.row.status;
-        return (
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 1,
-            }}
-          >
-            <Tooltip title="View">
-              <IconButton color="primary">
-                <Visibility />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Send SMS">
-              <IconButton color="primary">
-                <SendSMS smsContent={params.row.message} phoneNumber={params.row.phone} />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Change Status">
-              <IconButton
-                variant="contained"
-                color="primary"
-                size="small"
-                onClick={() => handleChangeStatus(params.row.id, currentStatus)}
-              >
-                {currentStatus === "Cancelled" ? <Done /> : <Cancel />}
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Delete">
-              <IconButton
-                color="error"
-                onClick={() => {
-                  setOpenDeleteDialog(true);
-                  setBookingIdToDelete(params.row.id);
-                }}
-              >
-                <Delete />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Cancel Booking">
-              <IconButton
-                variant="contained"
-                color="primary"
-                size="small"
-                disabled={currentStatus === "Cancelled" || currentStatus === "Completed"}
-                onClick={() => handleCancelStatus(params.row.id)}
-              >
-                <Cancel />
-              </IconButton>
-            </Tooltip>
-          </Box>
-        );
-      },
+      field: "date",
+      headerName: "Preferred Date",
+      renderCell: (params) => (
+        <Typography variant="body2">{new Date(params.value).toLocaleDateString()}</Typography>
+      ),
     },
+    {
+      field: "time",
+      headerName: "Preferred Time",
+      renderCell: (params) => <Typography variant="body2">{params.value}</Typography>,
+    },
+
   ];
 
   const rows = filteredBookings.map((booking) => ({
@@ -216,76 +229,292 @@ const ManageBookingsPage = () => {
     code: booking.code,
   }));
 
+  const TableViewCell = ({ row }) => (
+    <ListItem alignItems="flex-start">
+      <ListItemText
+        primary={
+          <Accordion
+            sx={{ width: "100%" }}
+          >
+            <AccordionSummary
+              expandIcon={<ExpandMore />}
+              aria-controls="panel1a-content"
+              id="panel1a-header"
+            >
+              <Typography>{row?.name}</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Typography>
+                <strong>Phone:</strong> {row?.phone}
+              </Typography>
+              <Typography>
+                <strong>Date:</strong> {row?.date.slice(0, 10)}
+              </Typography>
+              <Typography>
+                <strong>Time:</strong> {row?.time}
+              </Typography>
+              <Typography>
+                <strong>Code:</strong> {row?.code}
+              </Typography>
+            </AccordionDetails>
+          </Accordion>
+        }
+        secondary={
+          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 1 }}>
+            <Chip
+              label={row?.status}
+              color={bookStatusColor(row?.status)}
+              size="small"
+              sx={{ fontWeight: "bold" }}
+            />
+            <IconButton onClick={(event) => handleContextMenu(event, row)}>
+              <MoreVert />
+            </IconButton>
+          </Box>
+        }
+      />
+    </ListItem>
+  );
+
   return (
-    <Box sx={{ padding: { xs: 1, sm: 3 } }}>
-      <Typography
-        variant={isMobile ? "h5" : "h4"}
-        sx={{
-          marginBottom: { xs: 2, sm: 3 },
-          fontWeight: "bold",
-          textAlign: "center",
-        }}
-      >
-        Manage Online Bookings
-      </Typography>
-
-      <Tabs
-        value={activeTab}
-        onChange={handleTabChange}
-        variant="scrollable"
-        scrollButtons="auto"
-        sx={{
-          marginBottom: { xs: 2, sm: 3 },
-          borderBottom: 1,
-          borderColor: "divider",
-        }}
-      >
-        {statuses.map((status) => (
-          <Tab key={status} label={status} value={status} />
-        ))}
-      </Tabs>
-
-      {loading ? (
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "50vh",
-          }}
+    <Box >
+      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", mb: 2 }}>
+        <Tabs
+          value={activeTab}
+          onChange={handleTabChange}
+          variant="scrollable"
+          scrollButtons="auto"
+          allowScrollButtonsMobile
+          aria-label="scrollable auto tabs example"
         >
-          <CircularProgress />
-        </Box>
-      ) : (
-        <Box
-          component={Paper}
-          sx={{
-            height: 500,
-            width: "100%",
-            overflowX: "auto",
-          }}
-        >
+          {statuses.map((status) => (
+            <Tab key={status} label={status} value={status} />
+          ))}
+        </Tabs>
+      </Box>
+      <Paper sx={{ height: 'calc(100vh - 250px)' }}>
+        {!isMobile ?
           <DataGrid
             rows={rows}
             columns={columns}
-            pageSize={10}
-            rowsPerPageOptions={[10, 20, 30, 40, 50]}
-            disableSelectionOnClick
-            components={{
-              Toolbar: GridToolbar,
+            loading={loading}
+            pageSizeOptions={[5, 10, 20]}
+            autoPageSize
+            pagination
+            initialState={{
+              density: "compact",
+              sortBy: [{ field: "date", order: "desc" }],
+            }}
+            slots={{
+              toolbar: GridToolbar,
+              noRowsOverlay: () => (
+                <Stack height="100%" alignItems="center" justifyContent="center">
+                  {loading ? <CircularProgress /> : <Typography>No bookings found.</Typography>}
+                </Stack>
+              ),
+              noResultsOverlay: () => (
+                <Stack height="100%" alignItems="center" justifyContent="center">
+                  <Typography>No results found.</Typography>
+                </Stack>
+              ),
+            }}
+            slotProps={{
+              toolbar: {
+                showQuickFilter: true,
+                quickFilterProps: { debounceMs: 500 },
+              },
             }}
           />
-        </Box>
-      )}
+          :
+          <Box sx={{ height: 'calc(100vh - 250px)', p: 2 }}>
+            <List
+              sx={{
+                width: "100%",
+                bgcolor: "background.paper",
+                overflow: "auto",
+                maxHeight: "calc(100vh - 250px)",
+              }}
+            >
+              {rows.map((row) => (
+                <TableViewCell key={row.id} row={row} />
+              ))}
+            </List>
 
-      <ConfirmationDialog
-        open={openDeleteDialog}
-        onClose={() => setOpenDeleteDialog(false)}
-        onConfirm={handleDeleteBooking}
-        title="Delete Booking"
-        message="Are you sure you want to delete this booking?"
-        loading={loadingDelete}
-      />
+          </Box>
+        }
+      </Paper>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={openDeleteDialog} onClose={() => setOpenDeleteDialog(false)}>
+        <DialogTitle>Confirm Delete</DialogTitle>
+        <DialogContent>
+          <Typography>Are you sure you want to delete this booking?</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDeleteDialog(false)}>Cancel</Button>
+          <Button onClick={handleDeleteBooking} color="error" disabled={loadingDelete}>
+            {loadingDelete ? <CircularProgress size={24} /> : "Delete"}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Confirm Dialog */}
+      <Dialog open={ConfirmDialog} onClose={() => setConfirmDialog(false)}>
+        <DialogTitle>Confirm Booking</DialogTitle>
+        <DialogContent>
+          <Typography>Are you sure you want to confirm this booking?</Typography>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="code"
+            label="Code"
+            type="text"
+            fullWidth
+            variant="outlined"
+            value={`Code: ${selectedBooking?.name}`}
+            disabled
+          />
+
+          <TextField
+            margin="dense"
+            id="prferredDate"
+            label="Preferred Date"
+            type="text"
+            variant="outlined"
+            value={selectedBooking?.date.slice(0, 10)}
+            disabled
+          />
+
+          <TextField
+            margin="dense"
+            id="prferredTime"
+            label="Preferred Time"
+            type="text"
+            variant="outlined"
+            value={selectedBooking?.time}
+            disabled
+          />
+
+          {/* date */}
+          <TextField
+            margin="dense"
+            id="date"
+            label="Date & Time"
+            type="datetime-local"
+            fullWidth
+            variant="outlined"
+            value={
+              selectedBooking?.date
+                ? new Date(selectedBooking.date).toISOString().slice(0, 16)
+                : ''
+            }
+            onChange={(e) => {
+              const newDate = new Date(e.target.value);
+              if (!isNaN(newDate)) {
+                setSelectedBooking({
+                  ...selectedBooking,
+                  date: newDate.toISOString(),
+                  time: newDate.toLocaleTimeString(),
+                });
+              }
+            }}
+          />
+
+          {/* Message */}
+          <TextField
+            margin="dense"
+            id="message"
+            label="Message"
+            type="textarea"
+            multiline
+            rows={4}
+            fullWidth
+            variant="outlined"
+            value={`Hello ${selectedBooking?.name},\nyour booking has been confirmed.\nDate: ${selectedBooking?.date.split("T")[0]},Time: ${selectedBooking?.time}\nPlease note your booking code: ${selectedBooking?.code}\nPlease be on time.`}
+          />
+
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setConfirmDialog(false)}>Cancel</Button>
+          <Button variant="contained" onClick={handleConfirmBooking} color="primary" disabled={loadingConfirm}>
+            {loadingConfirm ? <CircularProgress size={24} /> : "Confirm"}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Context Menu */}
+      <Menu
+        open={Boolean(contextMenu)}
+        onClose={handleCloseContextMenu}
+        anchorReference="anchorPosition"
+        anchorPosition={
+          contextMenu
+            ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
+            : undefined
+        }
+      >
+        <MenuItem
+          onClick={() => {
+            setConfirmDialog(true);
+            handleCloseContextMenu();
+          }}
+        >
+          <ListItemIcon>
+            <Done />
+          </ListItemIcon>
+          <ListItemText>Confirm Booking</ListItemText>
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            handleChangeStatus(selectedBooking.id, selectedBooking.status);
+            handleCloseContextMenu();
+          }}
+        >
+          <ListItemIcon>
+            <Edit />
+          </ListItemIcon>
+          <ListItemText>Change Status</ListItemText>
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            handleCancelStatus(selectedBooking.id);
+            handleCloseContextMenu();
+          }}
+        >
+          <ListItemIcon>
+            <Cancel />
+          </ListItemIcon>
+          <ListItemText>Cancel Booking</ListItemText>
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            setOpenDeleteDialog(true);
+            handleCloseContextMenu();
+          }}
+        >
+          <ListItemIcon>
+            <Delete />
+          </ListItemIcon>
+          <ListItemText>Delete Booking</ListItemText>
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            <SendSMS smsContent={`
+              Hello ${selectedBooking?.name},
+              your booking has been confirmed.
+              Date: ${selectedBooking?.date.split("T")[0]}, Time: ${selectedBooking?.time}
+              Please note your booking code: ${selectedBooking?.code}
+              Please be on time.
+              `} phoneNumber={selectedBooking?.phone} />
+            handleCloseContextMenu();
+          }}
+        >
+          <ListItemIcon>
+            <Send />
+          </ListItemIcon>
+          <ListItemText>Send SMS</ListItemText>
+        </MenuItem>
+      </Menu>
     </Box>
   );
 };

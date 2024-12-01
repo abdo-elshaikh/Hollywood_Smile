@@ -12,6 +12,7 @@ import {
     Collapse,
     Box,
     useTheme,
+    useMediaQuery,
 } from "@mui/material";
 import {
     Home as HomeIcon,
@@ -33,16 +34,17 @@ import {
     Bookmark as BookmarkIcon,
     Person as PersonIcon,
     MedicationSharp as MedicationSharpIcon,
-
 } from "@mui/icons-material";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import SidebarItems from "./SidebarItems";
 import { useAuth } from "../../contexts/AuthContext";
 import TransferWithinAStationIcon from '@mui/icons-material/TransferWithinAStation';
+import ConfirmationDialog from "../common/ConfirmationDialog";
 
 const Sidebar = ({ open, sidebarWidth, onToggleDrawer, setCurrentPage }) => {
     const { user, logout } = useAuth();
     const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
     const [expanded, setExpanded] = React.useState({ settings: false });
 
     const items = [
@@ -84,32 +86,48 @@ const Sidebar = ({ open, sidebarWidth, onToggleDrawer, setCurrentPage }) => {
 
     return (
         <Drawer
-            variant="permanent"
+            variant={isMobile ? "temporary" : "permanent"}
+            security="left"
             sx={{
                 width: sidebarWidth,
-                transition: theme.transitions.create("width", {
-                    easing: theme.transitions.easing.sharp,
-                    duration: theme.transitions.duration.enteringScreen,
-                }),
                 flexShrink: 0,
                 "& .MuiDrawer-paper": {
                     width: sidebarWidth,
                     boxSizing: "border-box",
-                    backgroundColor: "background.default",
-                    transition: "width 0.3s ease",
+                    backgroundColor: theme.palette.background.default,
+                    color: theme.palette.text.primary,
+                    borderRight: `1px solid ${theme.palette.divider}`,
+                    transition: theme.transitions.create("width", {
+                        easing: theme.transitions.easing.sharp,
+                        duration: theme.transitions.duration.enteringScreen,
+                    }),
                     overflowX: "hidden",
+                    "&::-webkit-scrollbar": {
+                        width: 8,
+                        height: 8,
+                    },
+                    "&::-webkit-scrollbar-thumb": {
+                        backgroundColor: theme.palette.primary.main,
+                        borderRadius: 8,
+                    },
+                    "&::-webkit-scrollbar-thumb:hover": {
+                        backgroundColor: theme.palette.primary.dark,
+                    },
+                    "&::-webkit-scrollbar-thumb:active": {
+                        backgroundColor: theme.palette.primary.dark,
+                    },
                 },
             }}
             open={open}
             anchor="left"
         >
             <Toolbar>
-                <Typography variant="body1" sx={{ flexGrow: 1, fontWeight: "bold", display: open ? "block" : "none" }}>
-                    Admin Dashboard
-                </Typography>
                 <IconButton edge="start" color="inherit" onClick={onToggleDrawer}>
                     {open ? <ChevronLeftIcon /> : <MenuIcon />}
                 </IconButton>
+                <Typography variant="h6" noWrap component="div">
+                    Dashboard
+                </Typography>
             </Toolbar>
             <Divider />
             <List>

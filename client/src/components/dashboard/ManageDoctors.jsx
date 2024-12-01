@@ -3,7 +3,8 @@ import {
     Paper, Button, Dialog, Box, Container,
     DialogActions, DialogContent, DialogTitle,
     TextField, CircularProgress, Typography, IconButton,
-    Grid, Switch, Tooltip
+    Grid, Switch, Tooltip, LinearProgress, List, ListItem, ListItemText, ListItemAvatar,
+    useTheme, useMediaQuery, Avatar, ListItemSecondaryAction
 } from '@mui/material';
 import { Add, Edit, Delete } from '@mui/icons-material';
 import { DataGrid } from '@mui/x-data-grid';
@@ -33,6 +34,8 @@ const ManageDoctors = () => {
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [selectedDoctor, setSelectedDoctor] = useState(null);
     const showSnackbar = useSnackbar();
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
     useEffect(() => {
         fetchDoctors();
@@ -188,15 +191,39 @@ const ManageDoctors = () => {
                 </Button>
             </Box>
 
-            <Paper elevation={3} style={{ height: 400, width: '100%' }}>
-                <DataGrid
-                    rows={doctors}
-                    columns={columns}
-                    pageSize={10}
-                    rowsPerPageOptions={[5, 10, 20, 50, 100]}
-                    loading={loading}
-                    getRowId={(row) => row._id}
-                />
+            <Paper elevation={3} style={{ height: 'calc(100vh - 250px)', overflow: 'auto' }}>
+                {isMobile ?
+                    <List>
+                        {doctors.map((doctor) => (
+                            <ListItem key={doctor._id}>
+                                <ListItemAvatar>
+                                    <Avatar src={doctor.imageUrl} alt={doctor.name.en[0]} />
+                                </ListItemAvatar>
+                                <ListItemText
+                                    primary={doctor.name.en}
+                                    secondary={doctor.position.en}
+                                />
+                                <ListItemSecondaryAction>
+                                    <IconButton onClick={() => { setDoctorId(doctor._id); setDoctorData(doctor); setOpen(true); }}>
+                                        <Edit />
+                                    </IconButton>
+                                    <IconButton onClick={() => handleDeleteClick(doctor._id)}>
+                                        <Delete />
+                                    </IconButton>
+                                </ListItemSecondaryAction>
+                            </ListItem>
+                        ))}
+                    </List>
+                    :
+                    <DataGrid
+                        rows={doctors}
+                        columns={columns}
+                        pageSize={10}
+                        rowsPerPageOptions={[5, 10, 20, 50, 100]}
+                        loading={loading}
+                        getRowId={(row) => row._id}
+                    />
+                }
             </Paper>
 
             <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="md">
