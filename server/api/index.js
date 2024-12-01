@@ -23,7 +23,7 @@ const galleryRoutes = require('../routes/galleryRoutes');
 const beforeAfterRoutes = require('../routes/beforeAfterRoutes');
 const notificationRoutes = require('../routes/notificationRoutes');
 const authRoutes = require('../routes/authRoutes');
-const themeRoutes = require('../routes/themeRoutes');
+const themeRoutes = require('../routes/ThemeRoutes');
 
 // Import Middlewares
 const { notFound, errorHandler } = require('../middlewares/errorMiddleware');
