@@ -17,7 +17,6 @@ import TestimonialsManager from "../components/dashboard/TestimonialsManager";
 import CustomizationPanel from "../components/dashboard/CustomizationPanel";
 import ManageFAQPage from "../components/dashboard/ManageFAQPage";
 import ManageMessagesPage from "../components/dashboard/ManageMessagesPage";
-import ThemeCustomizationPage from "../components/dashboard/ThemeCustomizationPage";
 import ManageSubscriptionsPage from "../components/dashboard/ManageSubscriptionsPage";
 import ManageNotificationsPage from "../components/dashboard/NotificationsPage";
 import ManageGalleryPage from "../components/dashboard/ManageGalleryPage";
@@ -63,6 +62,7 @@ const DashboardPage = () => {
                 sidebarWidth={sidebarWidth}
                 setCurrentPage={setCurrentPage}
                 isMobile={isMobile}
+                setOpen={setOpen}
             />
 
             {/* Main Content Area */}
@@ -73,7 +73,6 @@ const DashboardPage = () => {
                     px: 3,
                     py: 2,
                     transition: "margin-left 0.3s ease, width 0.3s ease",
-                    // ml: open ? sidebarWidth : 0,
                     overflowY: "auto",
                     minHeight: "100vh",
                     backgroundColor: theme.palette.background.paper,
@@ -113,7 +112,6 @@ const DashboardPage = () => {
                         <Route path="/messages" element={<ManageMessagesPage setCurrentPage={setCurrentPage} />} />
                         <Route path="/notifications" element={<ManageNotificationsPage setCurrentPage={setCurrentPage} />} />
                         <Route path="/settings/customization" element={<CustomizationPanel />} />
-                        <Route path="/settings/theme" element={<ThemeCustomizationPage />} />
                     </Routes>
                 </motion.div>
             </Box>

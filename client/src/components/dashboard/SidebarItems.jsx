@@ -12,7 +12,7 @@ import { useNavigate } from "react-router-dom";
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
-const SidebarItems = ({ item, open, handleItemClick }) => {
+const SidebarItems = ({ item, open, setOpen, handleItemClick, onToggleDrawer }) => {
     const theme = useTheme();
     const navigate = useNavigate();
     const [subOpen, setSubOpen] = useState(false);

@@ -22,8 +22,8 @@ const commentRoutes = require('../routes/commentRoutes');
 const galleryRoutes = require('../routes/galleryRoutes');
 const beforeAfterRoutes = require('../routes/beforeAfterRoutes');
 const notificationRoutes = require('../routes/notificationRoutes');
-const themeSettingsRoutes = require('../routes/themeSettingsRoutes');
 const authRoutes = require('../routes/authRoutes');
+const themeRoutes = require('../routes/themeRoutes');
 
 // Import Middlewares
 const { notFound, errorHandler } = require('../middlewares/errorMiddleware');
@@ -71,7 +71,7 @@ app.use('/comments', commentRoutes);
 app.use('/gallery', galleryRoutes);
 app.use('/before-after', beforeAfterRoutes);
 app.use('/notifications', notificationRoutes);
-app.use('/theme-settings', themeSettingsRoutes);
+app.use('/theme', themeRoutes);
 
 // Error Handling Middlewares
 app.use(notFound);

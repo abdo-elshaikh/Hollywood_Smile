@@ -34,6 +34,7 @@ import {
     Bookmark as BookmarkIcon,
     Person as PersonIcon,
     MedicationSharp as MedicationSharpIcon,
+    FiberManualRecordTwoTone
 } from "@mui/icons-material";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import SidebarItems from "./SidebarItems";
@@ -41,8 +42,8 @@ import { useAuth } from "../../contexts/AuthContext";
 import TransferWithinAStationIcon from '@mui/icons-material/TransferWithinAStation';
 import ConfirmationDialog from "../common/ConfirmationDialog";
 
-const Sidebar = ({ open, sidebarWidth, onToggleDrawer, setCurrentPage }) => {
-    const { user, logout } = useAuth();
+const Sidebar = ({ open, sidebarWidth, onToggleDrawer, setCurrentPage, setOpen }) => {
+    const { logout } = useAuth();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
     const [expanded, setExpanded] = React.useState({ settings: false });
@@ -63,9 +64,9 @@ const Sidebar = ({ open, sidebarWidth, onToggleDrawer, setCurrentPage }) => {
         { title: "Blogs", icon: <InfoIcon />, link: "/blog-dashboard" },
         {
             title: "Settings", icon: <SettingsIcon />, subItems: [
-                { title: "Theme", icon: <LightModeIcon />, link: "/dashboard/settings/theme" },
-                { title: "Customs", icon: <DarkModeIcon />, link: "/dashboard/settings/customization" },
-                { title: "Manage Files", icon: <DriveFileMoveIcon />, link: "/dashboard/files" },
+                { title: "Customization", icon: <FiberManualRecordTwoTone />, link: "/dashboard/settings/customization" },
+                { title: "Messages", icon: <FiberManualRecordTwoTone />, link: "/dashboard/messages" },
+                { title: "Notifications", icon: <FiberManualRecordTwoTone />, link: "/dashboard/notifications" },
             ]
         },
     ];
@@ -78,6 +79,7 @@ const Sidebar = ({ open, sidebarWidth, onToggleDrawer, setCurrentPage }) => {
 
     const handleItemClick = (link) => {
         setCurrentPage(link);
+        setOpen(false);
     };
 
     const toggleExpand = (key) => {
@@ -147,6 +149,7 @@ const Sidebar = ({ open, sidebarWidth, onToggleDrawer, setCurrentPage }) => {
                                             item={subItem}
                                             open={open}
                                             handleItemClick={handleItemClick}
+                                            onToggleDrawer={onToggleDrawer}
                                             nested
                                         />
                                     ))}
@@ -163,7 +166,12 @@ const Sidebar = ({ open, sidebarWidth, onToggleDrawer, setCurrentPage }) => {
                     )
                 ))}
                 <Divider sx={{ marginTop: "auto", color: "#f07167" }} />
-
+                <ListItem button onClick={handleLogout}>
+                    <ListItemIcon>
+                        <LogoutIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Logout" />
+                </ListItem>
             </List>
         </Drawer>
     );

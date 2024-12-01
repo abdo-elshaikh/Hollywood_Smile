@@ -25,7 +25,7 @@ import { motion } from "framer-motion";
 // Main Customization Panel Component
 const CustomizationPanel = () => {
     // Access theme context values and functions
-    const { mode, colors, toggleMode, updateColors, resetTheme } = useCustomTheme();
+    const { mode, toggleMode, updateColors, colors, resetTheme } = useCustomTheme();
     const showSnackbar = useSnackbar();
 
     // Local states for color inputs
@@ -56,18 +56,22 @@ const CustomizationPanel = () => {
     };
 
     // Apply changes to theme
-    const applyThemeColors = () => {
-        updateColors({
-            primary: primaryColor,
-            secondary: secondaryColor,
-            text: textColor,
-            title: titleColor,
-            background: backgroundColor,
-            border: borderColor,
-            shadow: shadowColor,
-            subtitle: subtitleColor,
-        });
-        showSnackbar("Theme colors applied successfully", "success");
+    const applyThemeColors = async () => {
+        try {
+            await updateColors({
+                primary: primaryColor,
+                secondary: secondaryColor,
+                text: textColor,
+                title: titleColor,
+                background: backgroundColor,
+                border: borderColor,
+                shadow: shadowColor,
+                subtitle: subtitleColor,
+            });
+            showSnackbar("Theme colors applied successfully", "success");
+        } catch (error) {
+            showSnackbar("Failed to apply theme colors", "error");
+        }
     };
 
     // Reset the theme to default colors based on the mode
@@ -128,7 +132,7 @@ const CustomizationPanel = () => {
                                                 <IconButton sx={{ p: 0 }}>
                                                     <ColorLensIcon />
                                                 </IconButton>
-                                            )
+                                            ),
                                         }}
                                     />
                                 </Grid>
@@ -178,7 +182,6 @@ const CustomizationPanel = () => {
                             <Typography variant="subtitle1" sx={{ color: subtitleColor }} gutterBottom>
                                 This section dynamically reflects your customizations in real-time.
                             </Typography>
-                            {/* Add more components as needed */}
 
                             <Divider sx={{ mt: 2, mb: 3, color: borderColor }} />
 
