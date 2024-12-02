@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import {
     Box, Button, Typography, Dialog, DialogTitle, DialogContent,
-    DialogActions, TextField, Switch, FormControlLabel
+    DialogActions, TextField, Switch, FormControlLabel, useTheme, useMediaQuery,
+    CircularProgress, List, ListItem, ListItemText, ListItemIcon, Divider
 } from "@mui/material";
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 import { Add, Edit, Delete } from "@mui/icons-material";
@@ -15,6 +16,8 @@ const ManageFAQPage = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [tags, setTags] = useState([]);
     const showSnackbar = useSnackbar();
+    const theme = useTheme();
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
     useEffect(() => {
         fetchFAQs();
@@ -139,8 +142,7 @@ const ManageFAQPage = () => {
     ];
 
     return (
-        <Box sx={{ padding: 3 }}>
-            <Typography variant="h4" sx={{ mb: 2 }}>Manage FAQs</Typography>
+        <Box >
             <Button
                 variant="contained"
                 color="primary"
@@ -151,19 +153,57 @@ const ManageFAQPage = () => {
                 Add FAQ
             </Button>
 
-            <Box sx={{ height: 500, width: '100%' }}>
-                <DataGrid
-                    rows={faqs}
-                    columns={columns}
-                    pageSize={10}
-                    loading={isLoading}
-                    rowsPerPageOptions={[10, 25, 50, 100]}
-                    // checkboxSelection
-                    // onRowClick={(params) => handleOpenDialog(params.row)}
-                    disableSelectionOnClick
-                    experimentalFeatures={{ newEditingApi: true }}
-                    getRowId={(row) => row._id}
-                />
+            <Box sx={{ height: 500, width: '100%', backgroundColor: 'background.default', overflow: 'auto' }}>
+                {isSmallScreen ? (
+                    <List>
+                        {faqs.map((faq) => (
+                            <ListItem key={faq._id} sx={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #ccc' }}>
+                                <ListItemText
+                                    primary={faq.question_en}
+                                    secondary={
+                                        <React.Fragment>
+                                            <Typography
+                                                sx={{ display: 'inline' }}
+                                                component="span"
+                                                variant="body2"
+                                                color="text.primary"
+                                            >
+                                                {faq.question_ar}
+                                            </Typography>
+                                            <Divider variant="middle" sx={{ my: 1 }} />
+                                            <Box display="flex" alignItems="center" >
+                                                <Typography variant="body2">Show in Home</Typography>
+                                                <Switch
+                                                    checked={faq.showInHome}
+                                                    onChange={() => handleToggleShowInHome(faq)}
+                                                />
+                                                <Typography variant="body2">Available</Typography>
+                                                <Switch
+                                                    checked={faq.available}
+                                                    onChange={() => handleToggleAvailable(faq)}
+                                                />
+                                            </Box>
+                                        </React.Fragment>
+                                    }
+                                />
+                                <Divider orientation="vertical" flexItem sx={{ mx: 2 }} />
+                                <ListItemIcon sx={{ display: 'flex', alignItems: 'center', gap: 1, padding: 1, backgroundColor: 'background.paper' }}>
+                                    <Edit onClick={() => handleOpenDialog(faq)} />
+                                    <Delete onClick={() => handleDeleteFAQ(faq._id)} />
+                                </ListItemIcon>
+                            </ListItem>
+                        ))}
+                    </List>
+                ) : (
+                    <DataGrid
+                        rows={faqs}
+                        columns={columns}
+                        pageSize={10}
+                        rowsPerPageOptions={[10]}
+                        disableSelectionOnClick
+                        loading={isLoading}
+                    />
+                )}
             </Box>
 
             <FAQDialog open={open} onClose={handleCloseDialog} faqData={editData} setFaqData={setEditData} onSave={handleSaveFAQ} />

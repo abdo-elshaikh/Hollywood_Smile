@@ -1,11 +1,11 @@
 // src/components/SendSMS.js
 import React, { useState, useEffect } from "react";
-import smsService from "../services/smsService";
 import {
-    Box, TextField, Button, Typography, Paper, Tooltip, Container,
-    IconButton, CircularProgress, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions
+    Box, TextField, Button, Typography, Paper, Tooltip, Container, MenuItem, ListItemIcon, ListItemText, IconButton, CircularProgress, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions
 } from "@mui/material";
+
 import { Message } from "@mui/icons-material";
+import axiosInstance from "../services/axiosInstance";
 
 const SendSMS = ({ smsContent, phoneNumber }) => {
 
@@ -14,11 +14,13 @@ const SendSMS = ({ smsContent, phoneNumber }) => {
     const [responseMessage, setResponseMessage] = useState("");
     const [messageData, setMessageData] = useState({
         url: "http://192.168.1.30:8080/SendSMS",
-        username: "abdo",
-        password: "1234",
-        phone: phoneNumber || '',
-        message: smsContent || "",
+        username: "admin",
+        password: "admin",
+        phone: phoneNumber,
+        message: smsContent,
     });
+
+
 
     useEffect(() => {
         setMessageData({
@@ -46,14 +48,17 @@ const SendSMS = ({ smsContent, phoneNumber }) => {
     const handleSendSMS = async () => {
         setLoading(true);
         try {
-            const response = await smsService.sendLocalSms(messageData);
-            setResponseMessage(response.data.message);
+            const response = await axiosInstance.post('/sms/send-sms', messageData);
+            if (response.status === 200) {
+                setResponseMessage(response.data.message);
+            }
         } catch (error) {
-            setResponseMessage(`Error: ${error.response?.data?.message || error.message}`);
-        } finally {
-            setLoading(false);
+            console.error(error);
+            setResponseMessage("Failed to send SMS");
         }
-    };
+    }
+
+
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -65,11 +70,12 @@ const SendSMS = ({ smsContent, phoneNumber }) => {
 
     return (
         <>
-            <Tooltip title="Send SMS">
-                <IconButton onClick={handleOpen}>
+            <MenuItem onClick={handleOpen}>
+                <ListItemIcon>
                     <Message />
-                </IconButton>
-            </Tooltip>
+                </ListItemIcon>
+                <ListItemText primary="Send SMS" />
+            </MenuItem>
             <Dialog open={open} onClose={handleClose}>
                 <DialogTitle>Send SMS</DialogTitle>
                 <DialogContent>

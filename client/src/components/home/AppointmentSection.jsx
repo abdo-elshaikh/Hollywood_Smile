@@ -90,7 +90,9 @@ const AppointmentSection = () => {
         }
 
         try {
-            const data = await bookingService.createBooking(bookingData);
+            const res = await axiosInstance.post('/bookings', formData);
+            console.log(res.data , 'appointment created');
+            const data = res.data;
             if (data.success) {
                 showSnackbar(isArabic ? 'تم حجز الموعد بنجاح' : 'Appointment booked successfully', 'success');
                 setIsSuccess(true);

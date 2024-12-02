@@ -79,7 +79,9 @@ const Sidebar = ({ open, sidebarWidth, onToggleDrawer, setCurrentPage, setOpen }
 
     const handleItemClick = (link) => {
         setCurrentPage(link);
-        setOpen(false);
+        if (isMobile) {
+            setOpen(false);
+        }
     };
 
     const toggleExpand = (key) => {

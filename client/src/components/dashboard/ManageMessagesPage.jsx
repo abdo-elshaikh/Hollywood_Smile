@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Typography, CircularProgress, List, ListItem, ListItemText, ListItemIcon, useTheme, useMediaQuery } from "@mui/material";
 import { Delete, Edit, MarkChatRead } from "@mui/icons-material";
 import { DataGrid } from "@mui/x-data-grid";
 import axiosInstance from '../../services/axiosInstance';
@@ -12,6 +12,8 @@ const ManageMessagesPage = ({ setCurrentPage }) => {
     const [openDetails, setOpenDetails] = useState(false);
     const [selectedMessage, setSelectedMessage] = useState(null);
     const showSnackbar = useSnackbar();
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
     const fetchMessages = async () => {
         setCurrentPage("messages");
@@ -102,30 +104,94 @@ const ManageMessagesPage = ({ setCurrentPage }) => {
     }))
 
     return (
-        <Box p={3}>
+        <Box >
             <Typography variant="h4" gutterBottom>
                 Manage Messages
             </Typography>
-            <Box mt={2} style={{ height: 500, width: "100%" }}>
-                <DataGrid
-                    rows={rowData}
-                    columns={columns}
-                    pageSize={10}
-                    rowsPerPageOptions={[10]}
-                    loading={loading}
-                    getRowId={(row) => row._id}
-                    onCellDoubleClick={(params) => {
-                        setSelectedMessage(params.row);
-                        setOpenDetails(true);
-                    }}
-                />
+            <Box mt={2} style={{
+                height: "calc(100vh - 160px)",
+                width: "100%", overflow: "auto",
+                backgroundColor: "background.default",
+                borderRadius: "8px",
+                boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+            }}>
+                {loading && (
+                    <Box
+                        sx={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            height: "100%",
+                        }}
+                    >
+                        <CircularProgress />
+                    </Box>
+                )}
+                {isMobile ? (
+                    <List>
+                        {messages.map((message) => (
+                            <ListItem
+                                key={message._id}
+                                button
+                                onClick={() => {
+                                    setSelectedMessage(message);
+                                    setOpenDetails(true);
+                                }}
+                                sx={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    borderBottom: '1px solid #ccc',
+                                    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                                    borderRadius: 2,
+                                }}
+                            >
+                                <ListItemText
+                                    primary={message.name}
+                                    secondary={message.message}
+                                />
+                                <ListItemIcon>
+                                    <Button
+                                        color="primary"
+                                        size="small"
+                                        onClick={() => markAsRead(message._id)}
+                                        disabled={message.read}
+                                    >
+                                        <MarkChatRead />
+                                    </Button>
+                                    <Button
+                                        color="error"
+                                        size="small"
+                                        onClick={() => deleteMessage(message._id)}
+                                    >
+                                        <Delete />
+                                    </Button>
+                                </ListItemIcon>
+                            </ListItem>
+                        ))}
+                    </List>
+                ) : (
+                    <DataGrid
+                        rows={rowData}
+                        columns={columns}
+                        pageSize={10}
+                        getRowId={(row) => row._id}
+                        disableSelectionOnClick
+                        autoHeight
+                        density="compact"
+                        sx={{
+                            boxShadow: 2,
+                            borderRadius: 2,
+                            backgroundColor: theme.palette.background.paper,
+                        }}
+                    />
+                )}
             </Box>
             <MessageDetails
                 open={openDetails}
                 onClose={() => setOpenDetails(false)}
                 message={selectedMessage}
             />
-        </Box>
+        </Box >
     );
 };
 

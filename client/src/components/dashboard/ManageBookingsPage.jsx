@@ -35,6 +35,7 @@ import { Delete, Done, Cancel, Edit, Send, MoreVert, ExpandMore } from "@mui/ico
 import bookingService from "../../services/bookingService";
 import { useSnackbar } from "../../contexts/SnackbarProvider";
 import SendSMS from "../SendSMS";
+import WhatsAppMessage from "../common/WhatsAppMessage";
 import { useTheme } from "@mui/material/styles";
 
 const ManageBookingsPage = () => {
@@ -179,7 +180,7 @@ const ManageBookingsPage = () => {
 
   const columns = [
     {
-      field: "actions", headerName: "#", width: 50, renderCell: (params) => (
+      field: "actions", headerName: "#", flex: 0.2, renderCell: (params) => (
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <IconButton onClick={(event) => handleContextMenu(event, params.row)}>
             <MoreVert />
@@ -187,11 +188,11 @@ const ManageBookingsPage = () => {
         </Box>
       )
     },
-    { field: "code", headerName: "ID", hide: true, width: 100 },
+    { field: "code", headerName: "ID", hide: true, flex: true,},
     {
       field: "status",
       headerName: "Status",
-      width: 120,
+      flex: true,
       renderCell: (params) => (
         <Chip
           label={params.value}
@@ -201,11 +202,12 @@ const ManageBookingsPage = () => {
         />
       ),
     },
-    { field: "name", headerName: "Name", width: 150 },
-    { field: "phone", headerName: "Phone", width: 120 },
+    { field: "name", headerName: "Name", flex: true, },
+    { field: "phone", headerName: "Phone", flex: true, },
     ,
     {
       field: "date",
+      flex: true,
       headerName: "Preferred Date",
       renderCell: (params) => (
         <Typography variant="body2">{new Date(params.value).toLocaleDateString()}</Typography>
@@ -213,6 +215,7 @@ const ManageBookingsPage = () => {
     },
     {
       field: "time",
+      flex: true,
       headerName: "Preferred Time",
       renderCell: (params) => <Typography variant="body2">{params.value}</Typography>,
     },
@@ -292,7 +295,7 @@ const ManageBookingsPage = () => {
           ))}
         </Tabs>
       </Box>
-      <Paper sx={{ height: 'calc(100vh - 250px)' }}>
+      <Paper sx={{ height: 'calc(100vh - 250px)', width: '100%', overflow: 'auto' }}>
         {!isMobile ?
           <DataGrid
             rows={rows}
@@ -301,6 +304,9 @@ const ManageBookingsPage = () => {
             pageSizeOptions={[5, 10, 20]}
             autoPageSize
             pagination
+            autoHeight
+            checkboxSelection
+            disableSelectionOnClick
             initialState={{
               density: "compact",
               sortBy: [{ field: "date", order: "desc" }],
@@ -324,6 +330,7 @@ const ManageBookingsPage = () => {
                 quickFilterProps: { debounceMs: 500 },
               },
             }}
+            
           />
           :
           <Box sx={{ height: 'calc(100vh - 250px)', p: 2 }}>
@@ -432,7 +439,6 @@ const ManageBookingsPage = () => {
             variant="outlined"
             value={`Hello ${selectedBooking?.name},\nyour booking has been confirmed.\nDate: ${selectedBooking?.date.split("T")[0]},Time: ${selectedBooking?.time}\nPlease note your booking code: ${selectedBooking?.code}\nPlease be on time.`}
           />
-
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setConfirmDialog(false)}>Cancel</Button>
@@ -497,23 +503,19 @@ const ManageBookingsPage = () => {
           </ListItemIcon>
           <ListItemText>Delete Booking</ListItemText>
         </MenuItem>
-        <MenuItem
-          onClick={() => {
-            <SendSMS smsContent={`
-              Hello ${selectedBooking?.name},
-              your booking has been confirmed.
-              Date: ${selectedBooking?.date.split("T")[0]}, Time: ${selectedBooking?.time}
-              Please note your booking code: ${selectedBooking?.code}
-              Please be on time.
-              `} phoneNumber={selectedBooking?.phone} />
-            handleCloseContextMenu();
-          }}
-        >
-          <ListItemIcon>
-            <Send />
-          </ListItemIcon>
-          <ListItemText>Send SMS</ListItemText>
-        </MenuItem>
+        <Divider />
+        <SendSMS
+          phoneNumber={selectedBooking?.phone}
+          smsContent={`
+            مرحبًا ${selectedBooking?.name} ، تم تأكيد حجزك. التاريخ: ${selectedBooking?.date.split("T")[0]}, الوقت: ${selectedBooking?.time}. يرجى ملاحظة رمز الحجز الخاص بك: ${selectedBooking?.code}. يرجى التأكد من الحضور في الوقت المحدد.
+            `}
+        />
+
+        <WhatsAppMessage
+          phone={selectedBooking?.phone}
+          text={`Hello ${selectedBooking?.name}, your booking has been confirmed. Date: ${selectedBooking?.date.split("T")[0]}, Time: ${selectedBooking?.time}. Please note your booking code: ${selectedBooking?.code}. Please be on time.`}
+        />
+
       </Menu>
     </Box>
   );

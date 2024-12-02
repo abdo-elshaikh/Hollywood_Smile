@@ -1,31 +1,26 @@
-import React from "react";
-import {
-    Box,
-    Typography,
-    Button,
-    Container,
-    Stack,
-    useTheme,
-} from "@mui/material";
+import { Box, Button, Container, Stack, Typography, useTheme } from "@mui/material";
 import { motion } from "framer-motion";
-import { Swiper, SwiperSlide } from "swiper/react";
-import {
-    Navigation,
-    Pagination,
-    A11y,
-    EffectFade,
-    Autoplay,
-} from "swiper/modules";
-import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination, A11y, EffectFade, Autoplay } from "swiper/modules";
 import { useCustomTheme } from "../../contexts/ThemeProvider";
-
-const baseUrl = `${import.meta.env.VITE_SUPABASE_VIEW_URL}/uploads/slides`;
+import { useTranslation } from "react-i18next";
+const baseUrl = import.meta.env.VITE_SUPABASE_VIEW_URL;
 const slides = [
-    `${baseUrl}/slide_1.jpg`,
-    `${baseUrl}/slide_2.jpg`,
-    `${baseUrl}/slide_3.jpg`,
+    `${baseUrl}/uploads/slides/slide_1.jpg`,
+    `${baseUrl}/uploads/slides/slide_2.jpg`,
+    `${baseUrl}/uploads/slides/slide_3.jpg`,
+    `${baseUrl}/uploads/slides/slide_4.jpg`,
+    `${baseUrl}/uploads/slides/slide_5.jpg`,
 ];
+const MIN_SLIDES_FOR_LOOP = 5;
+
+const slideVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1 },
+};
+
+const slidesForLoop = slides.length < MIN_SLIDES_FOR_LOOP ? [...slides, ...slides] : slides;
 
 const HeroSection = () => {
     const { t, i18n } = useTranslation();
@@ -39,33 +34,35 @@ const HeroSection = () => {
         <Box
             sx={{
                 position: "relative",
-                height: { xs: "80vh", md: "90vh" },
+                height: { xs: "60vh", sm: "80vh", md: "90vh" },
                 overflow: "hidden",
             }}
         >
             <Swiper
                 modules={[Navigation, Pagination, A11y, EffectFade, Autoplay]}
+                slidesPerView={1}
+                slidesPerGroup={1}
                 centeredSlides
-                loop
+                loop={true}
                 effect="fade"
                 pagination={{
                     clickable: true,
                     dynamicBullets: true,
                 }}
                 autoplay={{
-                    delay: 6000,
+                    delay: 5000,
                     disableOnInteraction: false,
                 }}
                 style={{ height: "100%" }}
                 dir={isArabic ? "rtl" : "ltr"}
                 className="mySwiper"
             >
-                {slides.map((slide, index) => (
+                {slidesForLoop.map((slide, index) => (
                     <SwiperSlide key={index}>
                         <Box
                             sx={{
                                 position: "relative",
-                                height: "100vh",
+                                height: "100%",
                                 width: "100%",
                                 backgroundImage: `url(${slide})`,
                                 backgroundSize: "cover",
@@ -74,7 +71,6 @@ const HeroSection = () => {
                                 alignItems: "center",
                                 justifyContent: "center",
                                 flexDirection: "column",
-                                color: "white",
                                 textAlign: "center",
                                 "&:before": {
                                     content: '""',
@@ -83,7 +79,7 @@ const HeroSection = () => {
                                     left: 0,
                                     width: "100%",
                                     height: "100%",
-                                    bgcolor: "rgba(0,0,0,0.2)",
+                                    bgcolor: isDark ? "rgba(0, 0, 0, 0.3)" : "rgba(255, 255, 255, 0.3)",
                                     zIndex: 1,
                                 },
                             }}
@@ -98,6 +94,7 @@ const HeroSection = () => {
                                     alignItems: "center",
                                     justifyContent: "center",
                                     px: 2,
+                                    py: 4,
                                 }}
                             >
                                 <motion.div
@@ -111,7 +108,8 @@ const HeroSection = () => {
                                             fontWeight: "bold",
                                             color: "primary.main",
                                             fontSize: {
-                                                xs: theme.typography.pxToRem(40),
+                                                xs: theme.typography.pxToRem(35),
+                                                sm: theme.typography.pxToRem(40),
                                                 md: theme.typography.pxToRem(60),
                                             },
                                             lineHeight: { xs: 1.2, md: 1.5 },
@@ -131,7 +129,8 @@ const HeroSection = () => {
                                         sx={{
                                             color: "white",
                                             fontSize: {
-                                                xs: theme.typography.pxToRem(18),
+                                                xs: theme.typography.pxToRem(20),
+                                                sm: theme.typography.pxToRem(22),
                                                 md: theme.typography.pxToRem(24),
                                             },
                                             mt: 2,
@@ -142,10 +141,13 @@ const HeroSection = () => {
                                     </Typography>
                                 </motion.div>
                                 <Stack
-                                    direction="row"
+                                    direction={{ xs: "column", sm: "row" }}
                                     spacing={2}
-                                    sx={{ mt: 4, gap: 2 }}
-                                    justifyContent="center"
+                                    sx={{
+                                        mt: 4,
+                                        gap: 2,
+                                        justifyContent: "center",
+                                    }}
                                 >
                                     <motion.div
                                         initial={{ opacity: 0, scale: 0.9 }}
@@ -156,6 +158,7 @@ const HeroSection = () => {
                                             variant="contained"
                                             color="primary"
                                             size="large"
+                                            fullWidth={{ xs: true, sm: false }}
                                             onClick={() => navigate("/booking")}
                                             aria-label={isArabic ? "احجز الآن" : "Book Now"}
                                         >
@@ -171,6 +174,7 @@ const HeroSection = () => {
                                             variant="outlined"
                                             color="primary"
                                             size="large"
+                                            fullWidth={{ xs: true, sm: false }}
                                             onClick={() => navigate("/contact-us")}
                                             aria-label={isArabic ? "تواصل معنا" : "Contact Us"}
                                         >

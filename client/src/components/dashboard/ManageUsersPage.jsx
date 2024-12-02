@@ -9,36 +9,32 @@ import {
   DialogContent,
   TextField,
   IconButton,
-  FormControlLabel,
-  Switch,
   Select,
   MenuItem,
   DialogContentText,
   DialogActions,
+  useTheme,
+  useMediaQuery,
+  Tooltip,
+  Grid,
+  Switch,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import { useCustomTheme } from "../../contexts/ThemeProvider";
-import { useSnackbar } from "../../contexts/SnackbarProvider";
-import { useAuth } from "../../contexts/AuthContext";
+import { Delete, Edit, Search } from "@mui/icons-material";
 import { getUsers, deleteUser, updateUser, createUser } from "../../services/userService";
-import { Delete, Edit } from "@mui/icons-material";
 
 const ManageUsersPage = () => {
-  // Context and State Management
-  const { themeMode } = useCustomTheme();
-  const { user } = useAuth();
-  const showSnackbar = useSnackbar();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  // Component States
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [updating, setUpdating] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [deleteUserId, setDeleteUserId] = useState(null);
   const [openUserFormDialog, setOpenUserFormDialog] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
 
-  // Fetch Users on Component Mount
   useEffect(() => {
     fetchUsers();
   }, []);
@@ -46,114 +42,63 @@ const ManageUsersPage = () => {
   const fetchUsers = async () => {
     try {
       const data = await getUsers();
-      const filteredData = data.users.filter((u) => u._id !== user._id);
-      setUsers(filteredData);
-    } catch (error) {
-      showSnackbar("Error fetching users", "error");
+      setUsers(data.users);
+    } catch {
+      console.error("Error fetching users");
     } finally {
       setLoading(false);
     }
   };
 
-  // Handle Deleting a User
   const handleDeleteUser = async () => {
     try {
-      setUpdating(true);
-      const response = await deleteUser(deleteUserId);
-      if (!response.error) {
-        showSnackbar("User deleted successfully", "success");
-        setUsers((prevUsers) => prevUsers.filter((u) => u._id !== deleteUserId));
-      } else {
-        showSnackbar(response.message, "error");
-      }
-    } catch (error) {
-      showSnackbar(error.message || "Error deleting user", "error");
+      await deleteUser(deleteUserId);
+      setUsers(users.filter((user) => user._id !== deleteUserId));
+    } catch {
+      console.error("Error deleting user");
     } finally {
       setOpenDeleteDialog(false);
-      setUpdating(false);
     }
   };
 
-  // Handle Adding or Updating a User
   const handleSaveUser = async () => {
     try {
-      setUpdating(true);
       if (currentUser._id) {
-        // Update User
-        const response = await updateUser(currentUser._id, currentUser);
-        if (!response.error) {
-          showSnackbar("User updated successfully", "success");
-          fetchUsers();
-        } else {
-          showSnackbar(response.message, "error");
-        }
+        await updateUser(currentUser._id, currentUser);
       } else {
-        // Add New User
-        const password = import.meta.env.VITE_DEFAULT_PASSWORD;
-        const data = await createUser({ ...currentUser, password });
-        if (!data.error) {
-          showSnackbar("User created successfully", "success");
-          fetchUsers();
-        } else {
-          showSnackbar( data.message || 'Error creating user', "error");
-        }
+        await createUser(currentUser);
       }
-    } catch (error) {
-      showSnackbar(error.message || "Error saving user", "error");
+      fetchUsers();
+    } catch {
+      console.error("Error saving user");
     } finally {
       setOpenUserFormDialog(false);
-      setUpdating(false);
     }
   };
 
-  // Handle changing the role of a user
-  const handleRoleChange = async (id, role) => {
-    try {
-      const response = await updateUser(id, { role });
-      if (!response.error) {
-        showSnackbar("User role updated successfully", "success");
-        setUsers((prevUsers) =>
-          prevUsers.map((user) => (user._id === id ? { ...user, role } : user))
-        );
-      } else {
-        showSnackbar(response.message, "error");
-      }
-    } catch (error) {
-      showSnackbar(error.message || "Error updating user role", "error");
-    }
+  const handleEditUser = (user) => {
+    setCurrentUser(user);
+    setOpenUserFormDialog(true);
   };
 
-  // Handle changing the status of a user
-  const handleStatusChange = async (id, isActive) => {
-    try {
-      const response = await updateUser(id, { isActive });
-      if (!response.error) {
-        showSnackbar("User status updated successfully", "success");
-        setUsers((prevUsers) =>
-          prevUsers.map((user) => (user._id === id ? { ...user, isActive } : user))
-        );
-      } else {
-        showSnackbar(response.message, "error");
-      }
-    } catch (error) {
-      showSnackbar(error.message || "Error updating user status", "error");
-    }
-  };
+  const filteredUsers = users.filter(
+    (user) =>
+      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
-  // Columns Configuration for DataGrid
   const columns = [
-    { field: "name", headerName: "Name", width: 150 },
-    { field: "email", headerName: "Email", width: 200 },
+    { field: "name", headerName: "Name", flex: 1 },
+    { field: "email", headerName: "Email", flex: 1 },
     {
       field: "role",
       headerName: "Role",
-      width: 150,
-      editable: true,
+      flex: 1,
       renderCell: (params) => (
         <Select
+          value={params.row.role}
           size="small"
-          value={params.value}
-          onChange={(e) => handleRoleChange(params.id, e.target.value)}
+          onChange={(e) => updateUser(params.row._id, { role: e.target.value })}
         >
           <MenuItem value="admin">Admin</MenuItem>
           <MenuItem value="visitor">Visitor</MenuItem>
@@ -166,88 +111,134 @@ const ManageUsersPage = () => {
     {
       field: "isActive",
       headerName: "Status",
-      width: 120,
+      flex: 1,
       renderCell: (params) => (
         <Switch
-          // size="small"
-          color="primary"
-          checked={params.value}
-          onChange={(e) => handleStatusChange(params.id, e.target.checked)}
+          checked={params.row.isActive}
+          onChange={() => updateUser(params.row._id, { isActive: !params.row.isActive })}
         />
       ),
     },
     {
       field: "actions",
       headerName: "Actions",
-      width: 120,
+      flex: 1,
       renderCell: (params) => (
-        <>
-          <IconButton
-            color="error"
-            onClick={() => {
-              setDeleteUserId(params.row._id);
-              setOpenDeleteDialog(true);
-            }}
-          >
-            <Delete />
-          </IconButton>
-          <IconButton
-            onClick={() => {
-              setCurrentUser(params.row);
-              setOpenUserFormDialog(true);
-            }}
-          >
-            <Edit />
-          </IconButton>
-        </>
+        <Box sx={{ display: "flex", gap: 2 }}>
+          <Tooltip title="Edit">
+            <IconButton onClick={() => handleEditUser(params.row)}>
+              <Edit />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Delete">
+            <IconButton
+              onClick={() => {
+                setDeleteUserId(params.row._id);
+                setOpenDeleteDialog(true);
+              }}
+            >
+              <Delete />
+            </IconButton>
+          </Tooltip>
+        </Box>
       ),
     },
   ];
 
   return (
-    <Box sx={{ padding: 4 }}>
-      <Typography variant="h5" sx={{ marginBottom: 3, fontWeight: "bold" }}>
-        Manage Users
-      </Typography>
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={() => {
-          setCurrentUser(null);
-          setOpenUserFormDialog(true);
-        }}
-        sx={{ mb: 2 }}
-      >
-        Add User
-      </Button>
-      {loading ? (
-        <CircularProgress />
-      ) : (
-        <Box sx={{ height: 400, width: "100%" }}>
+    <Box>
+      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
+        <TextField
+          placeholder="Search users..."
+          size="small"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          InputProps={{
+            startAdornment: <Search sx={{ mr: 1 }} />,
+          }}
+        />
+        <Button
+          variant="contained"
+          onClick={() => {
+            setCurrentUser(null);
+            setOpenUserFormDialog(true);
+          }}
+        >
+          Add User
+        </Button>
+      </Box>
+
+      <Box sx={{ height: 'calc(100vh - 200px)', overflow: 'auto' }}>
+        {loading ? (
+          <CircularProgress />
+        ) : isMobile ? (
+          <Grid container spacing={2}
+            sx={{ borderRadius: 2, p: 2, overflow: "auto" }}
+          >
+            {filteredUsers.map((user) => (
+              <Grid item xs={12} key={user._id} sx={{ mb: 2 }}>
+                <Grid container spacing={2} sx={{ border: "1px solid #ccc", borderRadius: 2 }}>
+                  <Grid item xs={8}>
+                    <Typography variant="h6">{user.name}</Typography>
+                    <Typography variant="body2">{user.email}</Typography>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                      <IconButton onClick={() => handleEditUser(user)}>
+                        <Edit />
+                      </IconButton>
+                      <IconButton
+                        onClick={() => {
+                          setDeleteUserId(user._id);
+                          setOpenDeleteDialog(true);
+                        }}
+                      >
+                        <Delete />
+                      </IconButton>
+                    </Box>
+                  </Grid>
+                  <Grid item xs={12}
+                    sx={{ display: "flex", alignItems: "center", mt: 2, mb: 2 }}
+                  >
+                    <Switch
+                      checked={user.isActive}
+                      onChange={() => updateUser(user._id, { isActive: !user.isActive })}
+                    />
+
+                    <Select
+                      size="small"
+                      sx={{ ml: 2 }}
+                      value={user.role}
+                      onChange={(e) => updateUser(user._id, { role: e.target.value })}
+                    >
+                      <MenuItem value="admin">Admin</MenuItem>
+                      <MenuItem value="visitor">Visitor</MenuItem>
+                      <MenuItem value="editor">Editor</MenuItem>
+                      <MenuItem value="author">Author</MenuItem>
+                      <MenuItem value="support">Support</MenuItem>
+                    </Select>
+                  </Grid>
+                </Grid>
+              </Grid>
+            ))}
+          </Grid>
+        ) : (
           <DataGrid
-            rows={users}
+            rows={filteredUsers}
             columns={columns}
             pageSize={5}
-            rowsPerPageOptions={[5, 10, 20]}
             getRowId={(row) => row._id}
-            disableSelectionOnClick
           />
-        </Box>
-      )}
+        )}
+      </Box>
 
-      {/* Add User Form Dialog */}
-      <Dialog
-        open={openUserFormDialog}
-        onClose={() => setOpenUserFormDialog(false)}
-        fullWidth
-        maxWidth="sm"
-      >
+      <Dialog open={openUserFormDialog} onClose={() => setOpenUserFormDialog(false)}>
         <DialogTitle>{currentUser ? "Edit User" : "Add User"}</DialogTitle>
         <DialogContent>
           <TextField
-            label="Username"
-            value={currentUser?.username || ""}
-            onChange={(e) => setCurrentUser({ ...currentUser, username: e.target.value })}
+            label="Name"
+            value={currentUser?.name || ""}
+            onChange={(e) => setCurrentUser({ ...currentUser, name: e.target.value })}
             fullWidth
             margin="normal"
           />
@@ -258,23 +249,23 @@ const ManageUsersPage = () => {
             fullWidth
             margin="normal"
           />
-          <Button variant="contained" onClick={handleSaveUser} sx={{ marginTop: 2 }}>
-            {currentUser ? "Save Changes" : "Add User"}
-          </Button>
         </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenUserFormDialog(false)}>Cancel</Button>
+          <Button onClick={handleSaveUser} variant="contained">
+            Save
+          </Button>
+        </DialogActions>
       </Dialog>
 
-      {/* Delete User Dialog */}
       <Dialog open={openDeleteDialog} onClose={() => setOpenDeleteDialog(false)}>
         <DialogTitle>Delete User</DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            Are you sure you want to delete {users.find((user) => user._id === deleteUserId)?.username} user?
-          </DialogContentText>
+          <DialogContentText>Are you sure you want to delete this user?</DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpenDeleteDialog(false)}>Cancel</Button>
-          <Button onClick={handleDeleteUser} color="error">
+          <Button onClick={handleDeleteUser} color="error" variant="contained">
             Delete
           </Button>
         </DialogActions>

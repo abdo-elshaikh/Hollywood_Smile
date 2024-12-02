@@ -70,6 +70,7 @@ const BookingPage = () => {
         }
         try {
             const data = await bookingService.createBooking(bookingData);
+            console.log('Booking Data:', data);
             if (data.success) {
                 showSnackBar(isArabic ? 'تم حجز الموعد بنجاح' : 'Appointment booked successfully.', 'success');
                 setOpenDialog(false);

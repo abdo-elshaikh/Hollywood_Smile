@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Button, Typography, Alert } from '@mui/material';
+import { Box, Button, Typography, Alert, List, ListItem, ListItemText, CircularProgress } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import { motion } from 'framer-motion';
 import axiosInstance from '../../services/axiosInstance';
@@ -13,7 +13,7 @@ const ManageSubscriptionsPage = () => {
     useEffect(() => {
         const fetchSubscriptions = async () => {
             try {
-                const response = await axiosInstance.get('/subscribe');
+                const response = await axiosInstance.get('/subscribers');
                 setSubscriptions(response.data.subscribers);
             } catch (error) {
                 console.error('Failed to fetch subscriptions:', error);
@@ -34,11 +34,10 @@ const ManageSubscriptionsPage = () => {
     // Columns configuration for DataGrid
     const columns = [
         { field: 'email', headerName: 'Email', flex: 1 },
-        { field: 'subscriptionDate', headerName: 'Date Subscribed', flex: 1 },
+        { field: 'subscriptionDate', headerName: 'Date Subscribed' },
         {
             field: 'actions',
             headerName: 'Actions',
-            flex: 1,
             renderCell: (params) => (
                 <Button
                     variant="contained"
@@ -57,38 +56,27 @@ const ManageSubscriptionsPage = () => {
     };
 
     return (
-        <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5 }}
-        >
-            <Box p={3}>
-                <Typography variant="h4" gutterBottom>
-                    Manage Subscriptions
-                </Typography>
-
-                {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-
+        <Box >
+            {error && <Alert severity="error">{error}</Alert>}
+            {loading ? (
+                <CircularProgress />
+            ) : (
                 <motion.div
-                    initial={{ y: -20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
                     transition={{ duration: 0.5 }}
+                    style={{ height: 400, width: '100%', overflowX: 'auto' }}
                 >
-                    <Box sx={{ height: 400, width: '100%', mt: 3 }}>
-                        <DataGrid
-                            rows={rows}
-                            columns={columns}
-                            pageSize={5}
-                            loading={loading}
-                            rowsPerPageOptions={[5, 10, 20]}
-                            checkboxSelection
-                            disableSelectionOnClick
-                        />
-                    </Box>
+                    <DataGrid
+                        rows={rows}
+                        columns={columns}
+                        pageSize={10}
+                        rowsPerPageOptions={[10]}
+                        disableSelectionOnClick
+                    />
                 </motion.div>
-            </Box>
-        </motion.div>
+            )}
+        </Box>
     );
 };
 

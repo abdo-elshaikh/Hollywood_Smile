@@ -24,6 +24,7 @@ const beforeAfterRoutes = require('../routes/beforeAfterRoutes');
 const notificationRoutes = require('../routes/notificationRoutes');
 const authRoutes = require('../routes/authRoutes');
 const themeRoutes = require('../routes/ThemeRoutes');
+const smsRoutes = require('../routes/smsRoutes');
 
 // Import Middlewares
 const { notFound, errorHandler } = require('../middlewares/errorMiddleware');
@@ -72,6 +73,7 @@ app.use('/gallery', galleryRoutes);
 app.use('/before-after', beforeAfterRoutes);
 app.use('/notifications', notificationRoutes);
 app.use('/theme', themeRoutes);
+app.use('/sms', smsRoutes);
 
 // Error Handling Middlewares
 app.use(notFound);

@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import {
     Box, Button, Typography, Container, Dialog, Switch,
     FormControlLabel, TextField, DialogContent, DialogActions,
-    DialogTitle, Rating, Avatar
+    DialogTitle, Rating, Avatar, useTheme, useMediaQuery,
+    List, ListItem, ListItemAvatar, ListItemText, ListItemSecondaryAction
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import axiosInstance from '../../services/axiosInstance';
@@ -12,12 +13,14 @@ const TestimonialsManager = () => {
     const [testimonials, setTestimonials] = useState([]);
     const [openFormDialog, setOpenFormDialog] = useState(false);
     const [selectedTestimonial, setSelectedTestimonial] = useState(null);
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
     // Fetch testimonials from the service
     const fetchTestimonials = async () => {
         try {
             const { data } = await axiosInstance.get('/testimonials');
-            setTestimonials(data);
+            setTestimonials(data.sort((a, b) => b.createdAt - a.createdAt));
         } catch (error) {
             console.error('Failed to fetch testimonials:', error);
         }
@@ -58,7 +61,7 @@ const TestimonialsManager = () => {
         }
     };
 
-    
+
     // Define columns for the DataGrid
     const columns = [
         { field: 'name', headerName: 'Name', width: 150 },
@@ -88,21 +91,66 @@ const TestimonialsManager = () => {
     ];
 
     return (
-        <Container maxWidth="lg">
-            <Typography variant="h4" sx={{ my: 4 }}>
-                Manage Testimonials
-            </Typography>
+        <Box>
             <Button variant="contained" color="primary" onClick={() => handleOpenFormDialog()}>
                 Add Testimonial
             </Button>
-            <Box sx={{ height: 500, my: 2 }}>
-                <DataGrid
-                    rows={testimonials}
-                    columns={columns}
-                    pageSize={5}
-                    getRowId={(row) => row._id}
-                    disableSelectionOnClick
-                />
+            <Box sx={{ height: 550, my: 2, backgroundColor: 'background.default', borderRadius: 2, overflow: 'auto' }}>
+                {isMobile ? (
+                    <List>
+                        {testimonials?.map((testimonial) => (
+                            <ListItem key={testimonial._id} sx={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #ccc' }}>
+                                <ListItemAvatar>
+                                    <Avatar src={testimonial?.imgUrl} alt={testimonial.name[0]} />
+                                </ListItemAvatar>
+                                <ListItemText
+                                    primary={testimonial.name}
+                                    secondary={
+                                        <>
+                                            <Typography
+                                                sx={{ display: 'inline' }}
+                                                component="span"
+                                                variant="body2"
+                                                color="text.primary"
+                                            >
+                                                {testimonial.position}
+                                            </Typography>
+                                            <br />
+                                            <Rating name="read-only" value={testimonial.rating} readOnly />
+                                            <br />
+                                            <Typography
+                                                sx={{ display: 'inline' }}
+                                                component="span"
+                                                variant="body2"
+                                                color="text.primary"
+                                            >
+                                                {testimonial.quote}
+                                            </Typography>
+                                            <Box
+                                                sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                                            >
+                                                <Switch checked={testimonial.show} onChange={() => handleShowTestimonial(testimonial._id, testimonial.show)} />
+                                                <Button onClick={() => handleOpenFormDialog(testimonial)}>Edit</Button>
+                                                <Button color="error" onClick={() => handleDeleteTestimonial(testimonial._id)}>Delete</Button>
+                                            </Box>
+                                        </>
+                                    }
+
+                                />
+
+                            </ListItem>
+
+                        ))}
+                    </List>
+                ) : (
+                    <DataGrid
+                        rows={testimonials}
+                        columns={columns}
+                        pageSize={5}
+                        getRowId={(row) => row._id}
+                        disableSelectionOnClick
+                    />
+                )}
             </Box>
             <Dialog open={openFormDialog} onClose={handleCloseFormDialog}>
                 <TestimonialFormDialog
@@ -111,7 +159,7 @@ const TestimonialsManager = () => {
                     onSave={fetchTestimonials}
                 />
             </Dialog>
-        </Container>
+        </Box>
     );
 };
 

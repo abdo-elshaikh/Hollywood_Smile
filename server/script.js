@@ -1,38 +1,32 @@
-const autocannon = require('autocannon');
+const timeout = 10000; // Timeout after 10 seconds
+const url = "http://192.168.1.30:8080/SendSMS";
+const username = "abdo";
+const password = "123";
+const phone = "01555259191";
+const message = "Welcome to our website!\nWe hope you enjoy your stay!\n\nBest regards,\nAbdo";
 
-const endpoints = [
-  { method: 'GET', url: 'https://hollywoodsmile.vercel.app/users' },
-  { method: 'POST', url: 'https://hollywoodsmile.vercel.app/users', body: { name: 'John', email: 'john@example.com' } },
-  { method: 'GET', url: 'https://hollywoodsmile.vercel.app/services' },
-  { method: 'POST', url: 'https://hollywoodsmile.vercel.app/bookings', body: { date: '2024-12-01', user: 'user123',  } },
-  { method: 'GET', url: 'https://hollywoodsmile.vercel.app/bookings' },
-  { method: 'GET', url: 'https://hollywoodsmile.vercel.app/bookings/1' },
-  { method: 'PUT', url: 'https://hollywoodsmile.vercel.app/bookings/1', body: { date: '2024-12-01', user: 'user123',  } },
-  { method: 'DELETE', url: 'https://hollywoodsmile.vercel.app/bookings/1' },
-  { method: 'GET', url: 'https://hollywoodsmile.vercel.app/bookings/1' },
-  { method: 'GET', url: 'https://hollywoodsmile.vercel.app/bookings/2' },
-];
+const handleSendSMS = async () => {
+  try {
+    const response = await fetch(
+      `${url}?username=${username}&password=${password}&phone=${phone}&message=${message}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        timeout: timeout,
+      });
 
-const runTest = async (endpoint) => {
-  const { method, url, body } = endpoint;
-  const opts = {
-    url,
-    method,
-    connections: 10,
-    duration: 10,
-    ...(body && { requests: [{ body: JSON.stringify(body) }] }),
-  };
+    if (!response.ok) {
+      throw new Error("Failed to send SMS");
+    }
 
-  const instance = autocannon(opts);
-  autocannon.track(instance);
+    const responseData = await response.json();
+    console.log(responseData);
+  } catch (error) {
+    console.error(error);
 
-  return new Promise((resolve) => instance.on('done', resolve));
+  }
 };
 
-(async () => {
-  for (const endpoint of endpoints) {
-    console.log(`Testing ${endpoint.method} ${endpoint.url}`);
-    await runTest(endpoint);
-    console.log(`Completed ${endpoint.method} ${endpoint.url}\n`);
-  }
-})();
+handleSendSMS();

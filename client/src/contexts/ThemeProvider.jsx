@@ -12,7 +12,7 @@ const lightColors = {
   border: "#E3F2FD",
   shadow: "#E3F2FD",
   subtitle: "#575C66",
-  default: '#f5f5f5'
+  default: "#f5f5f5"
 };
 
 const darkColors = {
@@ -24,14 +24,14 @@ const darkColors = {
   border: "#2F89FC",
   shadow: "#2F89FC",
   subtitle: "#E3F2FD",
-  default: '#222831'
+  default: "#222831"
 };
 
 // Create a context for theme management
 const ThemeContext = createContext();
 
 export const CustomThemeProvider = ({ children }) => {
-  const localThemeSettings = JSON.parse(localStorage.getItem("themeSettings") || '{}');
+  const localThemeSettings = JSON.parse(localStorage.getItem("themeSettings") || "{}");
   const initialMode = localThemeSettings.mode || "light";
   const initialColors = localThemeSettings.colors || (initialMode === "light" ? lightColors : darkColors);
 
@@ -40,86 +40,101 @@ export const CustomThemeProvider = ({ children }) => {
   const [lightModeColors, setLightModeColors] = useState(lightColors);
   const [darkModeColors, setDarkModeColors] = useState(darkColors);
 
-  const fetchColors = async (mode) => {
+  // Fetch and set initial colors from backend
+  const initializeColors = async () => {
     try {
-      const res = await axiosInstance.get(`/theme/${mode}`);
-      const data = res.data.colors;
-      if (data) {
-        mode === "light" ? setLightModeColors(data) : setDarkModeColors(data);
+      const [lightRes, darkRes] = await Promise.all([
+        axiosInstance.get("/theme/light"),
+        axiosInstance.get("/theme/dark")
+      ]);
+      setLightModeColors(lightRes.data.colors || lightColors);
+      setDarkModeColors(darkRes.data.colors || darkColors);
+
+      if (mode === "light") {
+        setColors(lightRes.data.colors || lightColors);
       } else {
-        const defaultColors = mode === "light" ? lightColors : darkColors;
-        mode === "light" ? setLightModeColors(defaultColors) : setDarkModeColors(defaultColors);
-        await axiosInstance.post(`/theme/${mode}`, defaultColors);
+        setColors(darkRes.data.colors || darkColors);
       }
     } catch (error) {
-      console.error(error);
+      console.error("Error initializing colors:", error);
+      setLightModeColors(lightColors);
+      setDarkModeColors(darkColors);
     }
   };
 
-  useEffect(() => {
-    fetchColors("light");
-    fetchColors("dark");
-  }, []);
-
+  // Update current theme colors in backend
   const updateColors = async (newColors) => {
     try {
       const res = await axiosInstance.put(`/theme/${mode}`, newColors);
-      const data = res.data.colors;
-      setColors(data);
+      setColors(res.data.colors || newColors);
     } catch (error) {
-      console.error(error);
+      console.error("Error updating colors:", error);
     }
   };
 
+  // Toggle between light and dark modes
   const toggleMode = () => {
     const newMode = mode === "light" ? "dark" : "light";
     setMode(newMode);
     setColors(newMode === "light" ? lightModeColors : darkModeColors);
   };
 
+  // Persist theme settings in localStorage whenever they change
   useEffect(() => {
-    localStorage.setItem("themeSettings", JSON.stringify({ colors, mode }));
-  }, [colors, mode]);
+    localStorage.setItem("themeSettings", JSON.stringify({ mode, colors }));
+  }, [mode, colors]);
 
-  const theme = useMemo(() => createTheme({
-    palette: {
-      mode,
-      primary: { main: colors.primary },
-      secondary: { main: colors.secondary },
-      text: { primary: colors.text },
-      background: { default: colors.background },
-    },
-    typography: {
-      h1: { color: colors.title },
-      subtitle1: { color: colors.subtitle },
-      subtitle2: { color: colors.subtitle },
-      text: { color: colors.text },
-    },
-    components: {
-      MuiCard: {
-        styleOverrides: {
-          root: {
-            boxShadow: `0 4px 10px ${colors.shadow}`,
-            border: `1px solid ${colors.border}`,
+  // Fetch initial colors on component mount
+  useEffect(() => {
+    initializeColors();
+  }, []);
+
+  const theme = useMemo(
+    () =>
+      createTheme({
+        palette: {
+          mode,
+          primary: { main: colors.primary },
+          secondary: { main: colors.secondary },
+          text: { primary: colors.text },
+          background: { default: colors.background },
+        },
+        typography: {
+          h1: { color: colors.title },
+          subtitle1: { color: colors.subtitle },
+          subtitle2: { color: colors.subtitle },
+          text: { color: colors.text },
+        },
+        components: {
+          MuiCard: {
+            styleOverrides: {
+              root: {
+                boxShadow: `0 4px 10px ${colors.shadow}`,
+                border: `1px solid ${colors.border}`,
+              },
+            },
           },
         },
-      },
-    },
-  }), [mode, colors]);
+      }),
+    [mode, colors]
+  );
 
-  const contextValue = useMemo(() => ({
-    mode,
-    toggleMode,
-    updateColors,
-    colors,
-    resetTheme: () => {
-      setMode("light");
-      setColors(lightColors);
-      setLightModeColors(lightColors);
-      setDarkModeColors(darkColors);
-      localStorage.removeItem("themeSettings");
-    }
-  }), [mode, colors]);
+  const contextValue = useMemo(
+    () => ({
+      mode,
+      toggleMode,
+      updateColors,
+      colors,
+      resetTheme: () => {
+        setMode("light");
+        setColors(lightColors);
+        setLightModeColors(lightColors);
+        setDarkModeColors(darkColors);
+        localStorage.removeItem("themeSettings");
+      },
+    }),
+    [mode, colors]
+  );
 
   return (
     <ThemeContext.Provider value={contextValue}>
