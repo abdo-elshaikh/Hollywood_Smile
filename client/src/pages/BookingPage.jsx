@@ -69,7 +69,8 @@ const BookingPage = () => {
             return;
         }
         try {
-            const data = await bookingService.createBooking(bookingData);
+            const response = await axiosInstance.post('/bookings', bookingData);
+            const data = response.data;
             console.log('Booking Data:', data);
             if (data.success) {
                 showSnackBar(isArabic ? 'تم حجز الموعد بنجاح' : 'Appointment booked successfully.', 'success');
