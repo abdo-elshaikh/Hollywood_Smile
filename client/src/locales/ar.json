@@ -27,6 +27,7 @@
         "online booking": "الحجز عبر الإنترنت",
         "adminDashboard": "لوحة التحكم للادمن",
         "blogDashboard": "لوحة التحكم للمدونة",
+        "supportDashboard": "لوحة التحكم للدعم",
         "login": "تسجيل الدخول",
         "register": "تسجيل",
         "logout": "تسجيل الخروج",
@@ -587,6 +588,8 @@
         "deleteAccountButton": "حذف الحساب",
         "profileDescription": "قم بتحديث معلوماتك الشخصية والإعدادات.",
         "imageUploadSuccess": "تم تحميل الصورة بنجاح.",
-        "changeImage": "تغيير الصورة"
+        "changeImage": "تغيير الصورة",
+        "deleteAccountError": "فشل حذف الحساب. يرجى المحاولة مرة أخرى في وقت لاحق.",
+        "deleteAccountConfirmation": "هل أنت متأكد من أنك تريد حذف حسابك؟"
     }
 }

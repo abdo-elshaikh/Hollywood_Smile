@@ -91,18 +91,18 @@ const AppointmentSection = () => {
 
         try {
             const res = await axiosInstance.post('/bookings', formData);
-            console.log(res.data , 'appointment created');
+            console.log(res.data, 'appointment created');
             const data = res.data;
             if (data.success) {
                 showSnackbar(isArabic ? 'تم حجز الموعد بنجاح' : 'Appointment booked successfully', 'success');
                 setIsSuccess(true);
             } else {
-                showSnackbar(isArabic ? 'حدث خطأ أثناء حجز الموعد' : 'An error occurred while creating an appointment', 'error');
+                showSnackbar(isArabic ? 'حدث خطأ أثناء حجز الموعد' : 'An error occurred during booking', 'error');
             }
             await handleAddNotification(data._id, 'info');
         } catch (error) {
             console.error('Failed to create booking:', error);
-            showSnackbar(isArabic ? 'حدث خطأ أثناء حجز الموعد' : 'An error occurred while creating an appointment', 'error');
+            showSnackbar(error.response.data.message, 'error');
             handleAddNotification(null, 'error');
         } finally {
             setLoading(false);

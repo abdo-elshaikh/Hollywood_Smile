@@ -82,7 +82,7 @@ const BookingPage = () => {
             await handleAddNotification(data._id, 'info');
         } catch (error) {
             handleAddNotification(null, 'error');
-            showSnackBar(error?.response?.data?.message || 'Failed to book appointment.', 'error');
+            showSnackBar(error?.response?.data?.message , 'error');
         } finally {
             setLoading(false);
         }

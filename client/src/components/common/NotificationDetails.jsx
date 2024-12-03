@@ -11,7 +11,7 @@ import {
     Divider,
     Stack,
 } from '@mui/material';
-import { Notifications, Info, CheckCircle } from '@mui/icons-material';
+import { Notifications, Info, CheckCircle, Close, InfoOutlined } from '@mui/icons-material';
 import NotificationService from '../../services/notificationService';
 
 const NotificationDetails = ({ notification, open, onClose }) => {
@@ -46,13 +46,20 @@ const NotificationDetails = ({ notification, open, onClose }) => {
                         <Typography variant="body1">{notification?.type}</Typography>
                     </Box>
 
+                    {/* Reference */}
+                    <Box display="flex" alignItems="center" gap={1}>
+                        <InfoOutlined color="primary" />
+                        <Typography variant="subtitle1" fontWeight="bold">Reference:</Typography>
+                        <Typography variant="body1">{notification?.ref}</Typography>
+                    </Box>
+
                     <Divider />
 
                     {/* Message */}
                     <Box display="flex" alignItems="center" gap={1}>
-                        <Typography variant="subtitle1" fontWeight="bold">Message:</Typography>
+                        <Typography variant="subtitle1" fontWeight="bold">Content:</Typography>
                     </Box>
-                    <Typography variant="body2" sx={{ p: 2, border: '1px solid', borderRadius: 1, backgroundColor: '#f9f9f9' }}>
+                    <Typography variant="body2" sx={{ p: 2, border: '1px solid', borderRadius: 1, backgroundColor: 'background.default' }}>
                         {notification?.message}
                     </Typography>
 

@@ -22,10 +22,12 @@ import {
 import { DataGrid } from "@mui/x-data-grid";
 import { Delete, Edit, Search } from "@mui/icons-material";
 import { getUsers, deleteUser, updateUser, createUser } from "../../services/userService";
+import { useSnackbar } from "../../contexts/SnackbarProvider";
 
 const ManageUsersPage = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const showSnackbar = useSnackbar();
 
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -54,8 +56,10 @@ const ManageUsersPage = () => {
     try {
       await deleteUser(deleteUserId);
       setUsers(users.filter((user) => user._id !== deleteUserId));
+      showSnackbar("User deleted successfully", "success");
     } catch {
       console.error("Error deleting user");
+      showSnackbar("Error deleting user", "error");
     } finally {
       setOpenDeleteDialog(false);
     }
@@ -65,12 +69,19 @@ const ManageUsersPage = () => {
     try {
       if (currentUser._id) {
         await updateUser(currentUser._id, currentUser);
+        showSnackbar("User updated successfully", "success");
       } else {
+        const userPassword = import.meta.env.VITE_DEFAULT_PASSWORD;
+        const userName = import.meta.env.VITE_DEFAULT_USER;
+        currentUser.password = userPassword;
+        currentUser.name = userName;
         await createUser(currentUser);
+        showSnackbar("User created successfully", "success");
       }
       fetchUsers();
     } catch {
       console.error("Error saving user");
+      showSnackbar("Error saving user", "error");
     } finally {
       setOpenUserFormDialog(false);
     }
@@ -236,9 +247,9 @@ const ManageUsersPage = () => {
         <DialogTitle>{currentUser ? "Edit User" : "Add User"}</DialogTitle>
         <DialogContent>
           <TextField
-            label="Name"
-            value={currentUser?.name || ""}
-            onChange={(e) => setCurrentUser({ ...currentUser, name: e.target.value })}
+            label="User Name"
+            value={currentUser?.username || ""}
+            onChange={(e) => setCurrentUser({ ...currentUser, username: e.target.value })}
             fullWidth
             margin="normal"
           />

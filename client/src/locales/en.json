@@ -27,6 +27,7 @@
         "online booking": "Online Booking",
         "adminDashboard": "Admin Dashboard",
         "blogDashboard": "Blog Dashboard",
+        "supportDashboard": "Support Dashboard",
         "login": "Login",
         "register": "Register",
         "logout": "Logout",
@@ -586,6 +587,8 @@
         "deleteAccountButton": "Delete Account",
         "profileDescription": "Update your profile information and settings.",
         "imageUploadSuccess": "Image uploaded successfully.",
-        "changeImage": "Change Image"
+        "changeImage": "Change Image",
+        "deleteAccountError": "Failed to delete account. Please try again later.",
+        "deleteAccountConfirmation": "Are you sure you want to delete your account?"
     }
 }

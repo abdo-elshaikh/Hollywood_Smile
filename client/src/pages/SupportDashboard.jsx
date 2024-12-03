@@ -12,23 +12,31 @@ import {
     useTheme,
     useMediaQuery,
     Tooltip,
-    CircularProgress
+    CircularProgress,
+    Container,
 } from '@mui/material';
-import { Refresh, BarChart, BookOnline } from '@mui/icons-material';
+import { Refresh, BarChart, BookOnline, DarkMode, LightMode, Home, LoginOutlined } from '@mui/icons-material';
 import ManageBookingsPage from '../components/dashboard/ManageBookingsPage';
 import bookingService from '../services/bookingService';
 import { useSnackbar } from '../contexts/SnackbarProvider';
 import { useCustomTheme } from '../contexts/ThemeProvider';
-import darkIcon from '../assets/dark.png';
-import lightIcon from '../assets/light.png';
 import { Navigate } from 'react-router-dom';
+import MessagePopupMenu from '../components/common/MessagePopupMenu';
+import NotificationPopupMenu from '../components/common/NotificationPopupMenu';
+import { useAuth } from '../contexts/AuthContext';
 
 const SupportDashboard = () => {
+    document.body.dir = 'ltr';
     const theme = useTheme();
+    const { user, logout } = useAuth();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const { mode, toggleMode } = useCustomTheme();
-
     const [bookings, setBookings] = useState([]);
+    const [openDrawer, setOpenDrawer] = useState(false);
+
+    const handleToggleDrawer = () => {
+        setOpenDrawer(!openDrawer);
+    };
 
     useEffect(() => {
         fetchBookings();
@@ -78,39 +86,65 @@ const SupportDashboard = () => {
             }}
         >
             {/* Header */}
-            <Toolbar
+            <Container
+                maxWidth="xl"
                 sx={{
-                    justifyContent: 'space-between',
-                    display: 'flex',
-                    alignItems: 'center',
-                    mb: 4,
-                    backgroundColor: theme.palette.background.paper,
-                    borderRadius: 2,
-                    boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
-                    padding: { xs: 1, sm: 2 },
-
+                    position: 'fixed',
+                    top: 20,
+                    left: 0,
+                    right: 0,
+                    zIndex: 1000,
                 }}
             >
-                <Typography variant={isMobile ? 'h6' : 'h4'} fontWeight="bold">
-                    Support Dashboard
-                </Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                    <IconButton onClick={() => window.location.reload()} aria-label="refresh-page">
-                        <Refresh />
-                    </IconButton>
-                    <IconButton onClick={toggleMode} aria-label="toggle-theme">
-                        <img src={mode === 'light' ? darkIcon : lightIcon} alt="theme-icon" style={{ width: '24px', height: '24px' }} />
-                    </IconButton>
-                    <Button onClick={() => Navigate('/')} sx={{ ml: 2 }} variant="contained" color="primary">
-                        Home
-                    </Button>
-                </Box>
-            </Toolbar >
+                <Toolbar
+                    variant="dense"
+                    sx={{
+                        justifyContent: 'space-between',
+                        display: 'flex',
+                        width: '100%',
+                        alignItems: 'center',
+                        backgroundColor: theme.palette.background.paper,
+                        borderRadius: 2,
+                        boxShadow: theme.shadows[3],
+                        padding: { xs: 1, sm: 2 },
+                        flexDirection: { xs: 'column', sm: 'row' },
+                        gap: 2,
+                    }}
+                >
+                    <Typography variant={isMobile ? 'h6' : 'h4'} fontWeight="bold">
+                        Support Dashboard
+                    </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <Tooltip title="Refresh" arrow>
+                            <IconButton onClick={fetchBookings} aria-label="refresh">
+                                <Refresh color="primary" />
+                            </IconButton>
+                        </Tooltip>
+                        <NotificationPopupMenu source='support-dashboard' />
+                        <MessagePopupMenu source='support-dashboard' />
+                        <Tooltip title="Change Theme" arrow>
+                            <IconButton onClick={toggleMode} aria-label="toggle-dark-mode">
+                                {mode === 'dark' ? <LightMode /> : <DarkMode />}
+                            </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Home" arrow>
+                            <IconButton href="/" aria-label="home">
+                                <Home />
+                            </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Logout" arrow>
+                            <IconButton onClick={logout} aria-label="logout">
+                                <LoginOutlined color="error" />
+                            </IconButton>
+                        </Tooltip>
+                    </Box>
+                </Toolbar>
+            </Container>
 
             {/* Overview Cards */}
-            < Grid container spacing={4} sx={{ mb: 4 }}>
+            < Grid container spacing={4} sx={{ mb: 4, mt: 10 }}>
                 <Grid item xs={12} md={4}>
-                    <Card elevation={3} sx={{ borderLeft: `5px solid ${theme.palette.success.main}` }}>
+                    <Card sx={{ borderLeft: `5px solid ${theme.palette.success.main}` }}>
                         <CardHeader
                             avatar={<BarChart fontSize="large" color="success" />}
                             title="Total Bookings"
@@ -129,7 +163,7 @@ const SupportDashboard = () => {
                 </Grid>
 
                 <Grid item xs={12} md={4}>
-                    <Card elevation={3} sx={{ borderLeft: `5px solid ${theme.palette.info.main}` }}>
+                    <Card sx={{ borderLeft: `5px solid ${theme.palette.info.main}` }}>
                         <CardHeader
                             avatar={<BookOnline fontSize="large" color="info" />}
                             title="Pending Bookings"
@@ -148,7 +182,7 @@ const SupportDashboard = () => {
                 </Grid>
 
                 <Grid item xs={12} md={4}>
-                    <Card elevation={3} sx={{ borderLeft: `5px solid ${theme.palette.error.main}` }}>
+                    <Card sx={{ borderLeft: `5px solid ${theme.palette.error.main}` }}>
                         <CardHeader
                             avatar={<BarChart fontSize="large" color="error" />}
                             title="Cancelled Bookings"
@@ -176,9 +210,23 @@ const SupportDashboard = () => {
                     boxShadow: theme.shadows[3],
                 }}
             >
-                <ManageBookingsPage />
-            </Box >
-        </Box >
+                {loading ? (
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            height: '100%',
+
+                        }}
+                    >
+                        <CircularProgress />
+                    </Box>
+                ) : (
+                    <ManageBookingsPage />
+                )}
+            </Box>
+        </Box>
     );
 };
 

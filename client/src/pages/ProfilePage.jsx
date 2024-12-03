@@ -23,11 +23,13 @@ import HeaderSection from "../components/home/HeaderSection";
 import Footer from "../components/home/Footer";
 import ScrollToTopButton from "../components/common/ScrollToTopButton";
 import { getUserProfile, updateUserProfile, changePassword } from "../services/authService";
+import { deleteUser } from "../services/userService";
 import { uploadImage } from "../services/uploadImage";
+import ConfirmationDialog from "../components/common/ConfirmationDialog";
 
 const ProfilePage = () => {
     const { t } = useTranslation();
-    const { user } = useAuth();
+    const { user, logout } = useAuth();
     const { mode } = useCustomTheme();
     const showSnackbar = useSnackbar();
     const isDark = mode === "dark";
@@ -50,6 +52,7 @@ const ProfilePage = () => {
 
     const [loading, setLoading] = useState(false);
     const [imageUri, setImageUri] = useState('');
+    const [openConfirmationDialog, setOpenConfirmationDialog] = useState(false);
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -129,6 +132,19 @@ const ProfilePage = () => {
             }
         } catch (error) {
             showSnackbar(t("profile.imageUploadError"), "error");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleDeleteAccount = async () => {
+        try {
+            setLoading(true);
+            await deleteUser(user._id);
+            showSnackbar(t("profile.deleteAccountSuccess"), "success");
+            logout();
+        } catch (error) {
+            showSnackbar(t("profile.deleteAccountError"), "error");
         } finally {
             setLoading(false);
         }
@@ -372,13 +388,22 @@ const ProfilePage = () => {
                             variant="contained"
                             color="error"
                             sx={{ mt: 2 }}
-                            onClick={() => showSnackbar(t("profile.deleteAccountSuccess"), "success")}
+                            onClick={() => setOpenConfirmationDialog(true)}
                         >
                             {t("profile.deleteAccountButton")}
                         </Button>
                     </Paper>
                 </Grid>
+
+                <ConfirmationDialog
+                    open={openConfirmationDialog}
+                    onClose={() => setOpenConfirmationDialog(false)}
+                    onConfirm={handleDeleteAccount}
+                    title={t("profile.deleteAccount")}
+                    message={t("profile.deleteAccountConfirmation")}
+                />
             </Grid >
+
             <Footer />
             <ScrollToTopButton />
         </Box >

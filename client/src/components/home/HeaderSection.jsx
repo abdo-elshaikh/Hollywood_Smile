@@ -246,7 +246,7 @@ const HeaderSection = () => {
                                 <ListItemIcon>
                                     <SettingsApplications />
                                 </ListItemIcon>
-                                <ListItemText align={isArabic ? 'right' : 'left'} primary={t('app.dashboard')} />
+                                <ListItemText align={isArabic ? 'right' : 'left'} primary={t('app.supportDashboard')} />
                             </ListItem>
 
                             <ListItem
@@ -304,7 +304,7 @@ const HeaderSection = () => {
                     {user && user.role === 'support' && (
                         <MenuItem sx={{ cursor: 'pointer' }} onClick={() => navigate('/support-dashboard')}>{t('app.supportDashboard')}</MenuItem>
                     )}
-                    {user && user.role !== 'visitor' && (
+                    {user && user.role === 'author' || user.role === 'editor' && (
                         <MenuItem sx={{ cursor: 'pointer' }} onClick={() => navigate('/blog-dashboard')}>{t('app.blogDashboard')}</MenuItem>
                     )}
                     <Divider />

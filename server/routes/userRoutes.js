@@ -8,6 +8,6 @@ router.post('/', protect, createUser);
 router.get('/', protect, getAllUsers);
 router.get('/:id', protect, getUserById);
 router.put('/:id', protect, updateUser);
-router.delete('/:id', protect, authorize('admin'), deleteUser);
+router.delete('/:id', protect, deleteUser);
 
 module.exports = router;
