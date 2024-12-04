@@ -4,15 +4,14 @@ const User = require('../models/User');
 // Create a new user
 exports.createUser = async (req, res) => {
     const { username, email, password } = req.body;
-
+    console.log("req.body: ", req.body);
     try {
-        // Check if the user already exists in the database
-        const existingUser = await User.findOne({ ['$or']: [{ username }, { email }] });
+        const existingUser = await User.findOne({ $or: [{ email }, { username }] });
         if (existingUser) {
             return res.status(400).json({ error: 'User already exists' });
         }
-
-        const user = await User.create({ username, email, password });
+        req.body.name = req.body.email.split('@')[0];
+        const user = await User.create(req.body);
         res.status(201).json({ user });
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -25,9 +24,12 @@ exports.getAllUsers = async (req, res) => {
         const users = await User.find();
         if (users.length === 0) {
             return res.status(404).json({ error: 'No users found' });
-        } else {
-            res.status(200).json({ users });
         }
+        // remove password field
+        users.forEach(user => {
+            delete user.password;
+        });
+        res.status(200).json({ users });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -40,6 +42,7 @@ exports.getUserById = async (req, res) => {
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
+        delete user.password;
         res.status(200).json({ user });
     } catch (error) {
         res.status(500).json({ error: error.message });

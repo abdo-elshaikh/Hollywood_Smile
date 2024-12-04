@@ -150,57 +150,31 @@ const HeaderSection = () => {
                 {/* Language and Theme Toggle Buttons */}
                 <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 2, alignItems: 'center', flexShrink: 0 }}>
                     <Tooltip title={isArabic ? 'ترجم إلى الإنجليزية' : 'Translate to Arabic'}>
-                        <IconButton onClick={handleLanguageChange}>
-                            <img src={isArabic ? EnglishIcon : ArabicIcon} alt={isArabic ? 'en' : 'ar'} style={{ width: 28, height: 28 }} />
+                        <IconButton sx={{ width: 30, height: 30 }} onClick={handleLanguageChange}>
+                            <Avatar src={isArabic ? EnglishIcon : ArabicIcon} alt={isArabic ? 'en' : 'ar'} sx={{ width: 30, height: 30 }} />
                         </IconButton>
                     </Tooltip>
                     <Tooltip title={isDark ? (isArabic ? 'الوضع النهاري' : 'Light Mode') : (isArabic ? 'الوضع الليلى' : 'Dark Mode')}>
-                        <IconButton onClick={handleThemeToggle} aria-label="Toggle theme">
-                            <img src={isDark ? lightIcon : darkIcon} alt={isDark ? 'light' : 'dark'} style={{ width: 28, height: 28 }} />
+                        <IconButton sx={{ width: 30, height: 30 }} onClick={handleThemeToggle} aria-label="Toggle theme">
+                            <Avatar src={isDark ? lightIcon : darkIcon} alt={isDark ? 'light' : 'dark'} sx={{ width: 30, height: 30 }} />
                         </IconButton>
                     </Tooltip>
-                    {/* Login/Logout Button */}
-                    <motion.div
-                        whileHover={{ scale: 1.05 }}
-                        transition={{ type: 'spring', stiffness: 300, damping: 12 }}
-                        style={{ display: 'flex', alignItems: 'center' }}
-                    >
+
+                    {user ? (
+                        <Tooltip title={t('app.profile')}>
+                            <IconButton sx={{ width: 30, height: 30 }} onClick={handleAdminMenuClick}>
+                                <Avatar src={user.avatarUrl} alt={user.username[0]} sx={{ width: 30, height: 30 }} />
+                            </IconButton>
+                        </Tooltip>
+                    ) : (
                         <Button
-                            onClick={handleLogin}
                             variant="contained"
                             color="primary"
-                            sx={{
-                                fontSize: 12,
-                                fontWeight: 'bold',
-                                textTransform: 'none',
-                                padding: '10px',
-                                display: user ? 'none' : 'block',
-                            }}
+                            onClick={handleLogin}
+                            sx={{ display: { xs: 'none', md: 'flex' } }}
                         >
                             {t('app.login')}
                         </Button>
-                        <Button
-                            onClick={handleLogout}
-                            variant="contained"
-                            color="error"
-                            sx={{
-                                fontSize: 12,
-                                fontWeight: 'bold',
-                                textTransform: 'none',
-                                padding: '10px',
-                                display: user && user?.role === 'visitor' ? 'block' : 'none',
-                            }}
-                        >
-                            {t('app.logout')}
-                        </Button>
-                    </motion.div>
-                    {/* user admin show dashboard and blog dashboard */}
-                    {user && user?.role !== 'visitor' && (
-                        <Tooltip title={t('app.adminMenu')}>
-                            <IconButton onClick={handleAdminMenuClick}>
-                                <img src={settingsIcon} alt="admin" style={{ width: 28, height: 28 }} />
-                            </IconButton>
-                        </Tooltip>
                     )}
 
                 </Box>
@@ -252,7 +226,7 @@ const HeaderSection = () => {
 
                             <ListItem
                                 button="true"
-                                sx={{ cursor: 'pointer', display: user && user?.role === 'author' || user?.role === 'editor' ? 'flex' : 'none' }}
+                                sx={{ cursor: 'pointer', display: user && (user?.role === 'author' || user?.role === 'editor') ? 'flex' : 'none' }}
                                 onClick={() => navigate('/blog-dashboard')}
                             >
                                 <ListItemIcon>
@@ -261,7 +235,11 @@ const HeaderSection = () => {
                                 <ListItemText align={isArabic ? 'right' : 'left'} primary={t('app.blogDashboard')} />
                             </ListItem>
 
-                            <ListItem button="true" onClick={() => navigate('/profile')}>
+                            <ListItem
+                                button="true"
+                                onClick={() => navigate('/profile')}
+                                sx={{ cursor: 'pointer', display: user ? 'flex' : 'none' }}
+                            >
                                 <ListItemIcon><AccountCircle /></ListItemIcon>
                                 <ListItemText align={isArabic ? 'right' : 'left'} primary={t('app.profile')} />
                             </ListItem>
@@ -305,10 +283,12 @@ const HeaderSection = () => {
                     {user && user?.role === 'support' && (
                         <MenuItem sx={{ cursor: 'pointer' }} onClick={() => navigate('/support-dashboard')}>{t('app.supportDashboard')}</MenuItem>
                     )}
-                    {user && user?.role === 'author' || user?.role === 'editor' && (
+                    {user && (user?.role === 'author' || user?.role === 'editor') && (
                         <MenuItem sx={{ cursor: 'pointer' }} onClick={() => navigate('/blog-dashboard')}>{t('app.blogDashboard')}</MenuItem>
                     )}
-                    <Divider />
+                    {user && user.role !== 'visitor' && (
+                        <Divider sx={{ my: 1 }} />
+                    )}
                     <MenuItem sx={{ cursor: 'pointer' }} onClick={() => navigate('/profile')}>{t('app.profile')}</MenuItem>
                     <MenuItem sx={{ cursor: 'pointer', color: 'red', fontWeight: 'bold' }} onClick={handleLogout}>{t('app.logout')}</MenuItem>
                 </Menu>

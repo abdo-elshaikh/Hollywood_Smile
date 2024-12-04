@@ -39,7 +39,7 @@ const Login = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            const user = await login(formData);
+            const user = await login(formData, rememberMe);
             if (!user) {
                 showSnackbar(isArabic? "اسم المستخدم او كلمة المرور غير صحيحة" : "Invalid username or password", "error");
                 return;
@@ -69,6 +69,7 @@ const Login = () => {
                 boxShadow: isDarkMode ? "0px 0px 20px 5px rgba(66, 165, 245, 0.2)" : "0px 0px 20px 5px rgba(0, 123, 181, 0.2)",
                 maxWidth: '500px',
                 mx: "auto",
+                mb: 4,
                 border: `1px solid ${isDarkMode ? "#42a5f5" : "#007bb5"}`,
                 color: isDarkMode ? "#90caf9" : "#007bb5",
             }}

@@ -35,7 +35,18 @@ const ManageUsersPage = () => {
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [deleteUserId, setDeleteUserId] = useState(null);
   const [openUserFormDialog, setOpenUserFormDialog] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState({
+    _id: "",
+    username: "",
+    email: "",
+    password: "",
+    role: "visitor",
+    isActive: true,
+    name: "Unknown",
+    avatarUrl: "",
+    phone: "",
+    address: "",
+  });
 
   useEffect(() => {
     fetchUsers();
@@ -62,26 +73,34 @@ const ManageUsersPage = () => {
       showSnackbar("Error deleting user", "error");
     } finally {
       setOpenDeleteDialog(false);
+      fetchUsers();
     }
   };
 
   const handleSaveUser = async () => {
     try {
-      if (currentUser._id) {
-        await updateUser(currentUser._id, currentUser);
-        showSnackbar("User updated successfully", "success");
-      } else {
-        const userPassword = import.meta.env.VITE_DEFAULT_PASSWORD;
-        const userName = import.meta.env.VITE_DEFAULT_USER;
-        currentUser.password = userPassword;
-        currentUser.name = userName;
-        await createUser(currentUser);
-        showSnackbar("User created successfully", "success");
+      const data = currentUser._id ?
+        await updateUser(currentUser._id, currentUser)
+        : await createUser({ ...currentUser, password: import.meta.env.VITE_DEFAULT_PASSWORD });
+      console.log("data: ", data);
+      if (data.user) {
+        setUsers((prevUsers) => {
+          if (currentUser._id) {
+            return prevUsers.map((user) => (user._id === currentUser._id ? data.user : user));
+          } else {
+            return [...prevUsers, data.user];
+          }
+        });
+        setCurrentUser({
+          _id: "",
+          username: "",
+          email: "",
+          password: "",
+        });
+        showSnackbar("User saved successfully", "success");
       }
-      fetchUsers();
-    } catch {
-      console.error("Error saving user");
-      showSnackbar("Error saving user", "error");
+    } catch (error) {
+      showSnackbar(`Error : ${error}`, "error");
     } finally {
       setOpenUserFormDialog(false);
     }
@@ -109,7 +128,10 @@ const ManageUsersPage = () => {
         <Select
           value={params.row.role}
           size="small"
-          onChange={(e) => updateUser(params.row._id, { role: e.target.value })}
+          onChange={(e) => {
+            updateUser(params.row._id, { role: e.target.value });
+            showSnackbar(`User role updated to ${e.target.value}`, "success");
+          }}
         >
           <MenuItem value="admin">Admin</MenuItem>
           <MenuItem value="visitor">Visitor</MenuItem>
@@ -126,7 +148,14 @@ const ManageUsersPage = () => {
       renderCell: (params) => (
         <Switch
           checked={params.row.isActive}
-          onChange={() => updateUser(params.row._id, { isActive: !params.row.isActive })}
+          onChange={() => {
+            updateUser(params.row._id, { isActive: !params.row.isActive });
+            showSnackbar(
+              `User ${params.row.isActive ? "deactivated" : "activated"} successfully`,
+              "success"
+            )
+            fetchUsers();
+          }}
         />
       ),
     },
@@ -260,6 +289,19 @@ const ManageUsersPage = () => {
             fullWidth
             margin="normal"
           />
+          <TextField
+            label="Password"
+            type="password"
+            value={currentUser?.password || import.meta.env.VITE_DEFAULT_PASSWORD}
+            onChange={(e) => setCurrentUser({ ...currentUser, password: e.target.value })}
+            fullWidth
+            margin="normal"
+          />
+          {!currentUser?._id && (
+            <Typography variant="body2" color="textSecondary" mt={2}>
+              Default Password: <strong style={{ color: "red", textDecoration: "underline" }}>{import.meta.env.VITE_DEFAULT_PASSWORD}</strong> (You can change it)
+            </Typography>
+          )}
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpenUserFormDialog(false)}>Cancel</Button>

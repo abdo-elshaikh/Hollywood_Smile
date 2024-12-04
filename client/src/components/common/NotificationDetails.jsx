@@ -11,7 +11,7 @@ import {
     Divider,
     Stack,
 } from '@mui/material';
-import { Notifications, Info, CheckCircle, Close, InfoOutlined } from '@mui/icons-material';
+import { Notifications, Info, CheckCircle, Close, InfoOutlined, AccessTime, Source } from '@mui/icons-material';
 import NotificationService from '../../services/notificationService';
 
 const NotificationDetails = ({ notification, open, onClose }) => {
@@ -48,9 +48,16 @@ const NotificationDetails = ({ notification, open, onClose }) => {
 
                     {/* Reference */}
                     <Box display="flex" alignItems="center" gap={1}>
-                        <InfoOutlined color="primary" />
+                        <Source color="primary" />
                         <Typography variant="subtitle1" fontWeight="bold">Reference:</Typography>
                         <Typography variant="body1">{notification?.ref}</Typography>
+                    </Box>
+
+                    {/* Date */}
+                    <Box display="flex" alignItems="center" gap={1}>
+                        <AccessTime color="primary" />
+                        <Typography variant="subtitle1" fontWeight="bold">Date:</Typography>
+                        <Typography variant="body1">{new Date(notification?.createdAt).toLocaleString()}</Typography>
                     </Box>
 
                     <Divider />

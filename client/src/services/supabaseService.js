@@ -1,83 +1,157 @@
-import axiosInstance from './axiosInstance';
+// This service uploads an image to Supabase Storage.
+import { createClient } from '@supabase/supabase-js';
 
-const uploadFile = async (file, directory) => {
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+// Upload an image to Supabase Storage
+const uploadFile = async (file, directory, fileName, bucket = 'uploads') => {
+    if (!file) {
+        setError('Please select a file to upload.');
+        return;
+    }
+    if (!directory) {
+        setError('Please specify a directory.');
+        return;
+    }
+
+    if (file.size > 50 * 1024 * 1024) {
+        setError('File size exceeds the limit of 50MB.');
+        return;
+    }
+    console.log("file :", file);
+    const path = `${filePath}/${fileName}`;
+
     try {
-        if (!file || !directory) {
-            throw new Error('File and directory are required.');
+        const { data, error } = await supabase.storage
+            .from(bucket)
+            .upload(path, file, {
+                cacheControl: 3600,
+                upsert: true,
+            });
+
+        if (error) {
+            throw new Error(error.message);
         }
 
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('directory', directory);
-
-        const response = await axiosInstance.post('/supabase/upload', formData, {
-            headers: { 'Content-Type': 'multipart/form-data' },
-            // timeout: 60000,
-            onUploadProgress: (progressEvent) => {
-                const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-                console.log('Upload progress:', percentCompleted);
-            },
-        });
-
-        console.log('File uploaded:', response.data);
-        return response.data;
+        const fullUrl = `${import.meta.env.VITE_SUPABASE_VIEW_URL}/${data.fullPath}`;
+        return { ...data, fullUrl };
     } catch (error) {
-        if (error.response) {
-            const { status, data } = error.response;
-            if (status === 413) {
-                console.error('File size exceeds the limit of 50 MB');
-            } else {
-                toast.error(data?.error || 'Unknown error');
-            }
-        } else {
-            console.error('Error uploading file:', error.message);
-        }
         throw error;
     }
 };
 
-const uploadLargeFile = async (file, directory) => {
+// Replace an existing file
+const replaceFile = async (file, filePath, fileName, bucket = 'uploads') => {
+    if (!file) {
+        setError('Please select a file to upload.');
+        return;
+    }
+    if (!filePath) {
+        setError('Please specify a directory.');
+        return;
+    }
+
+    if (file.size > 50 * 1024 * 1024) {
+        setError('File size exceeds the limit of 50MB.');
+        return;
+    }
+    const path = `${filePath}/${fileName}`;
     try {
-        if (!file || !directory) {
-            throw new Error('File and directory are required.');
+        const { data, error } = await supabase.storage.from(bucket)
+            .update(path, file, {
+                cacheControl: 3600,
+                upsert: true,
+            });
+
+        if (error) {
+            throw new Error(error.message);
         }
 
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('directory', directory);
-
-        const response = await axiosInstance.post('/supabase/upload-large', formData, {
-            headers: { 'Content-Type': 'multipart/form-data' },
-            timeout: 120000, // 2 minutes
-        });
-
-        console.log('File uploaded:', response.data);
-        return response.data;
+        return data;
     } catch (error) {
-        if (error.response) {
-            const { status, data } = error.response;
-            if (status === 413) {
-                console.error('File size exceeds the limit of 50 MB');
-            } else {
-                console.error(data?.error || 'Unknown error');
-            }
-        } else {
-            console.error('Error uploading file:', error.message);
-        }
         throw error;
     }
 }
 
-// delete file from Supabase storage
-const deleteFile = async (filePath) => {
+// Create a new bucket
+const createBucket = async (bucketName, allowedMimeTypes) => {
     try {
-        const response = await axiosInstance.delete(`/supabase/delete/${filePath}`);
-        console.log('File deleted:', response.data);
-        return response.data;
-    } catch (error) {
-        console.error('Error deleting file:', error.message);
+        const { data, error } = await supabase.storage.createBucket(bucketName, { public: true, allowedMimeTypes });
+
+        if (error) {
+            throw new Error(error.message);
+        }
+
+        return data;
+    }
+    catch (error) {
         throw error;
     }
-};
+}
 
-export { uploadFile, uploadLargeFile, deleteFile };
+// Delete a file
+const deleteFile = async (filePath, bucket = 'uploads') => {
+    try {
+        const { data, error } = await supabase.storage.from(bucket).remove([filePath]);
+
+        if (error) {
+            throw new Error(error.message);
+        }
+
+        return data;
+    }
+    catch (error) {
+        throw error;
+    }
+}
+
+// Move a file to a different location
+const moveFile = async (sourcePath, destinationPath, bucket = 'uploads') => {
+    try {
+        const { data, error } = await supabase.storage.from(bucket).move([sourcePath], destinationPath);
+
+        if (error) {
+            throw new Error(error.message);
+        }
+
+        return data;
+    }
+    catch (error) {
+        throw error;
+    }
+}
+
+// Copy file
+const copyFile = async (sourcePath, destinationPath, bucket = 'uploads') => {
+    try {
+        const { data, error } = await supabase.storage.from(bucket).copy([sourcePath], destinationPath);
+
+        if (error) {
+            throw new Error(error.message);
+        }
+
+        return data;
+    } catch (error) {
+        throw error;
+    }
+}
+
+// List all files in a bucket
+const listFiles = async (bucket = 'uploads', folder = '') => {
+    try {
+        const { data, error } = await supabase.storage
+            .from(bucket)
+            .list(folder, { limit: 100, offset: 0, sortBy: { column: 'name', order: 'asc' } });
+        if (error) {
+            throw new Error(error.message);
+        }
+        return data;
+    } catch (error) {
+        throw error;
+    }
+}
+
+
+export { supabase, uploadFile, createBucket, deleteFile, moveFile, copyFile, listFiles, replaceFile };

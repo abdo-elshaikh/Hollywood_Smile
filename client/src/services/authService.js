@@ -1,12 +1,17 @@
 import axiosInstance from './axiosInstance';
 
 
-const loginUser = async (userData) => {
+const loginUser = async (userData, rememberMe) => {
     try {
         const response = await axiosInstance.post('/auth/login', userData);
         if (response.status === 200 && response.data.token) {
-            localStorage.setItem('token', response.data.token);
-            localStorage.setItem('user', JSON.stringify(response.data.user));
+            if (!rememberMe) {
+                sessionStorage.setItem('token', response.data.token);
+                sessionStorage.setItem('user', JSON.stringify(response.data.user));
+            } else {
+                localStorage.setItem('token', response.data.token);
+                localStorage.setItem('user', JSON.stringify(response.data.user));
+            }
         }
         return response.data;
     } catch (error) {
@@ -27,10 +32,6 @@ const registerUser = async (userData) => {
     }
 }
 
-const logoutUser = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-}
 
 const getUserProfile = async () => {
     try {
@@ -61,4 +62,4 @@ const changePassword = async (currentPassword, newPassword) => {
     }
 }
 
-export { registerUser, loginUser, logoutUser, getUserProfile, updateUserProfile, changePassword };
+export { registerUser, loginUser, getUserProfile, updateUserProfile, changePassword };

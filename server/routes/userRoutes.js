@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const { createUser, getAllUsers, getUserById, updateUser, deleteUser } = require('../controllers/userController');
-const { protect, authorize } = require('../middlewares/authMiddleware');
+const { protect } = require('../middlewares/authMiddleware');
 
 router.post('/', protect, createUser);
 router.get('/', protect, getAllUsers);

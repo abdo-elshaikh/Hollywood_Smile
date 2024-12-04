@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { registerUser, loginUser, logoutUser, getUserProfile, changePassword } from '../services/authService';
+import { registerUser, loginUser, getUserProfile, changePassword, updateUserProfile } from '../services/authService';
 
 // Create a context for authentication
 const AuthContext = createContext();
@@ -17,12 +17,13 @@ const AuthProvider = ({ children }) => {
 
     // Load user data from local storage
     useEffect(() => {
-        const storedUser = JSON.parse(localStorage.getItem('user'));
+        const storedUser = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user'));
         if (storedUser) {
             setUser(storedUser);
         }
         setLoading(false);
     }, []);
+
 
     // Register function
     const register = async (userData) => {
@@ -38,9 +39,9 @@ const AuthProvider = ({ children }) => {
     };
 
     // Login function
-    const login = async (userData) => {
+    const login = async (userData, rememberMe) => {
         try {
-            const data = await loginUser(userData);
+            const data = await loginUser(userData, rememberMe);
             console.log('Logged in user:', data);
             setUser(data.user);
             return data.user;
@@ -52,14 +53,13 @@ const AuthProvider = ({ children }) => {
 
     // Logout function
     const logout = () => {
-        logoutUser();
         setUser(null);
     };
 
     // Change password function
-    const changeUserPassword = async (password) => {
+    const changeUserPassword = async (currentPassword, newPassword) => {
         try {
-            const data = await changePassword(password);
+            const data = await changePassword(currentPassword, newPassword);
             return data;
         } catch (err) {
             setError(err.response.data.message || 'Password change failed');
@@ -71,7 +71,7 @@ const AuthProvider = ({ children }) => {
     const fetchUserProfile = async () => {
         try {
             const data = await getUserProfile();
-            setUser(data.user);
+            console.log('Fetched user profile:', data);
             return data.user;
         } catch (err) {
             setError(err.response.data.message || 'Could not fetch user profile');
@@ -79,8 +79,43 @@ const AuthProvider = ({ children }) => {
         }
     };
 
+    const EditUserProfile = async (userData) => {
+        try {
+            const data = await updateUserProfile(userData);
+            setUser(data.user);
+            return data.user;
+        } catch (err) {
+            setError(err.response.data.message || 'Could not update user profile');
+            throw err;
+        }
+    };
+
+    useEffect(() => {
+        if (error) {
+            setTimeout(() => {
+                setError(null);
+            }, 5000);
+        }
+    }, [error]);
+
+    useEffect(() => {
+        const storageUser = JSON.parse(localStorage.getItem('user'));
+        const sessionUser = JSON.parse(sessionStorage.getItem('user'));
+        if (user && storageUser) {
+            localStorage.setItem('user', JSON.stringify(user));
+        } else if (user && sessionUser) {
+            sessionStorage.setItem('user', JSON.stringify(user));
+        } else {
+            localStorage.removeItem('user');
+            sessionStorage.removeItem('user');
+            localStorage.removeItem('token');
+            sessionStorage.removeItem('token');
+        }
+    }, [user]);
+
+
     return (
-        <AuthContext.Provider value={{ user, loading, error, register, login, logout, fetchUserProfile, changeUserPassword }}>
+        <AuthContext.Provider value={{ user, loading, error, register, login, logout, fetchUserProfile, changeUserPassword, EditUserProfile }}>
             {!loading && children}
         </AuthContext.Provider>
     );

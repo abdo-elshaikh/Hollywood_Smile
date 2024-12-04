@@ -12,7 +12,7 @@ import {
     Stack,
     TextField,
 } from '@mui/material';
-import { Email, Phone, Person, ChatBubble, CheckCircle } from '@mui/icons-material';
+import { Email, Phone, Person, ChatBubble, CheckCircle, AccessTime } from '@mui/icons-material';
 import axiosInstance from '../../services/axiosInstance';
 
 const MessageDetails = ({ message, open, onClose }) => {
@@ -63,6 +63,13 @@ const MessageDetails = ({ message, open, onClose }) => {
                         <Typography variant="body1">{message?.email || 'N/A'}</Typography>
                     </Box>
 
+                    {/* Time */}
+                    <Box display="flex" alignItems="center" gap={1}>
+                        <AccessTime color="primary" />
+                        <Typography variant="subtitle1" fontWeight="bold">Time:</Typography>
+                        <Typography variant="body1">{new Date(message?.createdAt).toLocaleString()}</Typography>
+                    </Box>
+
                     <Divider />
 
                     {/* Message */}
@@ -77,20 +84,22 @@ const MessageDetails = ({ message, open, onClose }) => {
                         variant="outlined"
                         fullWidth
                         disabled
+                        sx={{ backgroundColor: 'background.default', borderRadius: 1 }}
                     />
 
                     <Divider />
 
                     {/* Statuses */}
-                    <Box display="flex" justifyContent="space-between">
+                    <Box display="flex" gap={2}>
                         <Chip
                             label={message?.read ? 'Read' : 'Unread'}
                             color={message?.read ? 'success' : 'warning'}
-                            icon={<CheckCircle />}
+                            icon={message?.replied && <CheckCircle />}
                         />
                         <Chip
                             label={message?.replied ? 'Replied' : 'Not Replied'}
                             color={message?.replied ? 'primary' : 'default'}
+                            icon={message?.replied && <CheckCircle />}
                         />
                     </Box>
                 </Stack>

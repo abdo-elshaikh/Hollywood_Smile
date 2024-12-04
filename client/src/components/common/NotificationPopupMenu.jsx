@@ -103,6 +103,23 @@ const NotificationPopupMenu = ({ source = 'admin-dashboard' }) => {
         fetchNotifications();
     };
 
+    const getFromTime = (date) => {
+        const diff = new Date() - new Date(date);
+        const seconds = Math.floor(diff / 1000);
+        const minutes = Math.floor(diff / 60000);
+        const hours = Math.floor(minutes / 60);
+        const days = Math.floor(hours / 24);
+        const weeks = Math.floor(days / 7);
+        const months = Math.floor(weeks / 4);
+        if (seconds < 1) return 'Just now';
+        if (minutes < 1) return `from ${seconds}s ago`;
+        if (hours < 1) return `from ${minutes}m ago`;
+        if (days < 1) return `from ${hours}h ago`;
+        if (weeks < 1) return `from ${days}d ago`;
+        if (months < 1) return `from ${days}d ago`;
+        return `from ${months}m ago`;
+    };
+
     return (
         <Box>
             <Tooltip title="Notifications" onClick={handleMenuClick} arrow>
@@ -137,8 +154,11 @@ const NotificationPopupMenu = ({ source = 'admin-dashboard' }) => {
                                     onClick={() => setSelectedNotification(notification)}
                                     sx={{
                                         cursor: 'pointer',
-                                        backgroundColor: notification.read ? 'inherit' : 'rgba(0,0,0,0.1)',
+                                        backgroundColor: notification.read ? 'inherit' : 'rgba(0,0,0,0.05)',
                                         position: 'relative',
+                                        // borderRadius: 1,
+                                        borderBottom: '1px solid',
+                                        borderColor: 'divider',
                                     }}
                                 >
                                     {notification.read ? null : (
@@ -156,7 +176,16 @@ const NotificationPopupMenu = ({ source = 'admin-dashboard' }) => {
                                     )}
                                     <ListItemText
                                         primary={notification.title}
-                                        secondary={notification.message.slice(0, 40) + '...'}
+                                        secondary={
+                                            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                                                <Typography variant="body2" sx={{ width: '100%', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                                    {notification.message.slice(0, 40) + '...'}
+                                                </Typography>
+                                                <Typography variant="caption" sx={{ color: 'text.secondary', mt: 0.5, fontWeight: 'bold' }}>
+                                                    - {getFromTime(notification.createdAt)}
+                                                </Typography>
+                                            </Box>
+                                        }
                                         sx={{ width: '100%', overflow: 'hidden', textOverflow: 'ellipsis' }}
                                         noWrap
                                         primaryTypographyProps={{ fontWeight: 'bold', fontSize: 12 }}
@@ -189,7 +218,7 @@ const NotificationPopupMenu = ({ source = 'admin-dashboard' }) => {
                         sx={{
                             height: 'calc(100vh - 64px)',
                             overflowY: 'scroll',
-                            padding: 2,
+                            padding: 1,
                             '&::-webkit-scrollbar': {
                                 width: 8,
                                 height: 8,
@@ -216,7 +245,8 @@ const NotificationPopupMenu = ({ source = 'admin-dashboard' }) => {
                                         cursor: 'pointer',
                                         backgroundColor: notification.read ? 'inherit' : 'rgba(0,0,0,0.1)',
                                         position: 'relative',
-                                        borderBottom: '1px solid rgba(0,0,0,0.1)',
+                                        borderBottom: '1px solid ',
+                                        borderColor: 'divider',
                                     }}
                                 >
                                     {notification.read ? null : (
@@ -234,7 +264,16 @@ const NotificationPopupMenu = ({ source = 'admin-dashboard' }) => {
                                     )}
                                     <ListItemText
                                         primary={notification.title}
-                                        secondary={notification.message}
+                                        secondary={
+                                            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                                                <Typography variant="body2" sx={{ width: '100%', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                                    {notification.message.slice(0, 40) + '...'}
+                                                </Typography>
+                                                <Typography variant="caption" sx={{ mt: 1, textAlign: 'right', color: 'secondary' }}>
+                                                    {new Date(notification.createdAt).toLocaleString()}
+                                                </Typography>
+                                            </Box>
+                                        }
                                     />
                                 </ListItem>
                             ))

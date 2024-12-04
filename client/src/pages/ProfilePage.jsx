@@ -15,6 +15,8 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import LockIcon from "@mui/icons-material/Lock";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { UploadFile } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
 import { useSnackbar } from "../contexts/SnackbarProvider";
@@ -23,26 +25,25 @@ import { useCustomTheme } from "../contexts/ThemeProvider";
 import HeaderSection from "../components/home/HeaderSection";
 import Footer from "../components/home/Footer";
 import ScrollToTopButton from "../components/common/ScrollToTopButton";
-import { getUserProfile, updateUserProfile, changePassword } from "../services/authService";
 import { deleteUser } from "../services/userService";
-import { uploadImage } from "../services/uploadImage";
+import { uploadFile, replaceFile } from "../services/supabaseService";
 import ConfirmationDialog from "../components/common/ConfirmationDialog";
 
 const ProfilePage = () => {
     const { t } = useTranslation();
-    const { user, logout } = useAuth();
+    const { user, logout, fetchUserProfile, changeUserPassword, EditUserProfile } = useAuth();
     const { mode } = useCustomTheme();
     const showSnackbar = useSnackbar();
     const isDark = mode === "dark";
 
     const [userInfo, setUserInfo] = useState({
-        username: "",
         name: "",
+        username: "",
         email: "",
         phone: "",
-        role: "",
         avatarUrl: "",
         address: "",
+        role: "",
     });
 
     const [passwords, setPasswords] = useState({
@@ -51,6 +52,12 @@ const ProfilePage = () => {
         confirmPassword: "",
     });
 
+    const [passwordsFields, setPasswordsFields] = useState([
+        { label: t("profile.currentPassword"), name: "currentPassword", type: "password" },
+        { label: t("profile.newPassword"), name: "newPassword", type: "password" },
+        { label: t("profile.confirmPassword"), name: "confirmPassword", type: "password" },
+    ]);
+
     const [loading, setLoading] = useState(false);
     const [uplodingImage, setUploadingImage] = useState(false);
     const [imageUri, setImageUri] = useState('');
@@ -58,16 +65,16 @@ const ProfilePage = () => {
     const [changePasswordState, setChangePasswordState] = useState(false);
 
     useEffect(() => {
-        const fetchUserData = async () => {
-            try {
-                const data = await getUserProfile();
-                setUserInfo(data);
-            } catch (error) {
-                showSnackbar(t("profile.errorFetchData"), "error");
-            }
-        };
         fetchUserData();
-    }, [t, showSnackbar]);
+    }, []);
+
+    const fetchUserData = async () => {
+        fetchUserProfile().then((user) => {
+            setUserInfo(user);
+        }).catch((error) => {
+            showSnackbar(t("profile.fetchError"), "error");
+        });
+    };
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -83,20 +90,15 @@ const ProfilePage = () => {
         if (imageUri) {
             userInfo.avatarUrl = imageUri;
         }
-        try {
-            setLoading(true);
-            const data = await updateUserProfile(userInfo);
-            if (data.user) {
-                setUserInfo(data.user);
-                showSnackbar(t("profile.successUpdate"), "success");
-            } else {
-                showSnackbar(data.error, "error");
-            }
-        } catch (error) {
+        setLoading(true);
+        EditUserProfile(userInfo).then((user) => {
+            setUserInfo(user);
+            showSnackbar(t("profile.successUpdate"), "success");
+        }).catch((error) => {
             showSnackbar(t("profile.faildUpdate"), "error");
-        } finally {
+        }).finally(() => {
             setLoading(false);
-        }
+        });
     };
 
     const handlePasswordUpdate = async () => {
@@ -108,21 +110,24 @@ const ProfilePage = () => {
             showSnackbar(t("profile.passwordNotMatch"), "error");
             return;
         }
-        try {
-            setLoading(true);
-            const data = await changePassword(passwords.currentPassword, passwords.newPassword);
-            if (!data.status === 200) {
-                showSnackbar(data.message, "error");
+        setLoading(true);
+        changeUserPassword(passwords.currentPassword, passwords.newPassword).then((data) => {
+            if (data.error) {
+                showSnackbar(data.error, "error");
                 return;
             }
             showSnackbar(t("profile.changePasswordSuccess"), "success");
-            setPasswords({ currentPassword: "", newPassword: "", confirmPassword: "" });
+            setPasswords({
+                currentPassword: "",
+                newPassword: "",
+                confirmPassword: "",
+            });
             setChangePasswordState(true);
-        } catch (error) {
+        }).catch((error) => {
             showSnackbar(t("profile.changePasswordError"), "error");
-        } finally {
+        }).finally(() => {
             setLoading(false);
-        }
+        });
     };
 
     useEffect(() => {
@@ -136,19 +141,27 @@ const ProfilePage = () => {
 
     const handleImageUpload = async (e) => {
         e.preventDefault();
-        const image = e.target.files[0];
+        const image = e.target.files ? e.target.files[0] : null;
         if (!image) return;
+
+        const fileName = userInfo?._id;
         setUploadingImage(true);
         try {
-            const data = await uploadImage(image, `avatars/users/${user.username}`);
-            if (data.fullUrl) {
+            const data = await uploadFile(image, `avatars/${userInfo?.username}`, fileName);
+            console.log("Image uploaded:", data);
+            if (data?.fullUrl) {
                 setImageUri(data.fullUrl);
                 showSnackbar(t("profile.imageUploadSuccess"), "success");
+                const saveButton = document.getElementById("saveButton");
+                if (saveButton) {
+                    saveButton.click();
+                }
             } else {
                 showSnackbar(t("profile.imageUploadError"), "error");
             }
         } catch (error) {
             showSnackbar(t("profile.imageUploadError"), "error");
+            console.error("Error uploading image:", error);
         } finally {
             setUploadingImage(false);
         }
@@ -167,6 +180,16 @@ const ProfilePage = () => {
         }
     };
 
+    const handleShowPassword = (failed) => {
+        setPasswordsFields(
+            passwordsFields.map((field) => {
+                if (field.name === failed) {
+                    field.type = field.type === "password" ? "text" : "password";
+                }
+                return field;
+            })
+        );
+    };
 
     return (
         <>
@@ -237,19 +260,17 @@ const ProfilePage = () => {
                             >
                                 <Grid item xs={12} md={3}>
                                     {uplodingImage ? (
-                                        <Box sx={{ display: "flex", justifyContent: "center" }}>
-                                            <Stack direction="row" sx={{ alignItems: "center" }} spacing={2}>
-                                                <CircularProgress color="primary" />
-                                                <Typography variant="body1">
-                                                    {t("profile.uploadingImage")}
-                                                </Typography>
-                                            </Stack>
+                                        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                                            <CircularProgress size={120} />
+                                            <Typography variant="body1" sx={{ mt: 2 }}>
+                                                {t("profile.uploadingImage")}
+                                            </Typography>
                                         </Box>
                                     ) : (
                                         <Box sx={{ display: "flex", justifyContent: "center" }}>
                                             <Avatar
-                                                alt={userInfo.name}
-                                                src={imageUri || userInfo.avatarUrl}
+                                                src={imageUri || userInfo?.avatarUrl}
+                                                alt={userInfo?.name}
                                                 onClick={() => document.getElementById("fileInput").click()}
                                                 sx={{
                                                     width: 180,
@@ -263,7 +284,7 @@ const ProfilePage = () => {
                                                         scale: 1.03,
                                                         transition: "all 0.3s ease",
                                                         "::before": {
-                                                            content: "'ching image'",
+                                                            content: "'Upload'",
                                                             position: "absolute",
                                                             top: 0,
                                                             left: 0,
@@ -292,13 +313,13 @@ const ProfilePage = () => {
                                 <Grid item xs={12} md={8} >
                                     <Box sx={{ position: 'relative', mt: { xs: 0, md: 10 }, textAlign: { xs: 'center', md: 'start' } }}>
                                         <Typography variant="h4" sx={{ fontWeight: "bold" }}>
-                                            {userInfo.name}
+                                            {userInfo?.name}
                                         </Typography>
                                         <Typography variant="h6" sx={{ color: "text.secondary" }}>
-                                            {userInfo.role}
+                                            {userInfo?.role}
                                         </Typography>
                                         <Typography variant="body1" sx={{ color: 'text.primary' }}>
-                                            {userInfo.email}
+                                            {userInfo?.email}
                                         </Typography>
                                         <Divider sx={{ mt: 2 }} />
                                         <Typography variant="body1" sx={{ mt: 2 }}>
@@ -330,8 +351,8 @@ const ProfilePage = () => {
                             <Grid container spacing={2}>
                                 {[
                                     { label: t("profile.username"), name: "username", disabled: true },
-                                    { label: t("profile.name"), name: "name" },
                                     { label: t("profile.email"), name: "email", disabled: true },
+                                    { label: t("profile.name"), name: "name" },
                                     { label: t("profile.phone"), name: "phone" },
                                     { label: t("profile.address"), name: "address" },
                                 ].map((field) => (
@@ -341,13 +362,14 @@ const ProfilePage = () => {
                                             label={field.label}
                                             variant="outlined"
                                             name={field.name}
-                                            value={userInfo[field.name] || ""}
+                                            value={userInfo[field.name] ? userInfo[field.name] : ""}
                                             onChange={handleInputChange}
                                             disabled={field.disabled}
                                         />
                                     </Grid>
                                 ))}
                                 <Button
+                                    id="saveButton"
                                     variant="contained"
                                     color="primary"
                                     sx={{ mt: 2 }}
@@ -378,20 +400,32 @@ const ProfilePage = () => {
                             </Typography>
                             <Divider sx={{ mb: 2 }} />
                             <Grid container spacing={2}>
-                                {[
-                                    { label: t("profile.currentPassword"), name: "currentPassword", type: "password" },
-                                    { label: t("profile.newPassword"), name: "newPassword", type: "password" },
-                                    { label: t("profile.confirmPassword"), name: "confirmPassword", type: "password" },
-                                ].map((field) => (
+                                {passwordsFields.map((field) => (
                                     <Grid item xs={12} key={field.name}>
                                         <TextField
                                             fullWidth
+                                            id={field.name}
                                             label={field.label}
                                             variant="outlined"
                                             name={field.name}
                                             type={field.type}
                                             value={passwords[field.name] || ""}
                                             onChange={handlePasswordChange}
+                                            disabled={loading}
+                                            InputProps={{
+                                                endAdornment: (
+                                                    <IconButton
+                                                        onClick={() => handleShowPassword(field.name)}
+                                                        edge="end"
+                                                    >
+                                                        {field.type === "password" ? (
+                                                            <VisibilityOffIcon sx={{ color: "text.primary" }} />
+                                                        ) : (
+                                                            <VisibilityIcon sx={{ color: "text.primary" }} />
+                                                        )}
+                                                    </IconButton>
+                                                ),
+                                            }}
                                         />
                                     </Grid>
                                 ))}

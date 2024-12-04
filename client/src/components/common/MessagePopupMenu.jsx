@@ -93,6 +93,23 @@ const MessagePopupMenu = ({ source = 'admin-dashboard' }) => {
         }
     };
 
+    const getFromTime = (date) => {
+        const diff = new Date() - new Date(date);
+        const seconds = Math.floor(diff / 1000);
+        const minutes = Math.floor(diff / 60000);
+        const hours = Math.floor(minutes / 60);
+        const days = Math.floor(hours / 24);
+        const weeks = Math.floor(days / 7);
+        const months = Math.floor(weeks / 4);
+        if (seconds < 1) return 'Just now';
+        if (minutes < 1) return `from ${seconds}s ago`;
+        if (hours < 1) return `from ${minutes}m ago`;
+        if (days < 1) return `from ${hours}h ago`;
+        if (weeks < 1) return `from ${days}d ago`;
+        if (months < 1) return `from ${days}d ago`;
+        return `from ${months}m ago`;
+    };
+
     return (
         <Box>
             {/* Message Icon Button */}
@@ -122,7 +139,7 @@ const MessagePopupMenu = ({ source = 'admin-dashboard' }) => {
                         {fetching ? (
                             Array.from({ length: 5 }).map((_, index) => (
                                 <ListItem key={index}>
-                                    <Skeleton variant="text" width="80%" />
+                                    <Skeleton variant="text" width="90%" />
                                 </ListItem>
                             ))
                         ) : messages.length > 0 ? (
@@ -133,8 +150,9 @@ const MessagePopupMenu = ({ source = 'admin-dashboard' }) => {
                                     onClick={() => handleViewMessageDetails(msg)}
                                     sx={{
                                         position: 'relative',
-                                        borderBottom: '1px solid rgba(0, 0, 0, 0.1)',
-                                        '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' },
+                                        borderBottom: '1px solid ',
+                                        borderColor: 'text.disabled',
+                                        '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.2)' },
                                     }}
                                 >
                                     <Box
@@ -169,12 +187,18 @@ const MessagePopupMenu = ({ source = 'admin-dashboard' }) => {
                                     />
                                     <ListItemText
                                         primary={msg.name}
-                                        secondary={`${msg.message.slice(0, 40)}...`}
-                                        primaryTypographyProps={{
-                                            variant: 'body1',
-                                            fontWeight: msg.read ? 'normal' : 'bold',
-                                        }}
-                                        secondaryTypographyProps={{ variant: 'body2', color: 'textSecondary' }}
+                                        secondary={
+                                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                <Typography variant="body2" color="textSecondary">
+                                                    {msg.message.slice(0, 40)}...
+                                                </Typography>
+                                                <Typography variant="caption" color="textSecondary" sx={{ mt: 0.5 }}>
+                                                    {getFromTime(msg.createdAt)}
+                                                </Typography>
+                                            </Box>
+                                        }
+                                        primaryTypographyProps={{ fontWeight: 'bold', fontSize: 14 }}
+                                        secondaryTypographyProps={{ fontSize: 10 }}
                                     />
                                 </ListItem>
                             ))
@@ -268,7 +292,16 @@ const MessagePopupMenu = ({ source = 'admin-dashboard' }) => {
                                     />
                                     <ListItemText
                                         primary={msg.name}
-                                        secondary={`${msg.message.slice(0, 100)}...`}
+                                        secondary={
+                                            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                                                <Typography variant="body2" color="textSecondary">
+                                                    {msg.message.slice(0, 40)}...
+                                                </Typography>
+                                                <Typography variant="caption" color="textSecondary" align='right' sx={{ mt: 0.5 }}>
+                                                    {new Date(msg.createdAt).toLocaleString()}
+                                                </Typography>
+                                            </Box>
+                                        }
                                         primaryTypographyProps={{ variant: 'body1', fontWeight: 'bold' }}
                                         secondaryTypographyProps={{ variant: 'body2', color: 'textSecondary' }}
                                     />

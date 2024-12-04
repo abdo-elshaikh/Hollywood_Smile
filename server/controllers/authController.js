@@ -67,7 +67,11 @@ const loginUser = async (req, res) => {
 const getUserProfile = async (req, res) => {
     try {
         const user = await User.findById(req.user._id);
-        res.status(200).json(user);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        delete user.password;
+        res.status(200).json({ user });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -82,6 +86,7 @@ const updateUserProfile = async (req, res) => {
         if (!updatedUser) {
             return res.status(404).json({ error: 'User not found' });
         } else {
+            delete updatedUser.password;
             return res.status(200).json({ user: updatedUser, message: 'Profile updated successfully! ' });
         }
     } catch (error) {
