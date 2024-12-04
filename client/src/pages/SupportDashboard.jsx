@@ -206,7 +206,7 @@ const SupportDashboard = () => {
                 sx={{
                     backgroundColor: theme.palette.background.paper,
                     borderRadius: 2,
-                    padding: 3,
+                    padding: 1,
                     boxShadow: theme.shadows[3],
                 }}
             >

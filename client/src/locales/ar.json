@@ -590,6 +590,7 @@
         "imageUploadSuccess": "تم تحميل الصورة بنجاح.",
         "changeImage": "تغيير الصورة",
         "deleteAccountError": "فشل حذف الحساب. يرجى المحاولة مرة أخرى في وقت لاحق.",
-        "deleteAccountConfirmation": "هل أنت متأكد من أنك تريد حذف حسابك؟"
+        "deleteAccountConfirmation": "هل أنت متأكد من أنك تريد حذف حسابك؟",
+        "redirectMessage": "سيتم تحويلك إلى صفحة تسجيل الدخول."
     }
 }

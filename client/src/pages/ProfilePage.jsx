@@ -10,6 +10,7 @@ import {
     Paper,
     IconButton,
     Stack,
+    CircularProgress,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
@@ -51,8 +52,10 @@ const ProfilePage = () => {
     });
 
     const [loading, setLoading] = useState(false);
+    const [uplodingImage, setUploadingImage] = useState(false);
     const [imageUri, setImageUri] = useState('');
     const [openConfirmationDialog, setOpenConfirmationDialog] = useState(false);
+    const [changePasswordState, setChangePasswordState] = useState(false);
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -107,9 +110,14 @@ const ProfilePage = () => {
         }
         try {
             setLoading(true);
-            await changePassword({ currentPassword: passwords.currentPassword, newPassword: passwords.newPassword });
+            const data = await changePassword(passwords.currentPassword, passwords.newPassword);
+            if (!data.status === 200) {
+                showSnackbar(data.message, "error");
+                return;
+            }
             showSnackbar(t("profile.changePasswordSuccess"), "success");
             setPasswords({ currentPassword: "", newPassword: "", confirmPassword: "" });
+            setChangePasswordState(true);
         } catch (error) {
             showSnackbar(t("profile.changePasswordError"), "error");
         } finally {
@@ -117,12 +125,21 @@ const ProfilePage = () => {
         }
     };
 
+    useEffect(() => {
+        if (changePasswordState) {
+            setTimeout(() => {
+                setChangePasswordState(false);
+                logout();
+            }, 5000);
+        }
+    }, [changePasswordState]);
+
     const handleImageUpload = async (e) => {
         e.preventDefault();
         const image = e.target.files[0];
         if (!image) return;
+        setUploadingImage(true);
         try {
-            setLoading(true);
             const data = await uploadImage(image, `avatars/users/${user.username}`);
             if (data.fullUrl) {
                 setImageUri(data.fullUrl);
@@ -133,7 +150,7 @@ const ProfilePage = () => {
         } catch (error) {
             showSnackbar(t("profile.imageUploadError"), "error");
         } finally {
-            setLoading(false);
+            setUploadingImage(false);
         }
     };
 
@@ -152,7 +169,7 @@ const ProfilePage = () => {
 
 
     return (
-        <Box>
+        <>
             <HeaderSection />
             <Box
                 sx={{
@@ -160,253 +177,304 @@ const ProfilePage = () => {
                         ? "linear-gradient(135deg, #2b2b2b, #1a1a1a)"
                         : "linear-gradient(135deg, #E0F7FA, #FFFFFF)",
                     color: "text.primary",
-                    height: "350px",
-                    borderRadius: "0 0 50% 50% / 0 0 15% 15%",
-                    boxShadow: 6,
+                    minHeight: "100vh",
                     position: "relative",
-                    overflow: "hidden",
                 }}
             >
                 <Box
                     sx={{
-                        position: "absolute",
-                        top: "50%",
-                        left: "50%",
-                        transform: "translate(-50%, -50%)",
-                        textAlign: "center",
+                        background: isDark
+                            ? "linear-gradient(135deg, #2b2b2b, #1a1a1a)"
+                            : "linear-gradient(135deg, #E0F7FA, #FFFFFF)",
+                        color: "text.primary",
+                        height: "350px",
+                        borderRadius: "0 0 50% 50% / 0 0 15% 15%",
+                        boxShadow: 6,
+                        position: "relative",
+                        overflow: "hidden",
                     }}
                 >
-                    <Typography
-                        variant="h2"
+
+                    <Box
                         sx={{
-                            fontWeight: "bold",
-                            color: isDark ? "#FFD700" : "#4CAF50",
+                            position: "absolute",
+                            top: "50%",
+                            left: "50%",
+                            transform: "translate(-50%, -50%)",
+                            textAlign: "center",
                         }}
                     >
-                        {t("profile.title")}
-                    </Typography>
-                    <Typography variant="h6" sx={{ color: "text.secondary", mt: 1 }}>
-                        {t("profile.subtitle")}
-                    </Typography>
-                </Box>
-            </Box>
-            <Grid container spacing={2} sx={{ px: 4, mt: -12, mb: 8, maxWidth: 'xl', mx: 'auto', }}>
-                {/* Profile Header */}
-                <Grid item xs={12}>
-                    <Paper
-                        elevation={5}
-                        sx={{
-                            p: 2,
-                            borderRadius: 4,
-                            background: isDark ? "#2b2b2b" : "#ffffff",
-                        }}
-                    >
-                        <Grid container spacing={4}
+                        <Typography
+                            variant="h2"
                             sx={{
-                                alignItems: "center",
+                                fontWeight: "bold",
                                 color: isDark ? "#FFD700" : "#4CAF50",
                             }}
                         >
-                            <Grid item xs={12} md={3}>
-                                <Avatar
-                                    src={imageUri || userInfo.avatarUrl}
-                                    alt={userInfo.username}
-                                    onClick={() => document.getElementById("fileInput").click()}
-                                    sx={{
-                                        width: 200,
-                                        height: 200,
-                                        mx: "auto",
-                                        border: "3px solid",
-                                        borderColor: isDark ? "#FFD700" : "#4CAF50",
-                                        cursor: "pointer",
-                                        position: "relative",
-                                        "&:hover::after": {
-                                            content: `"${t("profile.changeImage")}"`,
-                                            alignItems: "center",
-                                            display: "flex",
-                                            justifyContent: "center",
-                                            position: "absolute",
-                                            bottom: 0,
-                                            left: 0,
-                                            width: "100%",
-                                            height: "100%",
-                                            background: "rgba(0,0,0,0.4)",
-                                            color: "#fff",
-                                            fontSize: "12px",
-                                            textAlign: "center",
-                                            borderRadius: "50%",
-                                        },
-                                    }}
-                                />
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={handleImageUpload}
-                                    style={{ display: "none" }}
-                                    id="fileInput"
-                                />
-                            </Grid>
-                            <Grid item xs={12} md={8} >
-                                <Box sx={{ position: 'relative', mt: { xs: 0, md: 10 }, textAlign: { xs: 'center', md: 'start' } }}>
-                                    <Typography variant="h4" sx={{ fontWeight: "bold" }}>
-                                        {userInfo.name}
-                                    </Typography>
-                                    <Typography variant="h6" sx={{ color: "text.secondary" }}>
-                                        {userInfo.role}
-                                    </Typography>
-                                    <Typography variant="body1" sx={{ color: 'text.primary' }}>
-                                        {userInfo.email}
-                                    </Typography>
-                                    <Divider sx={{ mt: 2 }} />
-                                    <Typography variant="body1" sx={{ mt: 2 }}>
-                                        {t("profile.profileDescription")}
-                                    </Typography>
-                                </Box>
-                            </Grid>
-                        </Grid>
-                    </Paper>
-                </Grid>
-                {/* Profile Information */}
-                <Grid item xs={12} md={4}>
-                    <Paper
-                        elevation={5}
-                        sx={{
-                            p: 4,
-                            borderRadius: 4,
-                            background: isDark ? "#2b2b2b" : "#ffffff",
-                            height: "100%",
-                        }}
-                    >
-                        <Typography
-                            variant="h5"
-                            sx={{ fontWeight: "bold", mb: 2, color: "primary.main" }}
-                        >
-                            {t("profile.profileInformation")}
+                            {t("profile.title")}
                         </Typography>
-                        <Divider sx={{ mb: 2 }} />
-                        <Grid container spacing={2}>
-                            {[
-                                { label: t("profile.username"), name: "username", disabled: true },
-                                { label: t("profile.name"), name: "name" },
-                                { label: t("profile.email"), name: "email", disabled: true },
-                                { label: t("profile.phone"), name: "phone" },
-                                { label: t("profile.address"), name: "address" },
-                            ].map((field) => (
-                                <Grid item xs={12} key={field.name}>
-                                    <TextField
-                                        fullWidth
-                                        label={field.label}
-                                        variant="outlined"
-                                        name={field.name}
-                                        value={userInfo[field.name] || ""}
-                                        onChange={handleInputChange}
-                                        disabled={field.disabled}
-                                    />
-                                </Grid>
-                            ))}
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                sx={{ mt: 2 }}
-                                onClick={handleProfileUpdate}
-                                disabled={loading}
+                        <Typography variant="h6" sx={{ color: "text.secondary", mt: 1 }}>
+                            {t("profile.subtitle")}
+                        </Typography>
+                    </Box>
+                </Box>
+                <Grid container spacing={2} sx={{ px: 4, mt: -12, mb: 8, maxWidth: 'xl', mx: 'auto', }}>
+                    {/* Profile Header */}
+                    <Grid item xs={12}>
+                        <Paper
+                            elevation={5}
+                            sx={{
+                                p: 2,
+                                borderRadius: 4,
+                                background: isDark ? "#2b2b2b" : "#ffffff",
+                            }}
+                        >
+                            <Grid container spacing={4}
+                                sx={{
+                                    alignItems: "center",
+                                    color: isDark ? "#FFD700" : "#4CAF50",
+                                }}
                             >
-                                {t("profile.updateProfile")}
-                            </Button>
-                        </Grid>
-                    </Paper>
-                </Grid>
-                {/* Change Password */}
-                <Grid item xs={12} md={4}>
-                    <Paper
-                        elevation={5}
-                        sx={{
-                            p: 4,
-                            borderRadius: 4,
-                            background: isDark ? "#2b2b2b" : "#ffffff",
-                            height: "100%",
-                        }}
-                    >
-                        <Typography
-                            variant="h5"
-                            sx={{ fontWeight: "bold", mb: 2, color: "primary.main" }}
-                        >
-                            {t("profile.changePassword")}
-                        </Typography>
-                        <Divider sx={{ mb: 2 }} />
-                        <Grid container spacing={2}>
-                            {[
-                                { label: t("profile.currentPassword"), name: "currentPassword", type: "password" },
-                                { label: t("profile.newPassword"), name: "newPassword", type: "password" },
-                                { label: t("profile.confirmPassword"), name: "confirmPassword", type: "password" },
-                            ].map((field) => (
-                                <Grid item xs={12} key={field.name}>
-                                    <TextField
-                                        fullWidth
-                                        label={field.label}
-                                        variant="outlined"
-                                        name={field.name}
-                                        type={field.type}
-                                        value={passwords[field.name] || ""}
-                                        onChange={handlePasswordChange}
+                                <Grid item xs={12} md={3}>
+                                    {uplodingImage ? (
+                                        <Box sx={{ display: "flex", justifyContent: "center" }}>
+                                            <Stack direction="row" sx={{ alignItems: "center" }} spacing={2}>
+                                                <CircularProgress color="primary" />
+                                                <Typography variant="body1">
+                                                    {t("profile.uploadingImage")}
+                                                </Typography>
+                                            </Stack>
+                                        </Box>
+                                    ) : (
+                                        <Box sx={{ display: "flex", justifyContent: "center" }}>
+                                            <Avatar
+                                                alt={userInfo.name}
+                                                src={imageUri || userInfo.avatarUrl}
+                                                onClick={() => document.getElementById("fileInput").click()}
+                                                sx={{
+                                                    width: 180,
+                                                    height: 180,
+                                                    border: 4,
+                                                    borderColor: isDark ? "#FFD700" : "#4CAF50",
+                                                    objectFit: "cover",
+                                                    cursor: "pointer",
+                                                    transition: "all 0.3s ease",
+                                                    "&:hover": {
+                                                        scale: 1.03,
+                                                        transition: "all 0.3s ease",
+                                                        "::before": {
+                                                            content: "'ching image'",
+                                                            position: "absolute",
+                                                            top: 0,
+                                                            left: 0,
+                                                            right: 0,
+                                                            bottom: 0,
+                                                            display: "flex",
+                                                            justifyContent: "center",
+                                                            alignItems: "center",
+                                                            borderRadius: "50%",
+                                                            backgroundColor: "rgba(0,0,0,0.5)",
+                                                        },
+                                                    },
+
+                                                }}
+                                            />
+                                        </Box>
+                                    )}
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleImageUpload}
+                                        style={{ display: "none" }}
+                                        id="fileInput"
                                     />
                                 </Grid>
-                            ))}
-                            <Button
-                                variant="contained"
-                                color="secondary"
-                                sx={{ mt: 2 }}
-                                onClick={handlePasswordUpdate}
-                                disabled={loading}
+                                <Grid item xs={12} md={8} >
+                                    <Box sx={{ position: 'relative', mt: { xs: 0, md: 10 }, textAlign: { xs: 'center', md: 'start' } }}>
+                                        <Typography variant="h4" sx={{ fontWeight: "bold" }}>
+                                            {userInfo.name}
+                                        </Typography>
+                                        <Typography variant="h6" sx={{ color: "text.secondary" }}>
+                                            {userInfo.role}
+                                        </Typography>
+                                        <Typography variant="body1" sx={{ color: 'text.primary' }}>
+                                            {userInfo.email}
+                                        </Typography>
+                                        <Divider sx={{ mt: 2 }} />
+                                        <Typography variant="body1" sx={{ mt: 2 }}>
+                                            {t("profile.profileDescription")}
+                                        </Typography>
+                                    </Box>
+                                </Grid>
+                            </Grid>
+                        </Paper>
+                    </Grid>
+                    {/* Profile Information */}
+                    <Grid item xs={12} md={4}>
+                        <Paper
+                            elevation={5}
+                            sx={{
+                                p: 4,
+                                borderRadius: 4,
+                                background: isDark ? "#2b2b2b" : "#ffffff",
+                                height: "100%",
+                            }}
+                        >
+                            <Typography
+                                variant="h5"
+                                sx={{ fontWeight: "bold", mb: 2, color: "primary.main" }}
+                            >
+                                {t("profile.profileInformation")}
+                            </Typography>
+                            <Divider sx={{ mb: 2 }} />
+                            <Grid container spacing={2}>
+                                {[
+                                    { label: t("profile.username"), name: "username", disabled: true },
+                                    { label: t("profile.name"), name: "name" },
+                                    { label: t("profile.email"), name: "email", disabled: true },
+                                    { label: t("profile.phone"), name: "phone" },
+                                    { label: t("profile.address"), name: "address" },
+                                ].map((field) => (
+                                    <Grid item xs={12} key={field.name}>
+                                        <TextField
+                                            fullWidth
+                                            label={field.label}
+                                            variant="outlined"
+                                            name={field.name}
+                                            value={userInfo[field.name] || ""}
+                                            onChange={handleInputChange}
+                                            disabled={field.disabled}
+                                        />
+                                    </Grid>
+                                ))}
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    sx={{ mt: 2 }}
+                                    onClick={handleProfileUpdate}
+                                    disabled={loading}
+                                >
+                                    {t("profile.updateProfile")}
+                                </Button>
+                            </Grid>
+                        </Paper>
+                    </Grid>
+                    {/* Change Password */}
+                    <Grid item xs={12} md={4}>
+                        <Paper
+                            elevation={5}
+                            sx={{
+                                p: 4,
+                                borderRadius: 4,
+                                background: isDark ? "#2b2b2b" : "#ffffff",
+                                height: "100%",
+                            }}
+                        >
+                            <Typography
+                                variant="h5"
+                                sx={{ fontWeight: "bold", mb: 2, color: "primary.main" }}
                             >
                                 {t("profile.changePassword")}
+                            </Typography>
+                            <Divider sx={{ mb: 2 }} />
+                            <Grid container spacing={2}>
+                                {[
+                                    { label: t("profile.currentPassword"), name: "currentPassword", type: "password" },
+                                    { label: t("profile.newPassword"), name: "newPassword", type: "password" },
+                                    { label: t("profile.confirmPassword"), name: "confirmPassword", type: "password" },
+                                ].map((field) => (
+                                    <Grid item xs={12} key={field.name}>
+                                        <TextField
+                                            fullWidth
+                                            label={field.label}
+                                            variant="outlined"
+                                            name={field.name}
+                                            type={field.type}
+                                            value={passwords[field.name] || ""}
+                                            onChange={handlePasswordChange}
+                                        />
+                                    </Grid>
+                                ))}
+                                <Button
+                                    variant="contained"
+                                    color="secondary"
+                                    sx={{ mt: 2 }}
+                                    onClick={handlePasswordUpdate}
+                                    disabled={loading}
+                                >
+                                    {t("profile.changePassword")}
+                                </Button>
+                            </Grid>
+                        </Paper>
+                    </Grid>
+                    <Grid item xs={12} md={4}>
+                        <Paper
+                            elevation={5}
+                            sx={{
+                                p: 4,
+                                borderRadius: 4,
+                                background: isDark ? "#2b2b2b" : "#ffffff",
+                                height: "100%",
+                            }}
+                        >
+                            <Typography
+                                variant="h5"
+                                sx={{ fontWeight: "bold", mb: 2, color: "primary.main" }}
+                            >
+                                {t("profile.deleteAccount")}
+                            </Typography>
+                            <Divider sx={{ mb: 2 }} />
+                            <Typography variant="body2" color="text.secondary">
+                                {t("profile.deleteAccountWarning")}
+                            </Typography>
+                            <Button
+                                variant="contained"
+                                color="error"
+                                sx={{ mt: 2 }}
+                                onClick={() => setOpenConfirmationDialog(true)}
+                            >
+                                {t("profile.deleteAccountButton")}
                             </Button>
-                        </Grid>
-                    </Paper>
-                </Grid>
-                <Grid item xs={12} md={4}>
-                    <Paper
-                        elevation={5}
-                        sx={{
-                            p: 4,
-                            borderRadius: 4,
-                            background: isDark ? "#2b2b2b" : "#ffffff",
-                            height: "100%",
-                        }}
-                    >
-                        <Typography
-                            variant="h5"
-                            sx={{ fontWeight: "bold", mb: 2, color: "primary.main" }}
-                        >
-                            {t("profile.deleteAccount")}
-                        </Typography>
-                        <Divider sx={{ mb: 2 }} />
-                        <Typography variant="body2" color="text.secondary">
-                            {t("profile.deleteAccountWarning")}
-                        </Typography>
-                        <Button
-                            variant="contained"
-                            color="error"
-                            sx={{ mt: 2 }}
-                            onClick={() => setOpenConfirmationDialog(true)}
-                        >
-                            {t("profile.deleteAccountButton")}
-                        </Button>
-                    </Paper>
-                </Grid>
+                        </Paper>
+                    </Grid>
 
-                <ConfirmationDialog
-                    open={openConfirmationDialog}
-                    onClose={() => setOpenConfirmationDialog(false)}
-                    onConfirm={handleDeleteAccount}
-                    title={t("profile.deleteAccount")}
-                    message={t("profile.deleteAccountConfirmation")}
-                />
-            </Grid >
+                    <ConfirmationDialog
+                        open={openConfirmationDialog}
+                        onClose={() => setOpenConfirmationDialog(false)}
+                        onConfirm={handleDeleteAccount}
+                        title={t("profile.deleteAccount")}
+                        message={t("profile.deleteAccountConfirmation")}
+                    />
+                </Grid >
+                {changePasswordState && (
+                    <Box sx={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        height: "100%",
+                        zIndex: 9999,
+                        display: "flex",
+                        justifyContent: "center",
+                        flexDirection: "column",
+                        backgroundColor: isDark ? "rgba(0, 0, 0, 0.5)" : "rgba(255, 255, 255, 0.5)",
+                        backdropFilter: "blur(8px)",
+                    }}>
+                        <LockIcon sx={{ fontSize: 100, color: isDark ? "#FFD700" : "#4CAF50" }} />
+                        <Typography variant="h4" sx={{ mt: 2, color: "text.primary" }}>
+                            {t("profile.changePasswordSuccess")}
+                        </Typography>
+                        <CircularProgress size={50} />
+                        <Typography variant="body1" sx={{ mt: 2, textAlign: "center" }}>
+                            {t("profile.redirectMessage")}
+                        </Typography>
+                    </Box>
+                )}
 
+            </Box >
             <Footer />
             <ScrollToTopButton />
-        </Box >
+        </>
     );
 };
 

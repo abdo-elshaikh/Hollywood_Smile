@@ -53,7 +53,8 @@ const updateUserProfile = async (userData) => {
 
 const changePassword = async (currentPassword, newPassword) => {
     try {
-        const response = await axiosInstance.put('/auth/change-password', { currentPassword, newPassword });
+        const response = await axiosInstance.put('/auth/profile/change-password', { currentPassword, newPassword });
+        console.log('changePassword', response.data);
         return response.data;
     } catch (error) {
         return error.response.data;

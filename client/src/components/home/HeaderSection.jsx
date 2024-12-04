@@ -102,6 +102,7 @@ const HeaderSection = () => {
         logout();
         // navigate('/auth/login');
         closeMobileMenu();
+        closeAdminMenu();
         setAdminMenuAnchor(null);
     };
 
@@ -298,13 +299,13 @@ const HeaderSection = () => {
                         },
                     }}
                 >
-                    {user && user.role === 'admin' && (
+                    {user && user?.role === 'admin' && (
                         <MenuItem sx={{ cursor: 'pointer' }} onClick={() => navigate('/dashboard')}>{t('app.adminDashboard')}</MenuItem>
                     )}
-                    {user && user.role === 'support' && (
+                    {user && user?.role === 'support' && (
                         <MenuItem sx={{ cursor: 'pointer' }} onClick={() => navigate('/support-dashboard')}>{t('app.supportDashboard')}</MenuItem>
                     )}
-                    {user && user.role === 'author' || user.role === 'editor' && (
+                    {user && user?.role === 'author' || user?.role === 'editor' && (
                         <MenuItem sx={{ cursor: 'pointer' }} onClick={() => navigate('/blog-dashboard')}>{t('app.blogDashboard')}</MenuItem>
                     )}
                     <Divider />
