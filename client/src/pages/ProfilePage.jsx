@@ -1,16 +1,7 @@
 import React, { useState, useEffect } from "react";
 import {
-    TextField,
-    Button,
-    Box,
-    Grid,
-    Typography,
-    Divider,
-    Avatar,
-    Paper,
-    IconButton,
-    Stack,
-    CircularProgress,
+    TextField, Button, Box, Grid, Typography, Divider, Avatar,
+    Paper, IconButton, Stack, CircularProgress,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
@@ -65,15 +56,22 @@ const ProfilePage = () => {
     const [changePasswordState, setChangePasswordState] = useState(false);
 
     useEffect(() => {
-        fetchUserData();
+        if (user) {
+            setUserInfo(user);
+        } else {
+            fetchUserData();
+        }
     }, []);
 
     const fetchUserData = async () => {
-        fetchUserProfile().then((user) => {
-            setUserInfo(user);
-        }).catch((error) => {
-            showSnackbar(t("profile.fetchError"), "error");
-        });
+        try {
+            const user = await fetchUserProfile();
+            if (user) {
+                setUserInfo(user);
+            }
+        } catch (err) {
+            console.error("Error fetching user data:", err);
+        }
     };
 
     const handleInputChange = (e) => {
@@ -147,15 +145,14 @@ const ProfilePage = () => {
         const fileName = userInfo?._id;
         setUploadingImage(true);
         try {
-            const data = await uploadFile(image, `avatars/${userInfo?.username}`, fileName);
+            const data = user.avatarUrl ?
+                await replaceFile(image, `avatars/users/${userInfo.username}`, fileName) :
+                await uploadFile(image, `avatars/users/${userInfo.username}`, fileName);
             console.log("Image uploaded:", data);
             if (data?.fullUrl) {
                 setImageUri(data.fullUrl);
                 showSnackbar(t("profile.imageUploadSuccess"), "success");
-                const saveButton = document.getElementById("saveButton");
-                if (saveButton) {
-                    saveButton.click();
-                }
+
             } else {
                 showSnackbar(t("profile.imageUploadError"), "error");
             }

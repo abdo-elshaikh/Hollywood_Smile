@@ -591,6 +591,7 @@
         "changeImage": "Change Image",
         "deleteAccountError": "Failed to delete account. Please try again later.",
         "deleteAccountConfirmation": "Are you sure you want to delete your account?",
-        "redirectMessage": "You will be redirected to the login page."
+        "redirectMessage": "You will be redirected to the login page.",
+        "uploadingImage": "Uploading Image..."
     }
 }

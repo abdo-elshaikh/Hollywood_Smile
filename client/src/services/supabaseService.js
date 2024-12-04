@@ -6,12 +6,12 @@ const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Upload an image to Supabase Storage
-const uploadFile = async (file, directory, fileName, bucket = 'uploads') => {
+const uploadFile = async (file, filePath, fileName, bucket = 'uploads') => {
     if (!file) {
         setError('Please select a file to upload.');
         return;
     }
-    if (!directory) {
+    if (!filePath) {
         setError('Please specify a directory.');
         return;
     }
@@ -32,13 +32,13 @@ const uploadFile = async (file, directory, fileName, bucket = 'uploads') => {
             });
 
         if (error) {
-            throw new Error(error.message);
+            return { error: error.message };
         }
 
         const fullUrl = `${import.meta.env.VITE_SUPABASE_VIEW_URL}/${data.fullPath}`;
         return { ...data, fullUrl };
     } catch (error) {
-        throw error;
+        return { error: error.message };
     }
 };
 
@@ -66,29 +66,27 @@ const replaceFile = async (file, filePath, fileName, bucket = 'uploads') => {
             });
 
         if (error) {
-            throw new Error(error.message);
+            console.error(error);
+            return { error: error.message };
         }
 
-        return data;
+        const fullUrl = `${import.meta.env.VITE_SUPABASE_VIEW_URL}/${data.fullPath}`;
+        return { ...data, fullUrl };
     } catch (error) {
-        throw error;
+        return { error: error.message };
     }
 }
 
 // Create a new bucket
 const createBucket = async (bucketName, allowedMimeTypes) => {
-    try {
-        const { data, error } = await supabase.storage.createBucket(bucketName, { public: true, allowedMimeTypes });
+    const { data, error } = await supabase.storage.createBucket(bucketName, { public: true, allowedMimeTypes });
 
-        if (error) {
-            throw new Error(error.message);
-        }
+    if (error) {
+        return { error: error.message };
+    }
 
-        return data;
-    }
-    catch (error) {
-        throw error;
-    }
+    return data;
+
 }
 
 // Delete a file
@@ -103,7 +101,7 @@ const deleteFile = async (filePath, bucket = 'uploads') => {
         return data;
     }
     catch (error) {
-        throw error;
+        return { error: error.message };
     }
 }
 
@@ -113,13 +111,13 @@ const moveFile = async (sourcePath, destinationPath, bucket = 'uploads') => {
         const { data, error } = await supabase.storage.from(bucket).move([sourcePath], destinationPath);
 
         if (error) {
-            throw new Error(error.message);
+            return { error: error.message };
         }
 
         return data;
     }
     catch (error) {
-        throw error;
+        return { error: error.message };
     }
 }
 
@@ -129,12 +127,12 @@ const copyFile = async (sourcePath, destinationPath, bucket = 'uploads') => {
         const { data, error } = await supabase.storage.from(bucket).copy([sourcePath], destinationPath);
 
         if (error) {
-            throw new Error(error.message);
+            return { error: error.message };
         }
 
         return data;
     } catch (error) {
-        throw error;
+        return { error: error.message };
     }
 }
 
@@ -145,11 +143,11 @@ const listFiles = async (bucket = 'uploads', folder = '') => {
             .from(bucket)
             .list(folder, { limit: 100, offset: 0, sortBy: { column: 'name', order: 'asc' } });
         if (error) {
-            throw new Error(error.message);
+            return { error: error.message };
         }
         return data;
     } catch (error) {
-        throw error;
+        return { error: error.message };
     }
 }
 

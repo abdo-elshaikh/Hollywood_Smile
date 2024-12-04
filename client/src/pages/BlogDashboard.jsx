@@ -136,7 +136,7 @@ const BlogDashboard = () => {
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <TextField
                             size="small"
-                            placeholder="Search…"
+                            placeholder="Search …"
                             sx={{
                                 backgroundColor: theme.palette.background.paper,
                                 mr: 2,
@@ -147,9 +147,9 @@ const BlogDashboard = () => {
                             }}
                         />
                         {/* Notification popup menu */}
-                        {user?.role === 'admin' && <NotificationPopupMenu />}
+                        <NotificationPopupMenu source="blog-dashboard" />
                         <IconButton onClick={(event) => setAnchorEl(event.currentTarget)} color="inherit">
-                            <Avatar alt={user?.name?.split(' ')[0]} src={''} />
+                            <Avatar alt={user?.name?.split(' ')[0]} src={user?.avatarUrl} />
                         </IconButton>
                         <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={() => setAnchorEl(null)}>
                             <MenuItem onClick={() => { navigate('/blog-dashboard/settings'); setAnchorEl(null); }}>
