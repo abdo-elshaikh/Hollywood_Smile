@@ -7,6 +7,7 @@ import {
     Box,
     useTheme,
     useMediaQuery,
+    Avatar,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import MessagePopupMenu from "../common/MessagePopupMenu";
@@ -59,7 +60,7 @@ const Header = ({ onToggleDrawer, sidebarWidth }) => {
 
                 <Box sx={{ display: "flex", alignItems: "center" }}>
                     {/* <ThemeToggleButton /> */}
-                    <NotificationPopupMenu />
+                    <NotificationPopupMenu source="admin-dashboard" />
                     <MessagePopupMenu />
                     <SettingsMenu />
                 </Box>

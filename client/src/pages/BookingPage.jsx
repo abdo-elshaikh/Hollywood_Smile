@@ -58,20 +58,21 @@ const BookingPage = () => {
     const { id } = useParams();
     const [bookingData, setBookingData] = useState({
         name: '', email: '', phone: '', service: id || '',
-        date: '', time: '', message: '', user: user?._id || null,
+        date: new Date(), time: '', message: '', user: user?._id || null,
     });
 
     const handleSubmission = async () => {
-        setLoading(true);
         if (!bookingData.name || !bookingData.phone || !bookingData.service || !bookingData.date || !bookingData.time) {
             showSnackBar(isArabic ? 'الرجاء ملء جميل الحقول المطلوبة!' : 'please fill all required fields !', 'error');
-            setLoading(false);
             return;
         }
+        // bookingData.date = bookingData.date.toLocaleDateString();
+        console.log('Booking Data:', bookingData);
+        setLoading(true);
         try {
             const response = await axiosInstance.post('/bookings', bookingData);
             const data = response.data;
-            console.log('Booking Data:', data);
+            console.log('Booking Data Response:', data);
             if (data.success) {
                 showSnackBar(isArabic ? 'تم حجز الموعد بنجاح' : 'Appointment booked successfully.', 'success');
                 setOpenDialog(false);
@@ -82,7 +83,7 @@ const BookingPage = () => {
             await handleAddNotification(data._id, 'info');
         } catch (error) {
             handleAddNotification(null, 'error');
-            showSnackBar(error?.response?.data?.message , 'error');
+            showSnackBar(error?.response?.data?.message, 'error');
         } finally {
             setLoading(false);
         }
@@ -95,14 +96,17 @@ const BookingPage = () => {
         if (success) {
             setTimeout(() => {
                 setSuccess(false);
-                setBookingData({ name: '', email: '', phone: '', service: '', date: '', time: '', message: '', user: user?._id || null });
+                setBookingData({ name: '', email: '', phone: '', service: '', date: new Date(), time: '', message: '', user: user?._id || null });
+                setPredefinedTimeSlots([]);
             }, 20000);
         }
     }, [success]);
+
     const handleChangeInput = (e) => {
         const { name, value } = e.target;
         setBookingData({ ...bookingData, [name]: value });
     };
+
     useEffect(() => {
         const interval = setInterval(() => {
             const now = new Date();
@@ -117,6 +121,7 @@ const BookingPage = () => {
         }, 1000);
         return () => clearInterval(interval);
     }, []);
+
     const fetchBookings = async () => {
         try {
             const { data } = await bookingService.getAllBookings();
@@ -159,7 +164,8 @@ const BookingPage = () => {
         showSnackBar(isArabic ? `تم اختيار اليوم : ${t(`days.${selectedDay}`)}` : `Selected Day : ${t(`days.${selectedDay}`)}`, 'info');
 
         setSelectedDate(dayjs(date));
-        setBookingData({ ...bookingData, date: date.toLocaleDateString() });
+        // showSnackBar(date.toLocaleDateString(), 'info');
+        setBookingData({ ...bookingData, date: date });
         const times = clinicInfo?.onlineTimes.find((time) => time.day.toLowerCase() === selectedDay);
 
         if (times) {
@@ -338,25 +344,27 @@ const BookingPage = () => {
                         </Typography>
                         <Divider sx={{ my: 1 }} />
                         <Grid container spacing={2} sx={{ mt: 2 }}>
-                            {predefinedTimeSlots.map((time, index) => (
-                                <Grid item xs={4} key={index}>
-                                    <Button
-                                        variant="contained"
-                                        color={bookingData.time === time ? 'primary' : 'secondary'}
-                                        sx={{ width: '100%' }}
-                                        onClick={() => handleTimeSelection(time)} disabled={usableTime(time)}
-                                    >
-                                        {time}
-                                    </Button>
-                                </Grid>
-                            ))}
-                            {predefinedTimeSlots.length === 0 && (
-                                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%' }}>
-                                    <Typography variant="h6" color="textSecondary">
-                                        {isArabic ? 'لا توجد أوقات متاحة لهذا اليوم' : 'No available times for this day'}
-                                    </Typography>
-                                </Box>
-                            )}
+                            {predefinedTimeSlots.length > 0 ?
+                                predefinedTimeSlots.map((time, index) => (
+                                    <Grid item xs={4} key={index}>
+                                        <Button
+                                            variant="contained"
+                                            color={bookingData.time === time ? 'primary' : 'secondary'}
+                                            sx={{ width: '100%' }}
+                                            onClick={() => handleTimeSelection(time)} disabled={usableTime(time)}
+                                        >
+                                            {time}
+                                        </Button>
+                                    </Grid>
+                                )) : (
+                                    <Grid item xs={12}>
+                                        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%' }}>
+                                            <Typography variant="h6" color="textSecondary">
+                                                {isArabic ? 'لا توجد أوقات متاحة لهذا اليوم' : 'No available times for this day'}
+                                            </Typography>
+                                        </Box>
+                                    </Grid>
+                                )}
                         </Grid>
                     </Grid>
                     {/* service */}

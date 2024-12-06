@@ -5,7 +5,6 @@ import {
     Typography,
     Box,
     Grid,
-    Paper,
     Card,
     CardActionArea,
     CardContent,
@@ -18,6 +17,7 @@ import {
     DialogContent,
     DialogTitle,
     LinearProgress,
+    CircularProgress,
 } from "@mui/material";
 import {
     CloudUpload,
@@ -25,38 +25,30 @@ import {
     Description,
     ContentCopy,
     ContentCut,
-    Edit,
     Delete,
-    Home,
-    ArrowBack,
-    ArrowForward,
-    Refresh,
 } from "@mui/icons-material";
 import { useSnackbar } from "../../contexts/SnackbarProvider";
-import { uploadImage } from "../../services/uploadImage";
-import FileViewer from "./FileViewer";
+import {
+    uploadFile,
+    listFiles,
+    deleteFile,
+    copyFile,
+    moveFile,
+} from "../../services/supabaseService";
 
 const FileExplorerDialog = ({ open, onClose, onSelectFile }) => {
     const showSnackbar = useSnackbar();
-    const [directoryPath, setDirectoryPath] = useState("/");
+    const [directoryPath, setDirectoryPath] = useState("");
     const [folders, setFolders] = useState([]);
     const [files, setFiles] = useState([]);
     const [selectedFile, setSelectedFile] = useState(null);
     const [uploading, setUploading] = useState(false);
-    const [uploadProgress, setUploadProgress] = useState(0);
+    const [loading, setLoading] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
     const [contextItem, setContextItem] = useState(null);
-    const [dialogOpen, setDialogOpen] = useState(false);
-    const [newName, setNewName] = useState("");
     const [clipboard, setClipboard] = useState(null);
-    const [clipboardPath, setClipboardPath] = useState("");
     const [clipboardAction, setClipboardAction] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
-    const [isCreatingFolder, setIsCreatingFolder] = useState(false);
-    const [previewDialogOpen, setPreviewDialogOpen] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const [history, setHistory] = useState(["/"]);
-    const [historyIndex, setHistoryIndex] = useState(0);
 
     useEffect(() => {
         if (open) fetchItems();
@@ -65,11 +57,11 @@ const FileExplorerDialog = ({ open, onClose, onSelectFile }) => {
     const fetchItems = async () => {
         setLoading(true);
         try {
-            const result = await fileService.getFilesInDirectory(directoryPath);
-            setFolders(result.files.filter((item) => item.type === "directory"));
-            setFiles(result.files.filter((item) => item.type !== "directory"));
+            const data = await listFiles("uploads", directoryPath);
+            setFolders(data.filter((item) => item.id === null));
+            setFiles(data.filter((item) => item.id !== null));
         } catch (error) {
-            showSnackbar(error.message, "error");
+            showSnackbar(error.message || "Failed to load items.", "error");
         } finally {
             setLoading(false);
         }
@@ -81,32 +73,22 @@ const FileExplorerDialog = ({ open, onClose, onSelectFile }) => {
 
     const handleUpload = async () => {
         if (!selectedFile) {
-            showSnackbar("Please select a file to upload", "error");
+            showSnackbar("Please select a file to upload.", "error");
             return;
         }
         try {
             setUploading(true);
-            const data = await uploadImage(selectedFile, directoryPath);
+            const data = await uploadFile(selectedFile, directoryPath, selectedFile.name);
             if (data) {
-                setUploadProgress(Math.round((data.loaded * 100) / data.total));
-                showSnackbar("File uploaded successfully", "success");
+                showSnackbar("File uploaded successfully.", "success");
+                await fetchItems();
             }
-            await fetchItems();
         } catch (error) {
-            showSnackbar(error.message, "error");
+            showSnackbar(error.message || "File upload failed.", "error");
         } finally {
             setUploading(false);
-            setUploadProgress(0);
             setSelectedFile(null);
         }
-    };
-
-    const handleSelectFile = (file) => {
-        const basePath = import.meta.env.VITE_API_URL + "/uploads/";
-        const filePath = `${basePath}${directoryPath}${file.name}`;
-        onSelectFile({ ...file, path: filePath });
-        showSnackbar("File selected", "success");
-        onClose();
     };
 
     const handleContextMenuOpen = (event, item) => {
@@ -120,96 +102,129 @@ const FileExplorerDialog = ({ open, onClose, onSelectFile }) => {
         setContextItem(null);
     };
 
-    const handleDialogOpen = (isFolderCreation = false) => {
-        setIsCreatingFolder(isFolderCreation);
-        setNewName(isFolderCreation ? "" : contextItem?.name || "");
-        setDialogOpen(true);
+    const handleDelete = async (item) => {
+        try {
+            await deleteFile(`${directoryPath}${item.name}`);
+            showSnackbar("File deleted successfully.", "success");
+            await fetchItems();
+        } catch (error) {
+            showSnackbar(error.message || "File deletion failed.", "error");
+        }
     };
 
-    const handleDialogClose = () => {
-        setDialogOpen(false);
-        setNewName("");
-        setContextItem(null);
+    const handleClipboardAction = async () => {
+        if (!clipboard || !clipboardAction) return;
+        try {
+            if (clipboardAction === "copy") {
+                await copyFile(`${directoryPath}${clipboard.name}`, directoryPath);
+                showSnackbar("File copied successfully.", "success");
+            } else if (clipboardAction === "cut") {
+                await moveFile(`${directoryPath}${clipboard.name}`, directoryPath);
+                showSnackbar("File moved successfully.", "success");
+            }
+            setClipboard(null);
+            setClipboardAction(null);
+            await fetchItems();
+        } catch (error) {
+            showSnackbar(error.message || "Clipboard action failed.", "error");
+        }
+    };
+
+    const handleSelectFile = (file) => {
+        const basePath = import.meta.env.VITE_SUPABASE_BUCKET_URL;
+        const filePath = `${basePath}/${directoryPath}${file.name}`;
+        onSelectFile({ path: filePath, type: file.metadata.mimetype });
+        setDirectoryPath("");
+        showSnackbar("File selected successfully.", "success");
+        onClose();
     };
 
     const filteredFiles = files.filter((file) =>
         file.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
-
     const filteredFolders = folders.filter((folder) =>
         folder.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     return (
-        <Dialog open={open} onClose={onClose} fullWidth maxWidth="md" >
+        <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
             <DialogTitle>File Explorer</DialogTitle>
             <DialogContent>
                 <Box display="flex" justifyContent="space-between" mb={2}>
                     <Breadcrumbs aria-label="breadcrumb">
-                        <Link color="inherit" onClick={() => setDirectoryPath("/")}>
+                        <Link color="inherit" onClick={() => setDirectoryPath("")}>
                             Home
                         </Link>
-                        {directoryPath
-                            .split("/")
-                            .filter(Boolean)
-                            .map((part, index, arr) => {
-                                const path = `/${arr.slice(0, index + 1).join("/")}/`;
-                                return (
-                                    <Link key={path} color="inherit" onClick={() => setDirectoryPath(path)}>
-                                        {part}
-                                    </Link>
-                                );
-                            })}
+                        {directoryPath.split("/").filter(Boolean).map((path, index) => (
+                            <Link
+                                key={index}
+                                color="inherit"
+                                onClick={() =>
+                                    setDirectoryPath(
+                                        directoryPath.split("/").slice(0, index + 1).join("/") + "/"
+                                    )
+                                }
+                            >
+                                {path}
+                            </Link>
+                        ))}
                     </Breadcrumbs>
                     <Box display="flex" gap={1}>
-                        <Button onClick={() => handleDialogOpen(true)} variant="outlined">
-                            New Folder
+                        <Button component="label" variant="outlined" startIcon={<CloudUpload />}>
+                            Upload File
+                            <input type="file" hidden onChange={handleFileSelect} />
                         </Button>
-                        <Button
-                            component="label"
-                            variant="outlined"
-                            startIcon={<CloudUpload />}
-                            disabled={uploading}
-                            onClick={() => document.getElementById("file-input").click()}
-                        >
-                            {selectedFile ? "Upload" : "Upload File"}
-                        </Button>
-                        <input id="file-input" type="file" hidden onChange={handleFileSelect} />
+                        {selectedFile && (
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={handleUpload}
+                                disabled={uploading}
+                            >
+                                {uploading ? "Uploading..." : "Upload"}
+                            </Button>
+                        )}
                     </Box>
                 </Box>
-                {uploading && <LinearProgress variant="determinate" value={uploadProgress} />}
-                <Grid container spacing={2}>
-                    {filteredFolders.map((folder) => (
-                        <Grid item xs={6} sm={3} md={2} key={folder.name}>
-                            <Card>
-                                <CardActionArea
-                                    onClick={() => setDirectoryPath(`${directoryPath}${folder.name}/`)}
-                                    onContextMenu={(e) => handleContextMenuOpen(e, folder)}
-                                >
-                                    <CardContent>
-                                        <Folder fontSize="large" />
-                                        <Typography variant="h6">{folder.name}</Typography>
-                                    </CardContent>
-                                </CardActionArea>
-                            </Card>
-                        </Grid>
-                    ))}
-                    {filteredFiles.map((file) => (
-                        <Grid item xs={6} sm={3} md={2} key={file.name}>
-                            <Card>
-                                <CardActionArea
-                                    onClick={() => handleSelectFile(file)}
-                                    onContextMenu={(e) => handleContextMenuOpen(e, file)}
-                                >
-                                    <CardContent>
-                                        <Description fontSize="large" />
-                                        <Typography variant="h6">{file.name}</Typography>
-                                    </CardContent>
-                                </CardActionArea>
-                            </Card>
-                        </Grid>
-                    ))}
-                </Grid>
+                {uploading && <LinearProgress />}
+                {loading ? (
+                    <Box display="flex" justifyContent="center" mt={2}>
+                        <CircularProgress />
+                    </Box>
+                ) : (
+                    <Grid container spacing={2}>
+                        {filteredFolders.map((folder) => (
+                            <Grid item xs={6} sm={3} md={2} key={folder.name}>
+                                <Card>
+                                    <CardActionArea
+                                        onClick={() => setDirectoryPath(`${directoryPath}${folder.name}/`)}
+                                        onContextMenu={(e) => handleContextMenuOpen(e, folder)}
+                                    >
+                                        <CardContent>
+                                            <Folder fontSize="large" />
+                                            <Typography variant="h6">{folder.name}</Typography>
+                                        </CardContent>
+                                    </CardActionArea>
+                                </Card>
+                            </Grid>
+                        ))}
+                        {filteredFiles.map((file) => (
+                            <Grid item xs={6} sm={3} md={2} key={file.name}>
+                                <Card>
+                                    <CardActionArea
+                                        onClick={() => handleSelectFile(file)}
+                                        onContextMenu={(e) => handleContextMenuOpen(e, file)}
+                                    >
+                                        <CardContent>
+                                            <Description fontSize="large" />
+                                            <Typography variant="h6">{file.name}</Typography>
+                                        </CardContent>
+                                    </CardActionArea>
+                                </Card>
+                            </Grid>
+                        ))}
+                    </Grid>
+                )}
             </DialogContent>
             <Menu
                 anchorEl={anchorEl}
@@ -218,13 +233,19 @@ const FileExplorerDialog = ({ open, onClose, onSelectFile }) => {
                 PaperProps={{ style: { maxHeight: 200 } }}
             >
                 <MenuItem onClick={() => handleSelectFile(contextItem)}>Select</MenuItem>
-                <MenuItem onClick={() => handleDialogOpen()}>Rename</MenuItem>
                 <MenuItem onClick={() => setClipboard(contextItem)}>Copy</MenuItem>
-                <MenuItem onClick={() => setClipboard(contextItem, "cut")}>Cut</MenuItem>
-                <MenuItem onClick={() => handleDialogOpen(true)}>Delete</MenuItem>
+                <MenuItem
+                    onClick={() => {
+                        setClipboard(contextItem);
+                        setClipboardAction("cut");
+                    }}
+                >
+                    Cut
+                </MenuItem>
+                <MenuItem onClick={() => handleDelete(contextItem)}>Delete</MenuItem>
             </Menu>
             <DialogActions>
-                <Button onClick={onClose}>Cancel</Button>
+                <Button onClick={onClose}>Close</Button>
             </DialogActions>
         </Dialog>
     );

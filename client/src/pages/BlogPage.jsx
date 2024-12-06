@@ -5,7 +5,6 @@ import {
     useTheme, IconButton, Pagination
 } from '@mui/material';
 import { Circle } from '@mui/icons-material';
-
 import { useNavigate } from 'react-router-dom';
 import HeaderSection from '../components/home/HeaderSection';
 import Footer from '../components/home/Footer';
@@ -32,20 +31,21 @@ const BlogPage = () => {
     }, [i18n.language]);
 
     useEffect(() => {
-        const fetchBlogs = async () => {
-            try {
-                const data = await blogService.getBlogs();
-                const sortedBlogs = data.filter(blog => blog.published).sort((a, b) => new Date(b.date) - new Date(a.date));
-                const filteredBlogs = sortedBlogs.sort((a, b) => (b.likes + b.views + b.loves) - (a.likes + a.views + a.loves)).slice(0, 3);
-                setMostLiked(filteredBlogs);
-                setBlogs(sortedBlogs);
-                setFilteredBlogs(sortedBlogs);
-            } catch (error) {
-                console.error('Error fetching blogs:', error);
-            }
-        };
         fetchBlogs();
     }, []);
+
+    const fetchBlogs = async () => {
+        try {
+            const data = await blogService.getBlogs();
+            const sortedBlogs = data.filter(blog => blog.published).sort((a, b) => new Date(b.date) - new Date(a.date));
+            const filteredBlogs = sortedBlogs.sort((a, b) => (b.likes + b.views + b.loves) - (a.likes + a.views + a.loves)).slice(0, 3);
+            setMostLiked(filteredBlogs);
+            setBlogs(sortedBlogs);
+            setFilteredBlogs(sortedBlogs);
+        } catch (error) {
+            console.error('Error fetching blogs:', error);
+        }
+    };
 
     useEffect(() => {
         setFilteredBlogs(
@@ -80,7 +80,7 @@ const BlogPage = () => {
                     categories={Object.keys(categoryCounts)}
                 />
                 {/* Sidebar */}
-                <Box sx={{ width: { xs: '100%', md: '250px', lg: '350px' }, padding: 3, border: '1px solid', borderRadius: 2, boxShadow: theme.shadows[1] }}>
+                <Box sx={{ width: { xs: '100%', md: '350px', lg: '400px' }, padding: 3, border: '1px solid', borderRadius: 2, boxShadow: theme.shadows[1] }}>
                     <Grid container spacing={2}>
                         {/* Search */}
                         <Grid item xs={12}>

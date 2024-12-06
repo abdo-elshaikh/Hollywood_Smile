@@ -4,11 +4,13 @@ import { DataGrid } from "@mui/x-data-grid";
 import { Edit, Delete } from "@mui/icons-material";
 import { motion } from "framer-motion";
 import { useSnackbar } from "../../contexts/SnackbarProvider";
+import { useAuth } from "../../contexts/AuthContext";
 import commentService from "../../services/commentService";
 
 const ManageComments = () => {
     const showSnackbar = useSnackbar();
     const [openModal, setOpenModal] = useState(false);
+    const { user } = useAuth();
     const [currentComment, setCurrentComment] = useState(null);
     const [editedText, setEditedText] = useState("");
     const [comments, setComments] = useState([]);
@@ -17,7 +19,9 @@ const ManageComments = () => {
     const fetchComments = async () => {
         try {
             const data = await commentService.getComments();
-            setComments(data);
+            console.log('comments:', data);
+            const filteredData = data.filter((comment) => comment.blog?.author?._id === user._id);
+            setComments(filteredData);
         } catch (err) {
             showSnackbar(err.message, "error");
         }

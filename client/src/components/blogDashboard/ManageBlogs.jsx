@@ -23,7 +23,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { motion } from 'framer-motion';
 
-const MainContentPage = () => {
+const ManageBlogs = () => {
     const { user } = useAuth();
     const [blogs, setBlogs] = useState([]);
     const [page, setPage] = useState(1);
@@ -40,7 +40,8 @@ const MainContentPage = () => {
             const response = await axiosInstance.get('/blogs');
             if (response.status === 200) {
                 const sortedBlogs = response.data.sort((a, b) => new Date(b.date) - new Date(a.date));
-                const userBlogs = user.role === 'admin' ? sortedBlogs : sortedBlogs.filter((blog) => blog.author === user._id);
+                const userBlogs = user.role === 'admin' ? sortedBlogs : sortedBlogs.filter((blog) => blog.author?._id === user?._id);
+                // console.log('User Blogs:', userBlogs);
                 setBlogs(userBlogs);
             } else {
                 showSnackbar('Error fetching blogs', 'error');
@@ -89,7 +90,7 @@ const MainContentPage = () => {
 
     const paginatedBlogs = blogs.slice((page - 1) * blogsPerPage, page * blogsPerPage);
 
-    
+
 
     return (
         <Box sx={{ px: { xs: 2, sm: 4 }, py: 3 }}>
@@ -166,4 +167,4 @@ const MainContentPage = () => {
     );
 };
 
-export default MainContentPage;
+export default ManageBlogs;

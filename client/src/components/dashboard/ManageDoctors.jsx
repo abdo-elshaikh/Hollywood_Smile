@@ -3,8 +3,9 @@ import {
     Paper, Button, Dialog, Box, Container,
     DialogActions, DialogContent, DialogTitle,
     TextField, CircularProgress, Typography, IconButton,
-    Grid, Switch, Tooltip, LinearProgress, List, ListItem, ListItemText, ListItemAvatar,
-    useTheme, useMediaQuery, Avatar, ListItemSecondaryAction
+    Grid, Switch, Tooltip, List, ListItem, ListItemText, ListItemAvatar,
+    useTheme, useMediaQuery, Avatar, ListItemSecondaryAction,
+    Tabs, Tab, AppBar, Select, MenuItem, FormControl, InputLabel,
 } from '@mui/material';
 import { Add, Edit, Delete } from '@mui/icons-material';
 import { DataGrid } from '@mui/x-data-grid';
@@ -16,6 +17,7 @@ import ConfirmationDialog from "../common/ConfirmationDialog";
 const ManageDoctors = () => {
     const [doctors, setDoctors] = useState([]);
     const [doctorId, setDoctorId] = useState(null);
+    const [activeTab, setActiveTab] = useState(0);
     const [doctorData, setDoctorData] = useState({
         name: { ar: '', en: '' },
         position: { ar: '', en: '' },
@@ -27,8 +29,22 @@ const ManageDoctors = () => {
             twitter: '',
             linkedin: '',
         },
+        email: '',
+        phone: '',
+        address: '',
         isActive: true,
+        workingHours: [
+            { day: 'Sunday', startTime: '', endTime: '' },
+            { day: 'Monday', startTime: '', endTime: '' },
+            { day: 'Tuesday', startTime: '', endTime: '' },
+            { day: 'Wednesday', startTime: '', endTime: '' },
+            { day: 'Thursday', startTime: '', endTime: '' },
+            { day: 'Friday', startTime: '', endTime: '' },
+            { day: 'Saturday', startTime: '', endTime: '' },
+        ],
+        rating: [],
     });
+    const [newWorkingHour, setNewWorkingHour] = useState({ day: '', startTime: '', endTime: '' });
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const [confirmOpen, setConfirmOpen] = useState(false);
@@ -62,13 +78,18 @@ const ManageDoctors = () => {
             position: { ar: '', en: '' },
             description: { ar: '', en: '' },
             imageUrl: '',
+            email: '',
+            phone: '',
+            address: '',
             socialLinks: {
                 facebook: '',
                 instagram: '',
                 twitter: '',
                 linkedin: '',
             },
+            workingHours: [],
             isActive: true,
+            rating: [],
         });
     };
 
@@ -132,7 +153,7 @@ const ManageDoctors = () => {
         {
             field: 'imageUrl',
             headerName: 'Photo',
-            fex: 1,
+            flex: 1,
             renderCell: (params) => (
                 <img
                     src={params.value}
@@ -145,21 +166,13 @@ const ManageDoctors = () => {
             field: 'name',
             headerName: 'Name (English)',
             flex: 1,
-            renderCell: (params) => (
-                <div>
-                    {params.row.name.en}
-                </div>
-            ),
+            renderCell: (params) => params.row.name.en,
         },
         {
             field: 'position',
             headerName: 'Position (English)',
             flex: 1,
-            renderCell: (params) => (
-                <div>
-                    {params.row.position.en}
-                </div>
-            ),
+            renderCell: (params) => params.row.position.en,
         },
         {
             field: 'actions',
@@ -183,26 +196,23 @@ const ManageDoctors = () => {
     ];
 
     return (
-        <Container maxWidth="lg">
+        <Box>
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-                <Typography variant="h4">Manage Doctors</Typography>
+                <Typography variant="h5">Manage Doctors</Typography>
                 <Button variant="contained" onClick={handleDialogOpen}>
-                    <Add /> Add Doctor
+                    <Add sx={{ mr: 1 }} /> Add
                 </Button>
             </Box>
 
-            <Paper elevation={3} style={{ height: 'calc(100vh - 250px)', overflow: 'auto' }}>
-                {isMobile ?
+            <Paper elevation={3} style={{ height: '60vh', overflow: 'auto' }}>
+                {isMobile ? (
                     <List>
                         {doctors.map((doctor) => (
                             <ListItem key={doctor._id}>
                                 <ListItemAvatar>
                                     <Avatar src={doctor.imageUrl} alt={doctor.name.en[0]} />
                                 </ListItemAvatar>
-                                <ListItemText
-                                    primary={doctor.name.en}
-                                    secondary={doctor.position.en}
-                                />
+                                <ListItemText primary={doctor.name.en} secondary={doctor.position.en} />
                                 <ListItemSecondaryAction>
                                     <IconButton onClick={() => { setDoctorId(doctor._id); setDoctorData(doctor); setOpen(true); }}>
                                         <Edit />
@@ -214,149 +224,372 @@ const ManageDoctors = () => {
                             </ListItem>
                         ))}
                     </List>
-                    :
-                    <DataGrid
-                        rows={doctors}
-                        columns={columns}
-                        pageSize={10}
-                        rowsPerPageOptions={[5, 10, 20, 50, 100]}
-                        loading={loading}
-                        getRowId={(row) => row._id}
-                    />
-                }
+                ) : (
+                    <DataGrid rows={doctors} columns={columns} pageSize={10} getRowId={(row) => row._id} loading={loading} />
+                )}
             </Paper>
 
             <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="md">
                 <DialogTitle>{doctorId ? 'Edit Doctor' : 'Add Doctor'}</DialogTitle>
                 <DialogContent>
-                    <Grid container spacing={2}>
-                        <Grid item xs={12} md={6}>
-                            <TextField
-                                label="Name (Arabic)"
-                                variant="outlined"
-                                fullWidth
-                                value={doctorData.name.ar}
-                                onChange={(e) => setDoctorData({ ...doctorData, name: { ...doctorData.name, ar: e.target.value } })}
-                            />
+                    <AppBar position="static" color="default">
+                        <Tabs
+                            value={activeTab}
+                            onChange={(e, val) => setActiveTab(val)}
+                            indicatorColor="primary"
+                            textColor="primary"
+                            scrollButtons="auto"
+                            variant="scrollable"
+                        >
+                            <Tab label="Required Information" />
+                            <Tab label="Optional Information" />
+                            <Tab label="Working Hours" />
+                        </Tabs>
+                    </AppBar>
+
+                    {activeTab === 0 && (
+                        <Grid container spacing={2} mt={2}>
+                            {/* Name Fields */}
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    label="Name (English)"
+                                    value={doctorData.name.en}
+                                    onChange={(e) => setDoctorData((prev) => ({
+                                        ...prev,
+                                        name: { ...prev.name, en: e.target.value },
+                                    }))}
+                                    fullWidth
+                                    required
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    label="Name (Arabic)"
+                                    value={doctorData.name.ar}
+                                    onChange={(e) => setDoctorData((prev) => ({
+                                        ...prev,
+                                        name: { ...prev.name, ar: e.target.value },
+                                    }))}
+                                    fullWidth
+                                    required
+                                />
+                            </Grid>
+
+                            {/* Position Fields */}
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    label="Position (English)"
+                                    value={doctorData.position.en}
+                                    onChange={(e) => setDoctorData((prev) => ({
+                                        ...prev,
+                                        position: { ...prev.position, en: e.target.value },
+                                    }))}
+                                    fullWidth
+                                    required
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    label="Position (Arabic)"
+                                    value={doctorData.position.ar}
+                                    onChange={(e) => setDoctorData((prev) => ({
+                                        ...prev,
+                                        position: { ...prev.position, ar: e.target.value },
+                                    }))}
+                                    fullWidth
+                                    required
+                                />
+                            </Grid>
+
+                            {/* Description Fields */}
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    label="Description (English)"
+                                    value={doctorData.description.en}
+                                    onChange={(e) => setDoctorData((prev) => ({
+                                        ...prev,
+                                        description: { ...prev.description, en: e.target.value },
+                                    }))}
+                                    fullWidth
+                                    required
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    label="Description (Arabic)"
+                                    value={doctorData.description.ar}
+                                    onChange={(e) => setDoctorData((prev) => ({
+                                        ...prev,
+                                        description: { ...prev.description, ar: e.target.value },
+                                    }))}
+                                    fullWidth
+                                    required
+                                />
+                            </Grid>
+                            {/* Active  */}
+                            <Grid item xs={12} md={6}>
+                                <InputLabel>Active</InputLabel>
+                                <FormControl >
+                                    <Switch
+                                        checked={doctorData.isActive}
+                                        onChange={(e) => setDoctorData((prev) => ({ ...prev, isActive: e.target.checked }))}
+                                    />
+                                </FormControl>
+                            </Grid>
+
+                            {/* Image Upload */}
+                            <Grid item xs={12} md={6}>
+                                <Box display="flex" alignItems="center">
+
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleImageChange}
+                                        style={{ display: 'block', marginTop: '10px' }}
+                                    />
+                                    {doctorData.imageUrl && (
+                                        <Box mt={2}>
+                                            <img
+                                                src={doctorData.imageUrl}
+                                                alt="Doctor"
+                                                style={{ width: 100, height: 100, borderRadius: '50%' }}
+                                            />
+                                        </Box>
+                                    )}
+                                </Box>
+                            </Grid>
                         </Grid>
-                        <Grid item xs={12} md={6}>
-                            <TextField
-                                label="Name (English)"
-                                variant="outlined"
-                                fullWidth
-                                value={doctorData.name.en}
-                                onChange={(e) => setDoctorData({ ...doctorData, name: { ...doctorData.name, en: e.target.value } })}
-                            />
+                    )}
+
+                    {activeTab === 1 && (
+                        <Grid container spacing={2} mt={2}>
+                            {/* Contact Information */}
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    label="Email"
+                                    value={doctorData.email}
+                                    onChange={(e) => setDoctorData((prev) => ({
+                                        ...prev,
+                                        email: e.target.value,
+                                    }))}
+                                    fullWidth
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    label="Phone"
+                                    value={doctorData.phone}
+                                    onChange={(e) => setDoctorData((prev) => ({
+                                        ...prev,
+                                        phone: e.target.value,
+                                    }))}
+                                    fullWidth
+                                />
+                            </Grid>
+
+                            {/* Address */}
+                            <Grid item xs={12}>
+                                <TextField
+                                    label="Address"
+                                    value={doctorData.address}
+                                    onChange={(e) => setDoctorData((prev) => ({
+                                        ...prev,
+                                        address: e.target.value,
+                                    }))}
+                                    fullWidth
+                                    multiline
+                                />
+                            </Grid>
+
+                            {/* Social Media Links */}
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    label="Facebook URL"
+                                    value={doctorData.socialLinks.facebook}
+                                    onChange={(e) => setDoctorData((prev) => ({
+                                        ...prev,
+                                        socialLinks: { ...prev.socialLinks, facebook: e.target.value },
+                                    }))}
+                                    fullWidth
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    label="Twitter URL"
+                                    value={doctorData.socialLinks.twitter}
+                                    onChange={(e) => setDoctorData((prev) => ({
+                                        ...prev,
+                                        socialLinks: { ...prev.socialLinks, twitter: e.target.value },
+                                    }))}
+                                    fullWidth
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    label="Instagram URL"
+                                    value={doctorData.socialLinks.instagram}
+                                    onChange={(e) => setDoctorData((prev) => ({
+                                        ...prev,
+                                        socialLinks: { ...prev.socialLinks, instagram: e.target.value },
+                                    }))}
+                                    fullWidth
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    label="LinkedIn URL"
+                                    value={doctorData.socialLinks.linkedin}
+                                    onChange={(e) => setDoctorData((prev) => ({
+                                        ...prev,
+                                        socialLinks: { ...prev.socialLinks, linkedin: e.target.value },
+                                    }))}
+                                    fullWidth
+                                />
+                            </Grid>
                         </Grid>
-                        <Grid item xs={12} md={6}>
-                            <TextField
-                                label="Position (Arabic)"
-                                variant="outlined"
-                                fullWidth
-                                value={doctorData.position.ar}
-                                onChange={(e) => setDoctorData({ ...doctorData, position: { ...doctorData.position, ar: e.target.value } })}
-                            />
+                    )}
+
+                    {activeTab === 2 && (
+                        <Grid container spacing={3} mt={2}>
+                            {/* Add New Working Hours */}
+                            <Grid item xs={12} lg={6}>
+                                <Typography variant="h6" gutterBottom>
+                                    Add Working Hours
+                                </Typography>
+                                <Grid container spacing={2}>
+                                    {/* Day Selector */}
+                                    <Grid item xs={12} sm={6} md={4}>
+                                        <FormControl fullWidth size="small">
+                                            <InputLabel>Select Day</InputLabel>
+                                            <Select
+                                                value={newWorkingHour.day}
+                                                onChange={(e) =>
+                                                    setNewWorkingHour((prev) => ({ ...prev, day: e.target.value }))
+                                                }
+                                            >
+                                                {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+                                                    .filter(
+                                                        (day) =>
+                                                            !doctorData.workingHours?.some(
+                                                                (existingDay) => existingDay.day === day
+                                                            )
+                                                    )
+                                                    .map((day) => (
+                                                        <MenuItem key={day} value={day}>
+                                                            {day}
+                                                        </MenuItem>
+                                                    ))}
+                                            </Select>
+                                        </FormControl>
+                                    </Grid>
+                                    {/* Start Time */}
+                                    <Grid item xs={12} sm={6} md={4}>
+                                        <TextField
+                                            size="small"
+                                            type="time"
+                                            label="Start Time"
+                                            value={newWorkingHour.startTime}
+                                            onChange={(e) =>
+                                                setNewWorkingHour((prev) => ({ ...prev, startTime: e.target.value }))
+                                            }
+                                            fullWidth
+                                        />
+                                    </Grid>
+                                    {/* End Time */}
+                                    <Grid item xs={12} sm={6} md={4}>
+                                        <TextField
+                                            size="small"
+                                            type="time"
+                                            label="End Time"
+                                            value={newWorkingHour.endTime}
+                                            onChange={(e) =>
+                                                setNewWorkingHour((prev) => ({ ...prev, endTime: e.target.value }))
+                                            }
+                                            fullWidth
+                                        />
+                                    </Grid>
+                                    {/* Add Button */}
+                                    <Grid item xs={12} sm={6} md={12}>
+                                        <Button
+                                            variant="contained"
+                                            color="primary"
+                                            fullWidth
+                                            disabled={!newWorkingHour.day || !newWorkingHour.startTime || !newWorkingHour.endTime}
+                                            onClick={() => {
+                                                setDoctorData((prev) => ({
+                                                    ...prev,
+                                                    workingHours: [...prev.workingHours, newWorkingHour],
+                                                }));
+                                                setNewWorkingHour({ day: "", startTime: "", endTime: "" });
+                                            }}
+                                        >
+                                            Add
+                                        </Button>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+
+                            {/* List Existing Working Hours */}
+                            <Grid item xs={12} lg={6}>
+                                <Typography variant="h6" gutterBottom>
+                                    Existing Working Hours
+                                </Typography>
+                                <List>
+                                    {doctorData.workingHours.map((workingHour, index) => (
+                                        <ListItem
+                                            key={index}
+                                            sx={{
+                                                bgcolor: index % 2 === 0 ? "grey.100" : "transparent",
+                                                borderRadius: 1,
+                                            }}
+                                        >
+                                            <ListItemText
+                                                primary={workingHour.day}
+                                                secondary={`${workingHour.startTime} - ${workingHour.endTime}`}
+                                            />
+                                            <ListItemSecondaryAction>
+                                                <Tooltip title="Delete">
+                                                    <IconButton
+                                                        edge="end"
+                                                        color="error"
+                                                        onClick={() =>
+                                                            setDoctorData((prev) => ({
+                                                                ...prev,
+                                                                workingHours: prev.workingHours.filter(
+                                                                    (day) => day.day !== workingHour.day
+                                                                ),
+                                                            }))
+                                                        }
+                                                    >
+                                                        <Delete />
+                                                    </IconButton>
+                                                </Tooltip>
+                                            </ListItemSecondaryAction>
+                                        </ListItem>
+                                    ))}
+                                </List>
+                            </Grid>
                         </Grid>
-                        <Grid item xs={12} md={6}>
-                            <TextField
-                                label="Position (English)"
-                                variant="outlined"
-                                fullWidth
-                                value={doctorData.position.en}
-                                onChange={(e) => setDoctorData({ ...doctorData, position: { ...doctorData.position, en: e.target.value } })}
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <TextField
-                                label="Description (Arabic)"
-                                variant="outlined"
-                                multiline
-                                rows={3}
-                                fullWidth
-                                value={doctorData.description.ar}
-                                onChange={(e) => setDoctorData({ ...doctorData, description: { ...doctorData.description, ar: e.target.value } })}
-                            />
-                            <TextField
-                                label="Description (English)"
-                                variant="outlined"
-                                multiline
-                                rows={3}
-                                fullWidth
-                                value={doctorData.description.en}
-                                onChange={(e) => setDoctorData({ ...doctorData, description: { ...doctorData.description, en: e.target.value } })}
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Typography variant="body1">Image: {doctorData.imageUrl}</Typography>
-                            <TextField
-                                type="file"
-                                accept="image/*"
-                                variant="outlined"
-                                fullWidth
-                                onChange={handleImageChange}
-                            />
-                        </Grid>
-                        <Grid item xs={12} md={6}>
-                            <TextField
-                                label="Facebook"
-                                variant="outlined"
-                                fullWidth
-                                value={doctorData.socialLinks.facebook}
-                                onChange={(e) => setDoctorData({ ...doctorData, socialLinks: { ...doctorData.socialLinks, facebook: e.target.value } })}
-                            />
-                        </Grid>
-                        <Grid item xs={12} md={6}>
-                            <TextField
-                                label="Instagram"
-                                variant="outlined"
-                                fullWidth
-                                value={doctorData.socialLinks.instagram}
-                                onChange={(e) => setDoctorData({ ...doctorData, socialLinks: { ...doctorData.socialLinks, instagram: e.target.value } })}
-                            />
-                        </Grid>
-                        <Grid item xs={12} md={6}>
-                            <TextField
-                                label="Twitter"
-                                variant="outlined"
-                                fullWidth
-                                value={doctorData.socialLinks.twitter}
-                                onChange={(e) => setDoctorData({ ...doctorData, socialLinks: { ...doctorData.socialLinks, twitter: e.target.value } })}
-                            />
-                        </Grid>
-                        <Grid item xs={12} md={6}>
-                            <TextField
-                                label="LinkedIn"
-                                variant="outlined"
-                                fullWidth
-                                value={doctorData.socialLinks.linkedin}
-                                onChange={(e) => setDoctorData({ ...doctorData, socialLinks: { ...doctorData.socialLinks, linkedin: e.target.value } })}
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Switch
-                                checked={doctorData.isActive}
-                                onChange={(e) => setDoctorData({ ...doctorData, isActive: e.target.checked })}
-                            />
-                            <Typography variant="caption">Active</Typography>
-                        </Grid>
-                    </Grid>
+                    )}
+
                 </DialogContent>
+
                 <DialogActions>
                     <Button onClick={() => setOpen(false)}>Cancel</Button>
-                    <Button onClick={createOrUpdateDoctor} variant="contained" color="primary">
-                        {loading ? <CircularProgress size={24} /> : 'Save'}
+                    <Button variant="contained" onClick={createOrUpdateDoctor}>
+                        Save
                     </Button>
                 </DialogActions>
             </Dialog>
 
             <ConfirmationDialog
                 open={confirmOpen}
-                onClose={() => setConfirmOpen(false)}
+                title="Delete Doctor"
+                description="Are you sure you want to delete this doctor?"
                 onConfirm={handleDeleteConfirm}
-                title="Confirm Deletion"
-                message={`Are you sure you want to delete ${selectedDoctor?.name?.en} from the list?`}
+                onCancel={() => setConfirmOpen(false)}
             />
-        </Container>
+        </Box>
     );
 };
 

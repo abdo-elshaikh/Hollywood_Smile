@@ -1,13 +1,28 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Box, Typography, Container, Grid, CircularProgress, Paper, Button, IconButton } from '@mui/material';
+import {
+    Box,
+    Typography,
+    Container,
+    Grid,
+    Paper,
+    IconButton,
+    Avatar,
+    Tooltip,
+    Divider,
+} from '@mui/material';
+import { ThumbUp, ThumbDown, Visibility, Comment } from '@mui/icons-material';
 import HeaderSection from '../components/home/HeaderSection';
 import Footer from '../components/home/Footer';
 import ScrollToTopButton from '../components/common/ScrollToTopButton';
-import BlogPost from '../components/blog/BlogPost';
 import { useTranslation } from 'react-i18next';
 import { useCustomTheme } from '../contexts/ThemeProvider';
-import { ChevronRight } from '@mui/icons-material'; // Example icon for a button
+import { useAuth } from '../contexts/AuthContext';
+import LoadingSpinner from '../components/common/LoadingSpinner';
+import CommentsSection from '../components/blog/CommentsSection';
+import BlogShareDialog from '../components/common/BlogShareDialog';
+import blogService from '../services/blogService';
+import NotificationService from '../services/notificationService';
 
 const BlogPostPage = () => {
     const { t, i18n } = useTranslation();
@@ -15,110 +30,234 @@ const BlogPostPage = () => {
     const navigate = useNavigate();
     const { id } = useParams();
 
+    const { user } = useAuth();
+    const [blog, setBlog] = useState(null);
+    const [likeCount, setLikeCount] = useState(0);
+    const [isLiked, setIsLiked] = useState(false);
+    const [disLikeCount, setDisLikeCount] = useState(0);
+    const [isDisLiked, setIsDisLiked] = useState(false);
+    const isArabic = i18n.language === 'ar';
+
     useEffect(() => {
-        if (!id) {
-            navigate('/not-found');
+        fetchBlogData();
+        incrementBlogView();
+    }, [id]);
+
+    const fetchBlogData = async () => {
+        try {
+            const data = await blogService.getBlog(id);
+            setBlog(data);
+            setLikeCount(data.likes || 0);
+            setDisLikeCount(data.dislikes || 0);
+        } catch (error) {
+            console.error('Error fetching blog data:', error);
         }
-    }, [id, navigate]);
+    };
+
+    const incrementBlogView = async () => {
+        try {
+            await blogService.addView(id);
+        } catch (error) {
+            console.error('Error incrementing blog view:', error);
+        }
+    };
+
+    const handleLike = async () => {
+        try {
+            await blogService.likeBlog(id);
+            await handleAddNotification('liked', 'success');
+            setLikeCount((prev) => prev + 1);
+            setIsLiked(true);
+        } catch (error) {
+            await handleAddNotification('liked', 'error');
+            console.error('Error liking blog:', error);
+        }
+    };
+
+    const handleDislike = async () => {
+        try {
+            await blogService.dislikeBlog(id);
+            await handleAddNotification('disliked', 'error');
+            setDisLikeCount((prev) => prev + 1);
+            setIsDisLiked(true);
+        } catch (error) {
+            await handleAddNotification('disliked', 'error');
+            console.error('Error disliking blog:', error);
+        }
+    };
+
+    const handleToComments = () => {
+        document.getElementById('comment-input').scrollIntoView({ behavior: 'smooth', block: 'center', position: 'start' });
+        document.getElementById('comment-input').focus();
+    };
+
+    const handleAddNotification = async (action, type) => {
+        const notification = {
+            title: `Add Notification for ${action}`,
+            message: `You ${action} the blog post ${blog.title}.`,
+            type,
+            ref: 'blog',
+            refId: id,
+        };
+        try {
+            await NotificationService.createNotification(notification);
+        } catch (error) {
+            console.error('Error adding notification:', error);
+        }
+    };
+
+
+    if (!blog) return <LoadingSpinner />;
 
     return (
         <>
             <HeaderSection />
-
             <Box
                 sx={{
-                    background: mode === 'dark' ? 'linear-gradient(45deg, #333, #222)' : 'linear-gradient(135deg, #C9E6F0, #f5f5f5)',
-                    padding: { xs: "40px 0", sm: "50px 0" },
-                    borderBottom: mode === 'dark' ? "1px solid #555" : "1px solid #ccc",
-                    transition: "all 0.3s ease",
+                    background: mode === 'dark'
+                        ? 'linear-gradient(45deg, #333, #222)'
+                        : 'linear-gradient(135deg, #C9E6F0, #f5f5f5)',
+                    py: 8,
+                    borderBottom: `1px solid ${mode === 'dark' ? '#555' : '#ccc'}`,
+                    textAlign: 'center',
                 }}
             >
-                <Container
-                    maxWidth="md"
-                    sx={{
-                        mt: 5,
-                    }}
-                >
-                    <Paper
+                <Container maxWidth="md">
+                    <Typography
+                        variant="h3"
                         sx={{
-                            padding: 5,
-                            backgroundColor: mode === 'dark' ? "#444" : "#fff",
-                            boxShadow: 3,
-                            borderRadius: 3,
-                            transition: "all 0.3s ease",
-                            textAlign: 'center',
-                            "&:hover": {
-                                boxShadow: 6,
-                            },
+                            fontWeight: 'bold',
+                            color: mode === 'dark' ? '#FFD700' : '#1976d2',
+                            mb: 1,
+                            fontFamily: 'Poppins, sans-serif',
                         }}
                     >
-                        <Typography
-                            variant="h3"
-                            sx={{
-                                fontWeight: 'bold',
-                                color: mode === 'dark' ? "#FFD700" : "#1976d2",
-                                mb: 2,
-                                fontFamily: "'Poppins', sans-serif",
-                            }}
-                        >
-                            {i18n.language === 'ar' ? 'المدونة' : 'Blog'}
-                        </Typography>
-                        <Typography
-                            variant="h5"
-                            sx={{
-                                color: mode === 'dark' ? "#bbb" : "#333",
-                                fontFamily: "'Roboto', sans-serif",
-                            }}
-                        >
-                            {i18n.language === 'ar' ? 'مقالات مفيدة ومثيرة' : 'Useful and Exciting Articles'}
-                        </Typography>
-                    </Paper>
+                        {t('Blog')}
+                    </Typography>
+                    <Typography
+                        variant="h6"
+                        sx={{
+                            color: mode === 'dark' ? '#bbb' : '#333',
+                            fontFamily: 'Roboto, sans-serif',
+                        }}
+                    >
+                        {t('Useful and Exciting Articles')}
+                    </Typography>
                 </Container>
             </Box>
 
-            {/* Blog Post Content */}
-            <Container sx={{ padding: '50px 0' }}>
-                <Grid container spacing={3}>
-                    <Grid item xs={12} md={8}>
-                        <BlogPost id={id} />
-                    </Grid>
+            <Grid container spacing={4}>
+                {/* Blog Post Section */}
+                <Grid item xs={12} md={8}>
+                    <Box sx={{ maxWidth: 'lg', mx: 'auto', px: 2, py: 4 }}>
 
-                    {/* Sidebar Section (if needed) */}
-                    <Grid item xs={12} md={4}>
-                        <Paper sx={{ padding: 3, boxShadow: 3, borderRadius: 2 }}>
-                            <Typography variant="h6" sx={{ fontWeight: 'bold', color: "#1976d2" }}>
-                                {i18n.language === 'ar' ? 'أحدث المقالات' : 'Latest Articles'}
-                            </Typography>
-                            <Box sx={{ mt: 2 }}>
-                                <Button
-                                    variant="outlined"
-                                    fullWidth
-                                    sx={{
-                                        marginBottom: 2,
-                                        padding: "10px",
-                                        fontSize: "1rem",
-                                        textTransform: "none",
-                                        "&:hover": {
-                                            backgroundColor: mode === 'dark' ? "#1976d2" : "#333",
-                                            color: "#fff",
-                                        },
-                                    }}
-                                >
-                                    {i18n.language === 'ar' ? 'المزيد من المقالات' : 'More Posts'}
-                                </Button>
-                                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <Typography variant="body2" sx={{ color: mode === 'dark' ? "#bbb" : "#333" }}>
-                                        {i18n.language === 'ar' ? 'استكشاف المزيد' : 'Explore More'}
+                        {/* Blog Content */}
+                        <Paper elevation={1} sx={{ p: 3, borderRadius: 2 }}>
+                            {/* Author Info */}
+                            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                                <Avatar src={blog.author?.avatarUrl} alt={blog.author?.name} sx={{ width: 50, height: 50 }} />
+                                <Box sx={{ mx: 2 }}>
+                                    <Typography variant="subtitle1">{blog.author?.name || 'Anonymous'}</Typography>
+                                    <Typography variant="subtitle2" color="text.secondary">
+                                        {new Date(blog.date).toLocaleString()}
                                     </Typography>
-                                    <IconButton sx={{ color: mode === 'dark' ? "#FFD700" : "#1976d2" }}>
-                                        <ChevronRight />
-                                    </IconButton>
                                 </Box>
                             </Box>
+
+                            {/* Blog Image */}
+                            {blog.imageUrl && (
+                                <img
+                                    src={blog.imageUrl}
+                                    alt={blog.title}
+                                    style={{
+                                        width: '100%',
+                                        borderRadius: 8,
+                                        marginBottom: 8,
+                                    }}
+                                />
+                            )}
+
+                            {/* Blog Title */}
+                            <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 2 }}>
+                                {blog.title}
+                            </Typography>
+
+                            {/* Blog Stats */}
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                    p: 2,
+                                }}
+                            >
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                    <Tooltip title={isArabic ? 'المشاهدات' : 'Views'}>
+                                        <IconButton>
+                                            <Visibility />
+                                        </IconButton>
+                                    </Tooltip>
+                                    <Typography>{blog.views}</Typography>
+                                    <Tooltip title={isArabic ? 'التعليقات' : 'Comments'}>
+                                        <IconButton onClick={handleToComments}>
+                                            <Comment />
+                                        </IconButton>
+                                    </Tooltip>
+                                    <Typography>{blog.comments.length}</Typography>
+                                    <BlogShareDialog blog={blog} />
+                                </Box>
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                    <IconButton
+                                        color={isDisLiked ? 'error' : 'default'}
+                                        onClick={handleDislike}
+                                        disabled={!user}
+                                    >
+                                        <ThumbDown />
+                                    </IconButton>
+                                    <Typography>{disLikeCount}</Typography>
+                                    <IconButton
+                                        color={isLiked ? 'primary' : 'default'}
+                                        onClick={handleLike}
+                                        disabled={!user}
+                                    >
+                                        <ThumbUp />
+                                    </IconButton>
+                                    <Typography>{likeCount}</Typography>
+                                </Box>
+                            </Box>
+
+                            <Divider sx={{ mb: 2 }} />
+
+                            {/* Blog Content */}
+                            <Typography variant="body1" sx={{ lineHeight: 1.6, mb: 3 }}>
+                                {blog.content}
+                            </Typography>
                         </Paper>
-                    </Grid>
+
+                        {/* Comments Section */}
+                        <Box id="comments" sx={{ mt: 2 }}>
+                            <CommentsSection id={id} addNotification={handleAddNotification} toComment={handleToComments} />
+                        </Box>
+                    </Box>
                 </Grid>
-            </Container>
+
+                {/* Sidebar Section */}
+                <Grid item xs={12} md={4}>
+                    <Paper sx={{ p: 3, height: '100%' }}>
+                        <Typography
+                            variant="h6"
+                            sx={{
+                                fontWeight: 'bold',
+                                color: mode === 'dark' ? '#FFD700' : '#1976d2',
+                                mb: 3,
+                            }}
+                        >
+                            {t('Explore More')}
+                        </Typography>
+                        {/* More content can be added here */}
+                    </Paper>
+                </Grid>
+            </Grid>
 
             <Footer />
             <ScrollToTopButton />

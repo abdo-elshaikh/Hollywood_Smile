@@ -145,7 +145,7 @@ const ProfilePage = () => {
         const fileName = userInfo?._id;
         setUploadingImage(true);
         try {
-            const data = user.avatarUrl ?
+            const data = !user.avatarUrl ?
                 await replaceFile(image, `avatars/users/${userInfo.username}`, fileName) :
                 await uploadFile(image, `avatars/users/${userInfo.username}`, fileName);
             console.log("Image uploaded:", data);

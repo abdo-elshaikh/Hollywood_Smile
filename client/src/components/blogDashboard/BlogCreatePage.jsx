@@ -8,14 +8,17 @@ import { Delete, AddPhotoAlternate, Upload } from '@mui/icons-material';
 import { useSnackbar } from '../../contexts/SnackbarProvider';
 import { useAuth } from '../../contexts/AuthContext';
 import FileExplorerDialog from '../common/FileExplorerDialog';
-import { uploadImage } from '../../services/uploadImage';
+import { uploadFile, replaceFile } from '../../services/supabaseService';
+import { useNavigate } from 'react-router-dom';
 
-const BlogCreatePage = () => {
+const BlogCreatePage = ({ newCode }) => {
     const { user } = useAuth();
+    const navigate = useNavigate();
     const showSnackbar = useSnackbar();
     const [open, setOpen] = useState(false);
     const [currentDate, setCurrentDate] = useState(new Date());
     const [formData, setFormData] = useState({
+        code: newCode,
         title: '',
         content: '',
         imageUrl: '',
@@ -65,6 +68,7 @@ const BlogCreatePage = () => {
             if (response.status === 201) {
                 showSnackbar('Blog created successfully', 'success');
                 setFormData({
+                    code: '',
                     title: '',
                     content: '',
                     imageUrl: '',
@@ -74,6 +78,7 @@ const BlogCreatePage = () => {
                     published: false,
                     date: new Date(),
                 });
+                navigate('/blog-dashboard/blogs');
             }
         } catch (error) {
             console.error('Error creating blog:', error);
@@ -83,7 +88,7 @@ const BlogCreatePage = () => {
 
     const handleUpload = async (file) => {
         try {
-            const data = await uploadImage(file, 'images/blogs/', 'uploads');
+            const data = await uploadFile(file, 'images/blogs/', newCode);
             setFormData({ ...formData, imageUrl: data.fullUrl });
             showSnackbar('Image uploaded successfully', 'success');
         } catch (error) {
@@ -105,6 +110,7 @@ const BlogCreatePage = () => {
 
             <Stack spacing={3}>
                 <Box textAlign="center">
+                    <Typography variant="h6">Blog Code: <strong>{formData.code}</strong></Typography>
                     <img
                         src={formData.imageUrl || 'https://via.placeholder.com/400x200'}
                         alt="Blog"
@@ -113,7 +119,8 @@ const BlogCreatePage = () => {
                             height: '200px',
                             objectFit: 'cover',
                             borderRadius: '8px',
-                            border: '1px solid #ddd',
+                            border: '1px solid',
+                            borderColor: 'divider',
                         }}
                     />
                     <Stack direction="row" spacing={1} justifyContent="center" mt={2}>

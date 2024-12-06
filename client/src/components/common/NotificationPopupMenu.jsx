@@ -49,14 +49,11 @@ const NotificationPopupMenu = ({ source = 'admin-dashboard' }) => {
     };
 
     const notificationsByUser = (role, notifications) => {
-        if (role === 'admin') {
-            return notifications;
-        } else if (role === 'support') {
-            return notifications.filter((notification) => notification.ref === 'booking');
-        } else if (role === 'editor' || role === 'author') {
-            return notifications.filter((notification) => notification.ref === 'blog');
-        }
-        return [];
+        if (role === 'admin') return notifications;
+        else if (role === 'support') return notifications.filter((notification) => notification.ref === 'booking');
+        else if (role === 'editor') return notifications.filter((notification) => notification.ref === 'blog');
+        else if (role === 'author') return notifications.filter((notification) => notification.ref === 'blog');
+        else return [];
     };
 
     useEffect(() => {
@@ -125,7 +122,7 @@ const NotificationPopupMenu = ({ source = 'admin-dashboard' }) => {
             <Tooltip title="Notifications" onClick={handleMenuClick} arrow>
                 <IconButton>
                     <Badge badgeContent={unreadCount} color="secondary">
-                        <Notifications />
+                        <Notifications color='action' />
                     </Badge>
                 </IconButton>
             </Tooltip>
@@ -211,7 +208,9 @@ const NotificationPopupMenu = ({ source = 'admin-dashboard' }) => {
             >
                 <Box sx={{ width: 400, px: 1 }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <Typography variant="h6">All Notifications</Typography>
+                        <Typography variant="h6">
+                            All Notifications
+                        </Typography>
                     </Box>
                     <Divider sx={{ my: 1 }} />
                     <List

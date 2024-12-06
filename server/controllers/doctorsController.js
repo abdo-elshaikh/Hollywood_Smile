@@ -1,75 +1,105 @@
 const Doctors = require('../models/Doctors');
 
 const getDoctors = async (req, res) => {
-    const doctors = await Doctors.find().populate('socialLinks')
-    .populate('rating.user', 'name email');
-    
-    if (!doctors || !doctors.length) {
-        res.status(404).json({ message: 'No doctors found' });
-    } else {
+    try {
+        const doctors = await Doctors.find().populate('socialLinks')
+            .populate('rating.user', 'name email');
+
+        if (!doctors || doctors.length === 0) {
+            return res.status(404).json({ message: 'No doctors found' });
+        }
         res.status(200).json(doctors);
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to retrieve doctors', error });
     }
 };
 
 const getDoctorById = async (req, res) => {
-    const doctor = await Doctors.findById(req.params.id).populate('socialLinks')
-    .populate('rating.user', 'name email');
-    if (doctor) {
-        res.status(200).json(doctor);
-    } else {
+    try {
+        const doctor = await Doctors.findById(req.params.id).populate('socialLinks')
+            .populate('rating.user', 'name email');
+
+        if (doctor) {
+            return res.status(200).json(doctor);
+        }
         res.status(404).json({ message: 'Doctor not found' });
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to retrieve doctor', error });
     }
 };
 
 const createDoctor = async (req, res) => {
-    const doctor = await Doctors.create(req.body);
-    if (doctor) {
+    try {
+        const doctor = await Doctors.create(req.body);
         res.status(201).json(doctor);
-    } else {
-        res.status(400).json({ message: 'Failed to create doctor' });
+    } catch (error) {
+        res.status(400).json({ message: 'Failed to create doctor', error });
     }
 };
 
 const updateDoctor = async (req, res) => {
-    const doctor = await Doctors.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    if (doctor) {
-        res.status(200).json(doctor);
-    } else {
+    try {
+        const doctor = await Doctors.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        if (doctor) {
+            return res.status(200).json(doctor);
+        }
         res.status(404).json({ message: 'Doctor not found' });
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to update doctor', error });
     }
 };
 
 const deleteDoctor = async (req, res) => {
-    const doctor = await Doctors.findByIdAndDelete(req.params.id);
-    if (doctor) {
-        res.status(200).json(doctor);
-    } else {
+    try {
+        const doctor = await Doctors.findByIdAndDelete(req.params.id);
+        if (doctor) {
+            return res.status(200).json(doctor);
+        }
         res.status(404).json({ message: 'Doctor not found' });
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to delete doctor', error });
     }
 };
 
 const addRating = async (req, res) => {
-    const { name, stars, comment, user } = req.body;
-    const doctor = await Doctors.findById(req.params.id);
-    if (doctor) {
-        doctor.rating.push({ name, stars, comment, user });
-        await doctor.save();
-        res.status(201).json({ message: 'Rating added successfully', doctor });
-    } else {
-        res.status(404).json({ message: 'Doctor not found' });
+    try {
+        const doctor = await Doctors.findById(req.params.id);
+        if (doctor) {
+            // Validate the rating data before adding
+            const { stars, user } = req.body;
+            if (typeof stars !== 'number' || stars < 1 || stars > 5) {
+                return res.status(400).json({ message: 'Rating must be between 1 and 5 stars' });
+            }
+
+            doctor.rating.push(req.body);
+            await doctor.save();
+            res.status(201).json({ message: 'Rating added successfully', doctor });
+        } else {
+            res.status(404).json({ message: 'Doctor not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to add rating', error });
     }
-}
+};
 
 const getAverageRating = async (req, res) => {
-    const doctor = await Doctors.findById(req.params.id);
-    if (doctor) {
-        const totalStars = doctor.rating.reduce((acc, item) => acc + item.stars, 0);
-        const averageRating = totalStars / doctor.rating.length;
-        res.status(200).json({ averageRating });
-    } else {
-        res.status(404).json({ message: 'Doctor not found' });
+    try {
+        const doctor = await Doctors.findById(req.params.id);
+        if (doctor) {
+            if (doctor.rating.length === 0) {
+                return res.status(200).json({ averageRating: 0 });
+            }
+
+            const totalStars = doctor.rating.reduce((acc, item) => acc + item.stars, 0);
+            const averageRating = totalStars / doctor.rating.length;
+            res.status(200).json({ averageRating });
+        } else {
+            res.status(404).json({ message: 'Doctor not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to get average rating', error });
     }
-}
+};
 
 module.exports = {
     getDoctors,

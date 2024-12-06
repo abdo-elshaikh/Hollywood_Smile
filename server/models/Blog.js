@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
 
 const BlogSchema = new mongoose.Schema({
+    code: {
+        type: String,
+        required: true,
+        unique: true,
+    },
     title: {
         type: String,
         required: true,
@@ -12,7 +17,7 @@ const BlogSchema = new mongoose.Schema({
     },
     imageUrl: {
         type: String,
-        default: 'https://via.placeholder.com/150',
+        default: '',
     },
     author: {
         type: mongoose.Schema.Types.ObjectId,

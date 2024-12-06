@@ -94,6 +94,7 @@ const DoctorsPage = () => {
                     flexDirection: 'column',
                     alignItems: 'center',
                     boxShadow: 5,
+                    height: '100%',
                     borderRadius: 4,
                     p: 3,
                     textAlign: 'center',
@@ -117,17 +118,30 @@ const DoctorsPage = () => {
                         borderColor: 'primary.main',
                     }}
                 />
-                <CardContent>
+                <CardContent
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        flexGrow: 1,
+                    }}
+                >
                     <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'text.primary', mb: 1 }}>
                         {isArabic ? doctor.name.ar : doctor.name.en}
                     </Typography>
+                    <Rating 
+                    name="read-only" 
+                    value={(doctor.rating?.reduce((acc, item) => acc + item.stars, 0) / doctor.rating?.length) || 0} 
+                    readOnly
+                    size="large"
+                    sx={{ mb: 1 }}
+                    />
                     <Typography variant="subtitle1" sx={{ color: 'text.secondary', fontStyle: 'italic', mb: 2 }}>
                         {isArabic ? doctor.position.ar : doctor.position.en}
                     </Typography>
                     <Typography variant="body2" sx={{ color: 'text.secondary', mb: 2 }}>
                         {isArabic ? doctor.description.ar : doctor.description.en}
                     </Typography>
-                    {/* <Rating name="read-only" value={(doctor.rating?.reduce((acc, item) => acc + item.stars, 0) / rating.length) || 0} readOnly /> */}
                     <Button onClick={() => navigate(`/doctors/${doctor._id}`)} variant="contained" color="primary" sx={{ mt: 1 }}>
                         {t('doctorsPage.learnMore')}
                     </Button>

@@ -1,7 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Box, Card, CardContent, Typography, IconButton, Grid, Container, Chip, CardMedia, Avatar,
-  Pagination, CircularProgress, Button
+  Box,
+  Card,
+  CardContent,
+  Typography,
+  IconButton,
+  Grid,
+  Container,
+  Chip,
+  CardMedia,
+  Avatar,
+  Pagination,
+  CircularProgress,
+  Button,
 } from '@mui/material';
 import { ThumbUp, Comment, Share, ThumbDown, Visibility } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
@@ -10,59 +21,70 @@ import { useTranslation } from 'react-i18next';
 
 const MainContent = ({ blogEntries, page, rowsPerPage, setPage, categories }) => {
   const navigate = useNavigate();
-  const { t, i18n } = useTranslation();
-  const [blogList, setBlogList] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { t } = useTranslation();
+  const [filteredBlogs, setFilteredBlogs] = useState(blogEntries);
+  const [loading, setLoading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('');
-  const isArabic = i18n.language === 'ar';
 
-  useEffect(() => {
-    document.body.dir = isArabic ? 'rtl' : 'ltr';
-  }, [i18n.language]);
-
-  const onCategorySelect = (category) => {
+  const handleCategorySelect = (category) => {
     setSelectedCategory(category);
     setPage(1);
-    setBlogList(category ? blogEntries.filter((blog) => blog.categories.includes(category)) : blogEntries);
   };
 
   useEffect(() => {
     setLoading(true);
-    const displayBlogs = blogEntries.slice((page - 1) * rowsPerPage, page * rowsPerPage);
-    setBlogList(displayBlogs);
-    setLoading(false);
-  }, [blogEntries, page, rowsPerPage, selectedCategory]);
+    let filtered = blogEntries;
 
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [page]);
+    if (selectedCategory) {
+      filtered = blogEntries.filter((blog) => blog.categories.includes(selectedCategory));
+    }
+
+    // Pagination logic: slice the filtered blogs to match the current page and rows per page
+    const paginatedBlogs = filtered.slice((page - 1) * rowsPerPage, page * rowsPerPage);
+    setFilteredBlogs(paginatedBlogs);
+    setLoading(false);
+  }, [blogEntries, selectedCategory, page, rowsPerPage]);
+
+  const handleBlogClick = (id) => {
+    navigate(`/blog/${id}`);
+  }
 
   return (
     <Container maxWidth="lg">
       {/* Categories Filter */}
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', mb: 4, border: '1px solid', p: 1, borderRadius: 2, boxShadow: 2 }}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          mb: 4,
+          p: 1,
+          borderRadius: 2,
+          boxShadow: 2,
+          border: '1px solid',
+        }}
+      >
         <Chip
-          label="All"
-          onClick={() => onCategorySelect('')}
+          label={t('All')}
+          onClick={() => handleCategorySelect('')}
           sx={{
             margin: 0.5,
             cursor: 'pointer',
             backgroundColor: selectedCategory === '' ? 'primary.main' : 'default',
             color: selectedCategory === '' ? 'white' : 'inherit',
-            '&:hover': { backgroundColor: 'primary.light' }
+            '&:hover': { backgroundColor: 'primary.light' },
           }}
         />
         {categories.map((category) => (
           <Chip
             key={category}
             label={category}
-            onClick={() => onCategorySelect(category)}
+            onClick={() => handleCategorySelect(category)}
             sx={{
               margin: 0.5,
               cursor: 'pointer',
               backgroundColor: selectedCategory === category ? 'primary.main' : 'default',
               color: selectedCategory === category ? 'white' : 'inherit',
-              '&:hover': { backgroundColor: 'primary.light' }
+              '&:hover': { backgroundColor: 'primary.light' },
             }}
           />
         ))}
@@ -70,24 +92,34 @@ const MainContent = ({ blogEntries, page, rowsPerPage, setPage, categories }) =>
 
       {/* Blog Entries Grid */}
       {loading ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
           <CircularProgress color="primary" />
         </Box>
       ) : (
         <Grid container spacing={3}>
-          {blogList.map((blog, index) => (
-            <Grid item xs={12} sm={index % 3 === 0 ? 12 : 6} md={index % 3 === 0 ? 8 : 4} key={blog._id}>
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+          {filteredBlogs.map((blog, index) => (
+            <Grid
+              item
+              xs={12}
+              sm={index % 3 === 0 ? 12 : 6}
+              md={index % 3 === 0 ? 8 : 4}
+              key={blog._id}
+            >
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+              >
                 <Card
                   sx={{
                     cursor: 'pointer',
                     display: 'flex',
                     flexDirection: 'column',
-                    borderRadius: '4px',
-                    '&:hover': { boxShadow: 6, transform: 'scale(1.02)' },
+                    borderRadius: 2,
                     transition: 'transform 0.3s ease-in-out',
+                    '&:hover': { boxShadow: 2, transform: 'translateY(-5px)' },
                   }}
-                  onClick={() => navigate(`/blog/${blog._id}`)}
+                  onClick={() => handleBlogClick(blog._id)}
                 >
                   <CardMedia
                     component="img"
@@ -98,16 +130,35 @@ const MainContent = ({ blogEntries, page, rowsPerPage, setPage, categories }) =>
                   />
                   <CardContent>
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                      <Avatar src={blog.author?.avatarUrl} alt={blog.author?.name} sx={{ width: 40, height: 40, mr: 1 }} />
-                      <Typography variant="subtitle2" color="text.secondary">
-                        {blog.author?.name} | {new Date(blog.createdAt).toLocaleDateString()}
+                      <Avatar
+                        src={blog.author?.avatarUrl || ''}
+                        alt={blog.author?.name || t('Anonymous')}
+                        sx={{ width: 40, height: 40, mr: 1 }}
+                      />
+                      <Typography
+                        variant="subtitle2"
+                        color="text.secondary"
+                        sx={{ fontWeight: 'bold', mx: 1 }}
+                      >
+                        {blog.author?.name || t('Anonymous')} |{' '}
+                        {new Date(blog.createdAt).toLocaleDateString()}
                       </Typography>
                     </Box>
-                    <Typography variant="h6" component="div" sx={{ fontWeight: 'bold', mb: 1 }}>
+                    <Typography
+                      variant="h6"
+                      component="div"
+                      sx={{ fontWeight: 'bold', mb: 1 }}
+                    >
                       {blog.title}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                      {blog.content.length > 100 ? `${blog.content.slice(0, 100)}...` : blog.content}
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{ mb: 2 }}
+                    >
+                      {blog.content.length > 100
+                        ? `${blog.content.slice(0, 100)}...`
+                        : blog.content}
                     </Typography>
                     {blog.content.length > 100 && (
                       <Button
@@ -118,31 +169,33 @@ const MainContent = ({ blogEntries, page, rowsPerPage, setPage, categories }) =>
                         {t('blog.readMore')}
                       </Button>
                     )}
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Box
+                      sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                    >
                       <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <IconButton size="small">
                           <ThumbUp />
                         </IconButton>
                         <Typography variant="body2" sx={{ mx: 1 }}>
-                          {blog.likes}
+                          {blog.likes || 0}
                         </Typography>
                         <IconButton size="small">
                           <ThumbDown />
                         </IconButton>
                         <Typography variant="body2" sx={{ mx: 1 }}>
-                          {blog.dislikes}
+                          {blog.dislikes || 0}
                         </Typography>
                         <IconButton size="small">
                           <Visibility />
                         </IconButton>
                         <Typography variant="body2" sx={{ mx: 1 }}>
-                          {blog.views}
+                          {blog.views || 0}
                         </Typography>
                         <IconButton size="small">
                           <Comment />
                         </IconButton>
                         <Typography variant="body2">
-                          {blog.comments.length}
+                          {blog.comments?.length || 0}
                         </Typography>
                       </Box>
                     </Box>
@@ -153,6 +206,16 @@ const MainContent = ({ blogEntries, page, rowsPerPage, setPage, categories }) =>
           ))}
         </Grid>
       )}
+
+      {/* Pagination */}
+      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+        <Pagination
+          count={Math.ceil(filteredBlogs.length / rowsPerPage)}
+          page={page}
+          onChange={(event, value) => setPage(value)}
+          color="primary"
+        />
+      </Box>
     </Container>
   );
 };

@@ -9,7 +9,7 @@ import commentService from '../../services/commentService';
 import notificationService from '../../services/notificationService';
 import { useAuth } from '../../contexts/AuthContext';
 
-const CommentsSection = ({ id, createNotification, toComment }) => {
+const CommentsSection = ({ id, addNotification, toComment }) => {
     const [showReplies, setShowReplies] = useState({});
     const [replies, setReplies] = useState([]);
     const [editReply, setEditReply] = useState(null);
@@ -46,6 +46,7 @@ const CommentsSection = ({ id, createNotification, toComment }) => {
     const likeComment = async (commentId) => {
         try {
             await commentService.likeComment(commentId);
+            addNotification('like comment', 'success');
             fetchData();
         } catch (error) {
             console.error('Failed to like comment:', error);
@@ -55,6 +56,7 @@ const CommentsSection = ({ id, createNotification, toComment }) => {
     const dislikeComment = async (commentId) => {
         try {
             await commentService.dislikeComment(commentId);
+            addNotification('dislike comment', 'warning');
             fetchData();
         } catch (error) {
             console.error('Failed to dislike comment:', error);
@@ -63,6 +65,10 @@ const CommentsSection = ({ id, createNotification, toComment }) => {
 
     const handleCommentSubmit = async () => {
         if (!commentText) return;
+        if (!user) {
+            setCommentText('');
+            return alert('You must be logged in to comment');
+        }
         try {
             if (editComment) {
                 await handleEditComment(editComment, commentText);
@@ -70,6 +76,7 @@ const CommentsSection = ({ id, createNotification, toComment }) => {
             } else {
                 await commentService.addComment({ content: commentText, blog: id });
             }
+            await addNotification('comment', 'success');
             setCommentText('');
             fetchData();
         } catch (error) {
@@ -85,6 +92,7 @@ const CommentsSection = ({ id, createNotification, toComment }) => {
             } else {
                 await commentService.addReply(commentId, { content: replyText, blog: id });
             }
+            await addNotification('comment reply', 'success');
             setReplyText('');
             setShowReply(null);
             fetchData();
@@ -96,6 +104,7 @@ const CommentsSection = ({ id, createNotification, toComment }) => {
     const handleCommentDelete = async (commentId) => {
         try {
             await commentService.deleteComment(commentId);
+            addNotification('delete comment', 'success');
             fetchData();
         } catch (error) {
             console.error('Failed to delete comment:', error);
@@ -105,6 +114,7 @@ const CommentsSection = ({ id, createNotification, toComment }) => {
     const handleReplyDelete = async (commentId, replyId) => {
         try {
             await commentService.deleteReply(commentId, replyId);
+            addNotification('delete reply', 'success');
             fetchData();
         } catch (error) {
             console.error('Failed to delete reply:', error);
@@ -114,6 +124,8 @@ const CommentsSection = ({ id, createNotification, toComment }) => {
     const handleEditComment = async (commentId, comment) => {
         try {
             await commentService.updateComment(commentId, { content: comment });
+            addNotification('edit comment', 'success');
+            fetchData();
         } catch (error) {
             console.error('Failed to update comment:', error);
         }
@@ -144,9 +156,9 @@ const CommentsSection = ({ id, createNotification, toComment }) => {
     };
 
     return (
-        <Box sx={{ p: 3, mb: 4 }}>
+        <Box sx={{ mb: 4 }}>
             {/* Add Comment */}
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, alignItems: 'flex-end', my: 2 }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, alignItems: 'flex-end' }}>
                 <TextField
                     fullWidth
                     multiline
@@ -155,6 +167,7 @@ const CommentsSection = ({ id, createNotification, toComment }) => {
                     placeholder={t('blog.add_comment')}
                     variant="outlined"
                     value={commentText}
+
                     onChange={(e) => setCommentText(e.target.value)}
                 />
                 <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', mb: 1 }}>
@@ -190,8 +203,8 @@ const CommentsSection = ({ id, createNotification, toComment }) => {
                                         p: 1,
                                         borderRadius: 2
                                     }}>
-                                        <Typography variant="body2" sx={{ fontWeight: 'bold', color: '#FF4545' }}>
-                                            {comment.user?.name} | {new Date(comment.date).toLocaleDateString()} - {new Date(comment.date).toLocaleTimeString()}
+                                        <Typography variant="body2" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+                                            {comment.user?.name || 'User'} | {new Date(comment.date).toLocaleDateString()} - {new Date(comment.date).toLocaleTimeString()}
                                         </Typography>
                                         <Typography variant="body1" sx={{ color: 'text.primary' }}>{comment.content}</Typography>
                                     </Box>

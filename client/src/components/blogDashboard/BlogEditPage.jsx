@@ -10,7 +10,7 @@ import { Delete, AddPhotoAlternate, Upload } from '@mui/icons-material';
 import { useSnackbar } from '../../contexts/SnackbarProvider';
 import { useAuth } from '../../contexts/AuthContext';
 import FileExplorerDialog from '../common/FileExplorerDialog';
-import { uploadImage } from '../../services/uploadImage';
+import { replaceFile } from '../../services/supabaseService';
 
 const BlogEditPage = () => {
     const { id } = useParams();
@@ -19,6 +19,7 @@ const BlogEditPage = () => {
     const showSnackbar = useSnackbar();
     const [open, setOpen] = useState(false);
     const [formData, setFormData] = useState({
+        code: '',
         title: '',
         content: '',
         imageUrl: '',
@@ -81,7 +82,7 @@ const BlogEditPage = () => {
             const response = await axiosInstance.put(`/blogs/${id}`, formData);
             if (response.status === 200) {
                 showSnackbar('Blog updated successfully', 'success');
-                navigate('/blog-dashboard/blogs'); // Redirect to blogs page or any preferred route
+                navigate('/blog-dashboard/blogs');
             }
         } catch (error) {
             console.error('Error updating blog:', error);
@@ -92,7 +93,7 @@ const BlogEditPage = () => {
     const handleUpload = async (file) => {
         setUploading(true);
         try {
-            const data = await uploadImage(file, 'images/blogs/', 'uploads');
+            const data = await replaceFile(file, 'images/blogs/', formData.code);
             setFormData({ ...formData, imageUrl: data.fullUrl });
             showSnackbar('Image uploaded successfully', 'success');
         } catch (error) {
@@ -109,21 +110,26 @@ const BlogEditPage = () => {
     if (loading) return <CircularProgress color='primary' />;
 
     return (
-        <Box maxWidth="md">
+        <Box
+            maxWidth="md"
+            mx="auto"
+        >
             <Box display="flex" flexDirection="column" alignItems="center" p={4}>
                 <Typography variant="h5" align="center" sx={{ mb: 2, fontWeight: 'bold' }}>
                     Edit Blog
+                </Typography>
+                <Typography variant="body2" color="textSecondary">
+                    Blog Code : <strong>{formData.code}</strong>
                 </Typography>
 
                 <Divider sx={{ my: 2 }} />
 
                 <Stack spacing={3}>
-
                     <Box textAlign="center">
                         <Paper
                             sx={{
-                                width: 200,
-                                height: 200,
+                                width: '100%',
+                                height: 300,
                                 display: 'flex',
                                 justifyContent: 'center',
                                 alignItems: 'center',
@@ -131,6 +137,7 @@ const BlogEditPage = () => {
                                 position: 'relative',
                             }}
                         >
+
                             {uploading ? (
                                 <CircularProgress color="inherit" />
                             ) : (

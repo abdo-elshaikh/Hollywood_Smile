@@ -6,6 +6,7 @@ import {
     Tooltip,
     ListItemIcon,
     ListItemText,
+    Avatar,
 } from '@mui/material';
 import {
     Settings as SettingsIcon,
@@ -39,7 +40,7 @@ const SettingsMenu = () => {
     }
 
     const onProfileClick = () => {
-        navigate('/dashboard/profile');
+        navigate('/profile');
         handleCloseMenu();
     }
 
@@ -52,7 +53,12 @@ const SettingsMenu = () => {
         <>
             <Tooltip title="Settings" arrow>
                 <IconButton color="inherit" sx={{ ml: 1 }} onClick={handleOpenMenu}>
-                    <SettingsIcon />
+                    <Avatar src={user.avatarUrl} alt={user.name} sx={{
+                        width: 32,
+                        height: 32,
+                        border: '1px solid',
+                        borderColor: 'divider',
+                    }} />
                 </IconButton>
             </Tooltip>
             <Menu
