@@ -55,11 +55,6 @@ const DoctorsSchema = new mongoose.Schema(
             {
                 name: String,
                 stars: Number,
-                comment: String,
-                user: {
-                    type: mongoose.Schema.Types.ObjectId,
-                    ref: 'User',
-                },
             },
         ]
     },

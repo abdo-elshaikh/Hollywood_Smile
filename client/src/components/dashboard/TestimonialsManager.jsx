@@ -8,6 +8,7 @@ import {
 import { DataGrid } from '@mui/x-data-grid';
 import axiosInstance from '../../services/axiosInstance';
 import { uploadImage } from '../../services/uploadImage';
+import TestimonialForm from '../common/TestimonialForm';
 
 const TestimonialsManager = () => {
     const [testimonials, setTestimonials] = useState([]);
@@ -152,129 +153,41 @@ const TestimonialsManager = () => {
                     />
                 )}
             </Box>
-            <Dialog open={openFormDialog} onClose={handleCloseFormDialog}>
-                <TestimonialFormDialog
-                    testimonial={selectedTestimonial}
-                    onClose={handleCloseFormDialog}
-                    onSave={fetchTestimonials}
-                />
+            <Dialog
+                open={openFormDialog}
+                onClose={handleCloseFormDialog}
+                fullScreen={isMobile}
+                fullWidth
+            >
+                <DialogTitle>
+                    <Box
+                        display="flex"
+                        justifyContent="space-between"
+                        alignItems="center"
+                        sx={{
+                            p: 1,
+                            borderRadius: 1,
+                            bgcolor: 'background.default',
+                            color: 'text.primary',
+                        }}
+                    >
+                        {selectedTestimonial ? 'Edit Testimonial' : 'Add Testimonial'}
+                        <Button onClick={handleCloseFormDialog}>&times;</Button>
+                    </Box>
+                </DialogTitle>
+                <DialogContent
+                    sx={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        flexDirection: 'column',
+                        bgcolor: 'background.paper',
+                        p: 2,
+                    }}
+                >
+                    <TestimonialForm testimonial={selectedTestimonial} />
+                </DialogContent>
             </Dialog>
-        </Box>
-    );
-};
-
-const TestimonialFormDialog = ({ testimonial, onClose, onSave }) => {
-    const [formData, setFormData] = useState({
-        name: '',
-        position: '',
-        quote: '',
-        rating: '',
-        show: true,
-        imgUrl: '',
-    });
-
-    useEffect(() => {
-        if (testimonial) {
-            setFormData(testimonial);
-        } else {
-            setFormData({
-                name: '',
-                position: '',
-                quote: '',
-                rating: '',
-                show: true,
-                imgUrl: '',
-            });
-        }
-    }, [testimonial]);
-
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
-
-    const handleSubmit = async () => {
-        try {
-            if (testimonial) {
-                await axiosInstance.put(`/testimonials/${testimonial._id}`, formData);
-            } else {
-                await axiosInstance.post('/testimonials', formData);
-            }
-            onSave();
-            onClose();
-        } catch (error) {
-            console.error('Failed to save testimonial:', error);
-        }
-    };
-
-    const handleUploadImage = async (file) => {
-        try {
-            const data = await uploadImage(file, '/images/testimonials');
-            setFormData({ ...formData, imgUrl: data.fullUrl });
-        } catch (error) {
-            console.error('Failed to upload image:', error);
-        }
-    };
-
-    return (
-        <Box component="form" autoComplete="off">
-            <DialogContent>
-                <Avatar
-                    src={formData.imgUrl}
-                    sx={{ width: 100, height: 100, mx: 'auto', my: 2 }}
-                    onClick={() => document.getElementById('imageInput').click()}
-                />
-                <input
-                    id='imageInput'
-                    type="file"
-                    style={{ display: 'none' }}
-                    accept='image/*'
-                    name="imgUrl"
-                    // value={formData.imgUrl}
-                    onChange={(e) => handleUploadImage(e.target.files[0])}
-                />
-                <TextField
-                    label="Name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    fullWidth
-                    margin="normal"
-                />
-                <TextField
-                    label="Position"
-                    name="position"
-                    value={formData.position}
-                    onChange={handleChange}
-                    fullWidth
-                    margin="normal"
-                />
-                <TextField
-                    label="Quote"
-                    name="quote"
-                    value={formData.quote}
-                    onChange={handleChange}
-                    fullWidth
-                    multiline
-                    rows={4}
-                    margin="normal"
-                />
-                <Rating
-                    name="rating"
-                    value={formData.rating}
-                    onChange={(e) => setFormData({ ...formData, rating: e.target.value })}
-                    size="large"
-                    margin="normal"
-                    precision={0.5}
-                />
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={onClose} color="secondary">
-                    Cancel
-                </Button>
-                <Button onClick={handleSubmit} color="primary">
-                    Save
-                </Button>
-            </DialogActions>
         </Box>
     );
 };

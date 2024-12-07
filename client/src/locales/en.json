@@ -386,6 +386,7 @@
         "learnMore": "Show Profile"
     },
     "galleryPage": {
+        "pageName": "Gallery",
         "title": "Gallery",
         "subtitle": "Explore our gallery to see the amazing transformations of our patients.",
         "button": "View Gallery",

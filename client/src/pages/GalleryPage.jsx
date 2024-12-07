@@ -82,12 +82,8 @@ const GalleryPage = () => {
     return (
         <Box sx={{ minHeight: '100vh' }}>
             <HeaderSection />
-            <MainHeaderPages page="Gallery" title={t('galleryPage.title')} src={bgVideo} />
+            <MainHeaderPages page={t('galleryPage.pageName')} title={t('galleryPage.title')} src={bgVideo} />
             <Container maxWidth="lg" sx={{ py: 4, position: 'relative' }}>
-                <Typography variant="h4" align="center" sx={{ mb: 4, fontWeight: 'bold' }}>
-                    {t('galleryPage.title')}
-                </Typography>
-
                 {/* Search Bar */}
                 <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
                     <TextField
@@ -145,7 +141,7 @@ const GalleryPage = () => {
                         <CircularProgress />
                     </Box>
                 ) : (
-                    <Grid container spacing={4}>
+                    <Grid container spacing={2}>
                         {filteredImages.map((item, index) => (
                             <Grid item xs={12} sm={gridItemSize(index)} md={gridItemSize(index)} key={item._id}>
                                 <motion.div
@@ -155,8 +151,8 @@ const GalleryPage = () => {
 
                                     variants={{
                                         initial: { opacity: 0, x: Math.random(), y: Math.random(), scale: Math.random() },
-                                        animate: { opacity: 1, x: 0, y: 0, scale: 1, duration: 3, delay: index * 0.2 },
-                                        whileHover: { opacity: 1, x: Math.random(), y: Math.random(), scale: 1.5 },
+                                        animate: { opacity: 1, x: 0, y: 0, scale: 1, duration: 3, delay: index * 0.3 },
+                                        whileHover: { opacity: 0.7, x: Math.random(), y: Math.random(), scale: 1.1, transition: { duration: 0.3 } },
                                     }}
                                 >
                                     <Box
@@ -169,12 +165,14 @@ const GalleryPage = () => {
                                             backgroundSize: 'cover',
                                             backgroundPosition: 'center',
                                             overflow: 'hidden',
+                                            border: '1px solid',
+                                            borderColor: 'divider',
                                         }}
                                         onClick={() => navigate(`/gallery/${item._id}`)}
                                     >
                                         <Box
                                             component={motion.div}
-                                            whileHover={{ scale: 1.2 }}
+                                            whileHover={{ scale: 1.1 }}
                                             sx={{
                                                 position: 'absolute',
                                                 inset: 0,
@@ -190,7 +188,7 @@ const GalleryPage = () => {
 
                                         <Box
                                             component={motion.div}
-                                            whileHover={{ scale: 1.2 }}
+                                            whileHover={{ scale: 1.1, opacity: 1 }}
                                             sx={{
                                                 position: 'absolute',
                                                 inset: 0,

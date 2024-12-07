@@ -34,7 +34,16 @@ import {
     Bookmark as BookmarkIcon,
     Person as PersonIcon,
     MedicationSharp as MedicationSharpIcon,
-    FiberManualRecordTwoTone
+    FiberManualRecordTwoTone,
+    SupportAgent,
+    RssFeed,
+    Diversity3,
+    BurstMode,
+    ChangeCircle,
+    Grade,
+    AutoAwesome,
+    Message,
+    Notifications,
 } from "@mui/icons-material";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import SidebarItems from "./SidebarItems";
@@ -53,20 +62,21 @@ const Sidebar = ({ open, sidebarWidth, onToggleDrawer, setCurrentPage, setOpen }
         { title: "Users", icon: <PersonIcon />, link: "/dashboard/users" },
         { title: "Online Bookings", icon: <BookOnlineIcon />, link: "/dashboard/online-bookings" },
         { title: "Services", icon: <HandymanIcon />, link: "/dashboard/services" },
-        { title: "Doctors", icon: <MedicationIcon />, link: "/dashboard/doctors" },
+        { title: "Doctors", icon: <Diversity3 />, link: "/dashboard/doctors" },
         { title: "Manage Offers", icon: <LocalOfferIcon />, link: "/dashboard/offers" },
         { title: "Clinic Information", icon: <MedicalInformationIcon />, link: "/dashboard/clinic-info" },
-        { title: "Gallery", icon: <MedicationSharpIcon />, link: "/dashboard/gallery" },
-        { title: "Befor & After", icon: <TransferWithinAStationIcon />, link: "/dashboard/before-after" },
-        { title: "Testimonials", icon: <SpeedIcon />, link: "/dashboard/testimonials" },
+        { title: "Gallery", icon: <BurstMode />, link: "/dashboard/gallery" },
+        { title: "Befor & After", icon: <ChangeCircle />, link: "/dashboard/before-after" },
+        { title: "Testimonials", icon: <Grade />, link: "/dashboard/testimonials" },
         { title: "Subscriptions", icon: <BookmarkIcon />, link: "/dashboard/subscriptions" },
         { title: "FAQs", icon: <QuizIcon />, link: "/dashboard/faqs" },
-        { title: "Blogs", icon: <InfoIcon />, link: "/blog-dashboard" },
+        { title: "Blog Dashboard", icon: <RssFeed />, link: "/blog-dashboard" },
+        { title: "Support Dashboard", icon: <SupportAgent />, link: "/support-dashboard" },
         {
             title: "Settings", icon: <SettingsIcon />, subItems: [
-                { title: "Customization", icon: <FiberManualRecordTwoTone />, link: "/dashboard/settings/customization" },
-                { title: "Messages", icon: <FiberManualRecordTwoTone />, link: "/dashboard/messages" },
-                { title: "Notifications", icon: <FiberManualRecordTwoTone />, link: "/dashboard/notifications" },
+                { title: "Customization", icon: <AutoAwesome />, link: "/dashboard/settings/customization" },
+                { title: "Messages", icon: <Message />, link: "/dashboard/messages" },
+                { title: "Notifications", icon: <Notifications />, link: "/dashboard/notifications" },
             ]
         },
     ];

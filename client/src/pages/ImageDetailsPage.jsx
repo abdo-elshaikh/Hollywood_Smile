@@ -1,14 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Box, Typography, Grid, Button, Paper, IconButton, Divider, Stack } from '@mui/material';
+import {
+  Container,
+  Box,
+  Typography,
+  Grid,
+  Button,
+  Paper,
+  IconButton,
+  Divider,
+  Stack,
+  Card,
+  CardMedia,
+  CardContent,
+} from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Share, ThumbUp, Favorite, NavigateBefore } from '@mui/icons-material';
-import { motion } from 'framer-motion';
 import galleryService from '../services/galleryService';
-import HeaderSection from '../components/home/HeaderSection';
 import Footer from '../components/home/Footer';
 import BlogShareDialog from '../components/common/BlogShareDialog';
 import ScrollToTopButton from '../components/common/ScrollToTopButton';
+import HeaderSection from '../components/home/HeaderSection';
 
 const ImageDetailsPage = () => {
   const { id } = useParams();
@@ -31,7 +43,7 @@ const ImageDetailsPage = () => {
     fetchImage();
   }, [id]);
 
-  // Handle actions (like, favorite, share)
+  // Handle actions (like, favorite)
   const likeImage = async () => {
     try {
       await galleryService.likeGalleryItem(id);
@@ -52,148 +64,135 @@ const ImageDetailsPage = () => {
 
   const goBack = () => navigate(-1);
 
-  // Image layout styling based on orientation
-  const imageOrientation = image.width / image.height > 1 ? 'landscape' : 'portrait';
-
   return (
-    <Box>
+    <>
       <HeaderSection />
-
-      {/* Hero Section with Image and Title */}
-      <Box
-        sx={{
-          position: 'relative',
-          width: '100%',
-          height: '80vh',
-          backgroundImage: `url(${image.imageUrl})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
-        }}
-      >
-        <Box
-          sx={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            width: '100%',
-            background: 'rgba(0, 0, 0, 0.5)',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            flexDirection: 'column',
-            color: 'white',
-            padding: '20px',
-            zIndex: 1,
-          }}
-        >
-          <Typography variant="h3" sx={{ fontWeight: 'bold', textAlign: 'center' }}>
-            {image.title}
-          </Typography>
-          <Typography variant="h5" sx={{ fontStyle: 'italic', mb: 3 }}>
-            {image.photographer}
-          </Typography>
-        </Box>
-      </Box>
-
-      {/* Main Content Area */}
-      <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-        <Grid container spacing={4} direction={{ xs: 'column', md: 'row' }}>
-          {/* Image Display Section */}
-          <Grid item xs={12} md={7}>
-            <Box
-              component={motion.div}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8 }}
-              sx={{
-                boxShadow: 4,
-                overflow: 'hidden',
-                backgroundColor: 'white',
-              }}
-            >
-              <img
-                src={image.imageUrl}
-                alt={image.title}
-                style={{
-                  width: '100%',
-                  height: imageOrientation === 'portrait' ? 'auto' : '100%',
-                  objectFit: 'cover',
-                }}
-              />
-            </Box>
-          </Grid>
-
-          {/* Sidebar Section for Image Details */}
-          <Grid item xs={12} md={5}>
-            <Paper elevation={5} sx={{ padding: 3 }}>
-              <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 2 }}>
-                {t('galleryPage.imageDetails')}
-              </Typography>
-
-              {/* Image Description */}
-              <Typography variant="body1" sx={{ mb: 2, color: 'text.secondary' }}>
-                {image.description || (isArabic ? 'لا يوجد وصف' : 'No description available.')}
-              </Typography>
-
-              <Divider sx={{ mb: 2 }} />
-
-              {/* Image Metadata */}
-              <Stack spacing={1} sx={{ mb: 2 }}>
-                <Typography variant="body2">
-                  <strong>{t('galleryPage.date')} :</strong> {new Date(image.createdAt).toLocaleDateString()}
-                </Typography>
-                <Typography variant="body2">
-                  <strong>{t('galleryPage.time')} :</strong> {new Date(image.createdAt).toLocaleTimeString()}
-                </Typography>
-              </Stack>
-
-
-              {/* Action Buttons */}
-              <Stack direction="column" spacing={2} sx={{ justifyContent: 'center', alignItems: 'center' }}>
-                <Box display='flex' alignItems='center' justifyContent='center' gap={2}>
-                  <IconButton color="primary" onClick={likeImage} sx={{ '&:hover': { transform: 'scale(1.1)' } }}>
-                    <ThumbUp />
-                  </IconButton>
-                  <Typography variant="body2">{image.likes}</Typography>
-
-                  <IconButton color="error" onClick={favoriteImage} sx={{ '&:hover': { transform: 'scale(1.1)' } }}>
-                    <Favorite />
-                  </IconButton>
-                  <Typography variant="body2">{image.loves}</Typography>
-
-                  <IconButton color="primary" sx={{ '&:hover': { transform: 'scale(1.1)' } }}>
-                    <BlogShareDialog blog={image} />
-                  </IconButton>
-                </Box>
-              </Stack>
-
-              {/* Back Button */}
-              <Button
-                variant="outlined"
-                color="info"
-                onClick={goBack}
+      <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', mt: 8, alignItems: 'center' }}>
+        {/* Main Content */}
+        <Container maxWidth="lg" sx={{ flex: 1, py: 4, mx: 'auto' }}>
+          <Grid container spacing={4} alignItems="center" justifyContent="space-between">
+            {/* Image Section */}
+            <Grid item xs={12} md={6}>
+              <Card
+                elevation={6}
                 sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  mt: 2,
+                  borderRadius: 2,
+                  overflow: 'hidden',
+                  boxShadow: '0px 6px 12px rgba(0, 0, 0, 0.15)',
+                  position: 'relative',
                 }}
               >
-                <NavigateBefore sx={{ mr: 1 }} />
-                {t('galleryPage.goBack')}
-              </Button>
-            </Paper>
-          </Grid>
-        </Grid>
-      </Container>
+                <CardMedia
+                  component="img"
+                  image={image.imageUrl}
+                  alt={image.title}
+                  sx={{
+                    height: { xs: '400px', md: '500px' },
+                    objectFit: 'cover',
+                    transition: 'filter 0.3s ease',
+                    '&:hover': {
+                      filter: 'brightness(90%)',
+                    },
+                  }}
+                />
+                <CardContent
+                  sx={{
+                    position: 'absolute',
+                    bottom: 0,
+                    width: '100%',
+                    bgcolor: 'rgba(0, 0, 0, 0.5)',
+                    color: '#fff',
+                    textAlign: 'center',
+                    p: 2,
+                  }}
+                >
+                  <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
+                    {image.title}
+                  </Typography>
+                  <Stack direction="row" spacing={2} justifyContent="center">
+                    <IconButton color="primary" onClick={likeImage} sx={{ color: '#fff' }}>
+                      <ThumbUp />
+                    </IconButton>
+                    <IconButton color="error" onClick={favoriteImage} sx={{ color: '#fff' }}>
+                      <Favorite />
+                    </IconButton>
+                    <IconButton sx={{ color: '#fff' }}>
+                      <BlogShareDialog blog={image} />
+                    </IconButton>
+                  </Stack>
+                </CardContent>
+              </Card>
+            </Grid>
 
+            {/* Details Section */}
+            <Grid item xs={12} md={5}>
+              <Paper
+                elevation={3}
+                sx={{
+                  padding: 3,
+                  borderRadius: 2,
+                  boxShadow: '0px 6px 12px rgba(0, 0, 0, 0.1)',
+                  background: 'linear-gradient(to right, #ffffff, #f8f8f8)',
+                }}
+              >
+                <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 2 }}>
+                  {image.title}
+                </Typography>
+                <Typography
+                  variant="subtitle1"
+                  sx={{
+                    color: 'text.secondary',
+                    fontStyle: 'italic',
+                    mb: 2,
+                  }}
+                >
+                  {image.photographer || (isArabic ? 'لا يوجد مصور' : 'No photographer specified.')}
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 3 }}>
+                  {image.description || (isArabic ? 'لا يوجد وصف' : 'No description available.')}
+                </Typography>
+                <Divider sx={{ my: 2 }} />
+
+                {/* Metadata */}
+                <Stack spacing={1} sx={{ mb: 3 }}>
+                  <Typography variant="body2">
+                    <strong>{t('galleryPage.date')}:</strong>{' '}
+                    {new Date(image.createdAt).toLocaleDateString()}
+                  </Typography>
+                  <Typography variant="body2">
+                    <strong>{t('galleryPage.time')}:</strong>{' '}
+                    {new Date(image.createdAt).toLocaleTimeString()}
+                  </Typography>
+                </Stack>
+
+                {/* Back Button */}
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={goBack}
+                  startIcon={<NavigateBefore />}
+                  sx={{
+                    textTransform: 'capitalize',
+                    fontWeight: 'bold',
+                    '&:hover': { backgroundColor: 'primary.dark' },
+                    width: '100%',
+                    py: 1.5,
+                  }}
+                >
+                  {t('galleryPage.goBack')}
+                </Button>
+              </Paper>
+            </Grid>
+          </Grid>
+        </Container>
+      </Box>
+
+      {/* Footer */}
       <Footer />
+
+      {/* Scroll to Top */}
       <ScrollToTopButton />
-    </Box>
+    </>
   );
 };
 

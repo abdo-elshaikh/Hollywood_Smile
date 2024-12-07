@@ -1,9 +1,13 @@
 import React, { createContext, useContext, useState, useMemo, useEffect } from "react";
 import { createTheme, ThemeProvider as MuiThemeProvider } from "@mui/material/styles";
 import axiosInstance from "../services/axiosInstance";
+import { arEG, enUS } from "@mui/material/locale";
+import { useTranslation } from "react-i18next";
+import CssBaseline from "@mui/material/CssBaseline";
 
-// Define light and dark colors
-const lightColors = {
+
+// Default theme colors
+const defaultLightColors = {
   primary: "#1976d2",
   secondary: "#FAB12F",
   text: "#0D1321",
@@ -12,10 +16,10 @@ const lightColors = {
   border: "#E3F2FD",
   shadow: "#E3F2FD",
   subtitle: "#575C66",
-  default: "#f5f5f5"
+  default: "#f5f5f5",
 };
 
-const darkColors = {
+const defaultDarkColors = {
   primary: "#1976d2",
   secondary: "#5F8487",
   text: "#E3F2FD",
@@ -24,51 +28,51 @@ const darkColors = {
   border: "#2F89FC",
   shadow: "#2F89FC",
   subtitle: "#E3F2FD",
-  default: "#222831"
+  default: "#222831",
 };
 
-// Create a context for theme management
+// Theme context
 const ThemeContext = createContext();
 
 export const CustomThemeProvider = ({ children }) => {
+  // Initialize theme settings from localStorage or use defaults
   const localThemeSettings = JSON.parse(localStorage.getItem("themeSettings") || "{}");
   const initialMode = localThemeSettings.mode || "light";
-  const initialColors = localThemeSettings.colors || (initialMode === "light" ? lightColors : darkColors);
+  const initialColors = localThemeSettings.colors || (initialMode === "light" ? defaultLightColors : defaultDarkColors);
 
   const [mode, setMode] = useState(initialMode);
   const [colors, setColors] = useState(initialColors);
-  const [lightModeColors, setLightModeColors] = useState(lightColors);
-  const [darkModeColors, setDarkModeColors] = useState(darkColors);
+  const [lightModeColors, setLightModeColors] = useState(defaultLightColors);
+  const [darkModeColors, setDarkModeColors] = useState(defaultDarkColors);
 
-  // Fetch and set initial colors from backend
+  const { i18n } = useTranslation();
+  const isArabic = i18n.language === "ar";
+
+  // Fetch theme colors from the backend
   const initializeColors = async () => {
     try {
       const [lightRes, darkRes] = await Promise.all([
         axiosInstance.get("/theme/light"),
-        axiosInstance.get("/theme/dark")
+        axiosInstance.get("/theme/dark"),
       ]);
-      setLightModeColors(lightRes.data.colors || lightColors);
-      setDarkModeColors(darkRes.data.colors || darkColors);
-
-      if (mode === "light") {
-        setColors(lightRes.data.colors || lightColors);
-      } else {
-        setColors(darkRes.data.colors || darkColors);
-      }
+      setLightModeColors(lightRes.data.colors || defaultLightColors);
+      setDarkModeColors(darkRes.data.colors || defaultDarkColors);
+      setColors(mode === "light" ? lightRes.data.colors : darkRes.data.colors);
     } catch (error) {
-      console.error("Error initializing colors:", error);
-      setLightModeColors(lightColors);
-      setDarkModeColors(darkColors);
+      console.error("Error fetching theme colors:", error);
+      // Fallback to default colors
+      setLightModeColors(defaultLightColors);
+      setDarkModeColors(defaultDarkColors);
     }
   };
 
-  // Update current theme colors in backend
+  // Update colors in the backend
   const updateColors = async (newColors) => {
     try {
       const res = await axiosInstance.put(`/theme/${mode}`, newColors);
       setColors(res.data.colors || newColors);
     } catch (error) {
-      console.error("Error updating colors:", error);
+      console.error("Error updating theme colors:", error);
     }
   };
 
@@ -79,44 +83,61 @@ export const CustomThemeProvider = ({ children }) => {
     setColors(newMode === "light" ? lightModeColors : darkModeColors);
   };
 
-  // Persist theme settings in localStorage whenever they change
+  // Persist theme settings in localStorage
   useEffect(() => {
     localStorage.setItem("themeSettings", JSON.stringify({ mode, colors }));
   }, [mode, colors]);
 
-  // Fetch initial colors on component mount
+  // Fetch colors on component mount
   useEffect(() => {
     initializeColors();
   }, []);
 
+  // Create the MUI theme
   const theme = useMemo(
     () =>
-      createTheme({
-        palette: {
-          mode,
-          primary: { main: colors.primary },
-          secondary: { main: colors.secondary },
-          text: { primary: colors.text },
-          background: { default: colors.background },
-        },
-        typography: {
-          h1: { color: colors.title },
-          subtitle1: { color: colors.subtitle },
-          subtitle2: { color: colors.subtitle },
-          text: { color: colors.text },
-        },
-        components: {
-          MuiCard: {
-            styleOverrides: {
-              root: {
-                boxShadow: `0 4px 10px ${colors.shadow}`,
-                border: `1px solid ${colors.border}`,
+      createTheme(
+        {
+          palette: {
+            mode,
+            primary: { main: colors.primary },
+            secondary: { main: colors.secondary },
+            text: { primary: colors.text },
+            title: { main: colors.title },
+            subtitle: { main: colors.subtitle },
+            background: { default: colors.background },
+          },
+          typography: {
+            h1: { color: colors.title },
+            subtitle1: { color: colors.subtitle },
+            subtitle2: { color: colors.subtitle },
+            body1: { color: colors.text },
+            body2: { color: colors.text },
+          },
+          components: {
+            MuiCard: {
+              styleOverrides: {
+                root: {
+                  backgroundColor: colors.background,
+                  border: `1px solid ${colors.border}`,
+                  boxShadow: `0px 2px 4px ${colors.shadow}`,
+                  borderRadius: 8,
+                  color: colors.text,
+                  direction: isArabic ? "rtl" : "ltr",
+                },
               },
             },
           },
+          shape: {
+            borderRadius: 8,
+
+          },
+          direction: isArabic ? "rtl" : "ltr",
+          locale: isArabic ? arEG : enUS,
         },
-      }),
-    [mode, colors]
+        isArabic ? arEG : enUS
+      ),
+    [mode, colors, isArabic]
   );
 
   const contextValue = useMemo(
@@ -127,9 +148,9 @@ export const CustomThemeProvider = ({ children }) => {
       colors,
       resetTheme: () => {
         setMode("light");
-        setColors(lightColors);
-        setLightModeColors(lightColors);
-        setDarkModeColors(darkColors);
+        setColors(defaultLightColors);
+        setLightModeColors(defaultLightColors);
+        setDarkModeColors(defaultDarkColors);
         localStorage.removeItem("themeSettings");
       },
     }),
@@ -138,7 +159,11 @@ export const CustomThemeProvider = ({ children }) => {
 
   return (
     <ThemeContext.Provider value={contextValue}>
-      <MuiThemeProvider theme={theme}>{children}</MuiThemeProvider>
+      <MuiThemeProvider theme={theme}>
+        <CssBaseline />
+        {/* <div dir={isArabic ? "rtl" : "ltr"}>{children}</div> */}
+        {children}
+      </MuiThemeProvider>
     </ThemeContext.Provider>
   );
 };

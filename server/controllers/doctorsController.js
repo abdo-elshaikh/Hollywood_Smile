@@ -3,8 +3,7 @@ const Doctors = require('../models/Doctors');
 const getDoctors = async (req, res) => {
     try {
         const doctors = await Doctors.find().populate('socialLinks')
-            .populate('rating.user', 'name email');
-
+            .populate('rating', 'name stars');
         if (!doctors || doctors.length === 0) {
             return res.status(404).json({ message: 'No doctors found' });
         }
@@ -17,7 +16,7 @@ const getDoctors = async (req, res) => {
 const getDoctorById = async (req, res) => {
     try {
         const doctor = await Doctors.findById(req.params.id).populate('socialLinks')
-            .populate('rating.user', 'name email');
+            .populate('rating', 'name stars');
 
         if (doctor) {
             return res.status(200).json(doctor);
@@ -64,21 +63,38 @@ const deleteDoctor = async (req, res) => {
 const addRating = async (req, res) => {
     try {
         const doctor = await Doctors.findById(req.params.id);
-        if (doctor) {
-            // Validate the rating data before adding
-            const { stars, user } = req.body;
-            if (typeof stars !== 'number' || stars < 1 || stars > 5) {
-                return res.status(400).json({ message: 'Rating must be between 1 and 5 stars' });
-            }
-
-            doctor.rating.push(req.body);
-            await doctor.save();
-            res.status(201).json({ message: 'Rating added successfully', doctor });
-        } else {
-            res.status(404).json({ message: 'Doctor not found' });
+        if (!doctor) {
+            return res.status(404).json({ message: 'Doctor not found' });
         }
+
+        const newRatings = req.body || [];
+        if (!Array.isArray(newRatings)) {
+            return res.status(400).json({ message: 'Ratings should be an array' });
+        }
+
+        const existingRatings = doctor.rating;
+        const updatedRatings = existingRatings.map(existingRating => {
+            const newRating = newRatings.find(newRating => newRating.name === existingRating.name);
+            if (newRating) {
+                return {
+                    ...existingRating,
+                    stars: (existingRating.stars + newRating.stars) / 2,
+                };
+            }
+            return existingRating;
+        });
+
+        newRatings.forEach(newRating => {
+            if (!updatedRatings.find(rating => rating.name === newRating.name)) {
+                updatedRatings.push(newRating);
+            }
+        });
+
+        doctor.rating = updatedRatings;
+        await doctor.save();
+        res.status(200).json(doctor);
     } catch (error) {
-        res.status(500).json({ message: 'Failed to add rating', error });
+        res.status(500).json({ message: 'Failed to add rating', error: error.message });
     }
 };
 

@@ -4,12 +4,26 @@ import { DataGrid } from '@mui/x-data-grid';
 import { Delete, Visibility } from '@mui/icons-material';
 import notificationService from '../../services/notificationService';
 import { useSnackbar } from '../../contexts/SnackbarProvider';
+import NotificationDetails from '../common/NotificationDetails';
 
 const ManageNotificationsPage = () => {
     const [notifications, setNotifications] = useState([]);
     const showSnackbar = useSnackbar();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    const [selectedNotification, setSelectedNotification] = useState(null);
+    const [openDialog, setOpenDialog] = useState(false);
+
+    const handleView = (notification) => {
+        setSelectedNotification(notification);
+        setOpenDialog(true);
+    }
+
+    const handleCloseDialog = () => {
+        setSelectedNotification(null);
+        setOpenDialog(false);
+    }
+
 
     // Fetch notifications from backend
     useEffect(() => {
@@ -49,7 +63,7 @@ const ManageNotificationsPage = () => {
             renderCell: (params) => (
                 <>
                     <Tooltip title="View">
-                        <IconButton onClick={() => alert(`Viewing notification: ${params.row.title}`)}>
+                        <IconButton onClick={() => handleView(params.row)}>
                             <Visibility color="primary" />
                         </IconButton>
                     </Tooltip>
@@ -88,7 +102,7 @@ const ManageNotificationsPage = () => {
                                 <ListItemText primary={notification.title} secondary={notification.message} />
                                 <ListItemIcon>
                                     <Tooltip title="View">
-                                        <IconButton onClick={() => alert(`Viewing notification: ${notification.title}`)}>
+                                        <IconButton onClick={() => handleView(notification)}>
                                             <Visibility color="primary" />
                                         </IconButton>
                                     </Tooltip>
@@ -111,6 +125,14 @@ const ManageNotificationsPage = () => {
                         autoHeight
                         density="compact"
                         sx={{ boxShadow: 2, borderRadius: 2, backgroundColor: 'background.paper' }}
+                    />
+                )}
+
+                {selectedNotification && (
+                    <NotificationDetails
+                        notification={selectedNotification}
+                        open={openDialog}
+                        onClose={handleCloseDialog}
                     />
                 )}
             </Box>

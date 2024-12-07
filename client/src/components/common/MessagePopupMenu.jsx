@@ -276,7 +276,6 @@ const MessagePopupMenu = ({ source = 'admin-dashboard' }) => {
                                             left: 0,
                                             width: '100%',
                                             height: '100%',
-                                            height: '100%',
                                             backgroundColor: msg.read ? 'transparent' : 'rgb(0, 0, 0, 0.1)',
                                         }}
                                     />

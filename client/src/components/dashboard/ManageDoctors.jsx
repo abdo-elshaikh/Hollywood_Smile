@@ -5,7 +5,7 @@ import {
     TextField, CircularProgress, Typography, IconButton,
     Grid, Switch, Tooltip, List, ListItem, ListItemText, ListItemAvatar,
     useTheme, useMediaQuery, Avatar, ListItemSecondaryAction,
-    Tabs, Tab, AppBar, Select, MenuItem, FormControl, InputLabel,
+    Tabs, Tab, AppBar, Select, MenuItem, FormControl, InputLabel, Rating
 } from '@mui/material';
 import { Add, Edit, Delete } from '@mui/icons-material';
 import { DataGrid } from '@mui/x-data-grid';
@@ -57,10 +57,20 @@ const ManageDoctors = () => {
         fetchDoctors();
     }, []);
 
+    const ratingNames = {
+        'work skills': { ar: 'مهارات العمل', en: 'Work Skills' },
+        'communication skills': { ar: 'مهارات الاتصال', en: 'Communication Skills' },
+        'punctuality': { ar: 'الانضباط', en: 'Punctuality' },
+        'cleanliness': { ar: 'النظافة', en: 'Cleanliness' },
+        'professionalism': { ar: 'الاحترافية', en: 'Professionalism' },
+        'overall experience': { ar: 'التجربة العامة', en: 'Overall Experience' },
+    };
+
     const fetchDoctors = async () => {
         setLoading(true);
         try {
             const doctors = await doctorService.fetchDoctors();
+            console.log('doctors:', doctors);
             setDoctors(doctors);
         } catch (error) {
             console.error(error);
@@ -94,12 +104,28 @@ const ManageDoctors = () => {
     };
 
     const createOrUpdateDoctor = async () => {
+        if (!doctorData) {
+            showSnackbar('Doctor data is missing', 'error');
+            return;
+        }
+
         setLoading(true);
         try {
             if (doctorId) {
+                if (!doctorData.rating) {
+                    doctorData.rating = [];
+                }
+                if (doctorData.rating.length !== Object.keys(ratingNames).length) {
+                    Object.keys(ratingNames).forEach((name) => {
+                        if (!doctorData.rating.some((rating) => rating.name === name)) {
+                            doctorData.rating.push({ name, stars: 0 });
+                        }
+                    });
+                }
                 await doctorService.updateDoctor(doctorId, doctorData);
                 showSnackbar('Doctor updated successfully', 'success');
             } else {
+                doctorData.rating = Object.keys(ratingNames).map((key) => ({ name: key, stars: 0 }));
                 await doctorService.createDoctor(doctorData);
                 showSnackbar('Doctor created successfully', 'success');
             }
@@ -107,7 +133,7 @@ const ManageDoctors = () => {
             setOpen(false);
         } catch (error) {
             console.error(error);
-            showSnackbar(error.message, 'error');
+            showSnackbar(error?.message || 'An unexpected error occurred', 'error');
         } finally {
             setLoading(false);
         }
@@ -175,6 +201,16 @@ const ManageDoctors = () => {
             renderCell: (params) => params.row.position.en,
         },
         {
+            field: 'rating',
+            headerName: 'Range',
+            flex: 1,
+            renderCell: (params) => {
+                const totalRating = params.row.rating.reduce((acc, rating) => acc + rating.stars, 0);
+                const averageRating = totalRating / params.row.rating.length;
+                return <Rating name="read-only" value={averageRating.toFixed(1)} readOnly />;
+            },
+        },
+        {
             field: 'actions',
             headerName: 'Actions',
             flex: 1,
@@ -212,7 +248,14 @@ const ManageDoctors = () => {
                                 <ListItemAvatar>
                                     <Avatar src={doctor.imageUrl} alt={doctor.name.en[0]} />
                                 </ListItemAvatar>
-                                <ListItemText primary={doctor.name.en} secondary={doctor.position.en} />
+                                <ListItemText primary={doctor.name.en} secondary={
+                                    <Box display="flex" flexDirection="column">
+                                        <Typography variant="body2" color="textSecondary" ml={1}>
+                                            {doctor.position.en}
+                                        </Typography>
+                                        <Rating name="read-only" value={(doctor.rating.reduce((acc, item) => acc + item.stars, 0) / doctor.rating.length) || 0} readOnly size="small" />
+                                    </Box>
+                                } />
                                 <ListItemSecondaryAction>
                                     <IconButton onClick={() => { setDoctorId(doctor._id); setDoctorData(doctor); setOpen(true); }}>
                                         <Edit />

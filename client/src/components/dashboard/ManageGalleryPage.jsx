@@ -34,7 +34,6 @@ const ManageGalleryPage = () => {
     const theme = useTheme();
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm')); // For smaller screens
 
-    // Fetch gallery items on component mount
     useEffect(() => {
         fetchGalleryItems();
     }, [page]);
@@ -150,8 +149,8 @@ const ManageGalleryPage = () => {
 
     const paginatedGalleryItems = filteredGalleryItems.slice((page - 1) * itemsPerPage, page * itemsPerPage);
 
-    const defaultCategories = ['others', "Smile Makeover", "Gum Treatment", "Restorative", "Crowns", "General Dentistry", "Endodontics", ...categories];
-    const defaultTags = ['others', "gum", "reshaping", "smile improvement", "crowns", "restorative", "strength", "checkup", "prevention", "routine", "root canal", "therapy", "pain relief", ...tags];
+    const defaultCategories = ['others', "Smile Makeover", "Gum Treatment", "Restorative", "Crowns", "General Dentistry", "Endodontics", "Public Health", "Orthodontics"];
+    const defaultTags = ['others', "gum", "reshaping", "smile improvement", "crowns", "restorative", "strength", "checkup", "prevention", "routine", "root canal", "therapy", "pain relief"];
 
     return (
         <Box p={3}>
@@ -244,176 +243,158 @@ const ManageGalleryPage = () => {
                         </Box>
                     </AccordionDetails>
                 </Accordion>
-
             </Box>
 
+            {/* Gallery Items */}
             {isLoading ? (
-                <Box display="flex" justifyContent="center" alignItems="center" height="60vh">
+                <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
                     <CircularProgress />
                 </Box>
             ) : (
                 <>
-                    <Grid container spacing={3}>
-                        {paginatedGalleryItems.map((item, index) => (
+                    <Grid container spacing={2} sx={{ mb: 2 }}>
+                        {paginatedGalleryItems.map(item => (
                             <Grid item xs={12} sm={6} md={4} key={item._id}>
-                                <motion.div
-                                    whileHover={{ scale: 1.05 }}
-                                    transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-                                >
-                                    <Card sx={{ boxShadow: 4, position: 'relative', overflow: 'hidden' }}>
-                                        <CardMedia
-                                            component="img"
-                                            image={item.imageUrl}
-                                            alt={item.altText}
-                                            sx={{ height: 250 }}
-                                        />
-                                        <CardContent sx={{ bgcolor: 'rgba(0, 0, 0, 0.7)', color: '#fff', p: 2 }}>
-                                            <Typography variant="h6" gutterBottom>
-                                                {item.title}
-                                            </Typography>
-                                            <Typography variant="body2">{item.description}</Typography>
-                                        </CardContent>
-                                        <Box
-                                            display="flex"
-                                            justifyContent="space-between"
-                                            alignItems="center"
-                                            position="absolute"
-                                            bottom={5}
-                                            right={5}
-                                            zIndex={2}
-                                        >
-                                            <Tooltip title="Edit">
-                                                <IconButton onClick={() => handleOpenDialog(item)} color="primary">
-                                                    <Edit />
-                                                </IconButton>
-                                            </Tooltip>
-                                            <Tooltip title="Delete">
-                                                <IconButton
-                                                    onClick={() => handleDelete(item._id)}
-                                                    color="error"
-                                                >
-                                                    <Delete />
-                                                </IconButton>
-                                            </Tooltip>
-                                        </Box>
-                                    </Card>
-                                </motion.div>
+                                <Card sx={{ position: 'relative', display: 'flex', flexDirection: 'column' }}>
+                                    <CardMedia
+                                        component="img"
+                                        alt={item.title}
+                                        height="200"
+                                        image={item.imageUrl}
+                                    />
+                                    <CardContent sx={{ flex: 1 }}>
+                                        <Typography variant="h6">{item.title}</Typography>
+                                        <Typography variant="body2" color="text.secondary" noWrap>{item.description}</Typography>
+                                    </CardContent>
+                                    <Box sx={{
+                                        position: 'absolute',
+                                        top: 10,
+                                        right: 10,
+                                        zIndex: 1,
+                                        display: 'flex',
+                                        gap: 1
+                                    }}>
+                                        <Tooltip title="Edit">
+                                            <IconButton onClick={() => handleOpenDialog(item)} sx={{ color: 'blue' }}>
+                                                <Edit />
+                                            </IconButton>
+                                        </Tooltip>
+                                        <Tooltip title="Delete">
+                                            <IconButton onClick={() => handleDelete(item._id)} sx={{ color: 'red' }}>
+                                                <Delete />
+                                            </IconButton>
+                                        </Tooltip>
+                                    </Box>
+                                </Card>
                             </Grid>
                         ))}
                     </Grid>
 
+                    {/* Pagination */}
                     <Pagination
                         count={Math.ceil(filteredGalleryItems.length / itemsPerPage)}
                         page={page}
-                        onChange={(e, value) => setPage(value)}
-                        sx={{ mt: 3, display: 'flex', justifyContent: 'center' }}
+                        onChange={(event, value) => setPage(value)}
+                        sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}
                     />
                 </>
             )}
 
-            {/* Dialog for creating and editing gallery items */}
+            {/* Dialog to add/edit gallery item */}
             <Dialog open={openDialog} onClose={handleCloseDialog}>
-                <DialogTitle>{selectedItem ? 'Edit Gallery Item' : 'Add Gallery Item'}</DialogTitle>
+                <DialogTitle>{selectedItem ? 'Edit Item' : 'Add New Item'}</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        {selectedItem ? 'Update your gallery item below.' : 'Fill the form to add a new gallery item.'}
+                        {selectedItem ? 'Edit the information for this gallery item' : 'Add a new gallery item to the collection'}
                     </DialogContentText>
-                    <TextField
-                        label="Title"
-                        name="title"
-                        fullWidth
-                        value={formData.title}
-                        onChange={handleChange}
-                        sx={{ mb: 2 }}
-                    />
-                    <TextField
-                        label="Description"
-                        name="description"
-                        fullWidth
-                        multiline
-                        value={formData.description}
-                        onChange={handleChange}
-                        sx={{ mb: 2 }}
-                    />
-                    <TextField
-                        label="Alt Text"
-                        name="altText"
-                        fullWidth
-                        value={formData.altText}
-                        onChange={handleChange}
-                        sx={{ mb: 2 }}
-                    />
-                    <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                        <Typography variant="body2">Image</Typography>
-                        <Button variant="contained" component="label">
-                            Upload Image
-                            <input
-                                hidden
-                                accept="image/*"
-                                type="file"
-                                onChange={handleFileUpload}
-                            />
-                        </Button>
+                    <Box>
+                        <TextField
+                            name="title"
+                            label="Title"
+                            value={formData.title}
+                            onChange={handleChange}
+                            fullWidth
+                            sx={{ mb: 2 }}
+                        />
+                        <TextField
+                            name="description"
+                            label="Description"
+                            value={formData.description}
+                            onChange={handleChange}
+                            fullWidth
+                            sx={{ mb: 2 }}
+                            multiline
+                            rows={4}
+                        />
+                        <TextField
+                            name="altText"
+                            label="Alt Text"
+                            value={formData.altText}
+                            onChange={handleChange}
+                            fullWidth
+                            sx={{ mb: 2 }}
+                        />
+                        <input
+                            accept="image/*"
+                            style={{ display: 'none' }}
+                            id="file-upload"
+                            type="file"
+                            onChange={handleFileUpload}
+                        />
+                        <label htmlFor="file-upload">
+                            <Button variant="contained" component="span" sx={{ width: '100%' }}>
+                                {selectedItem ? 'Change Image' : 'Upload Image'}
+                            </Button>
+                        </label>
+                        {imagePreview && <img src={imagePreview} alt="preview" style={{ maxWidth: '100%', marginTop: 10 }} />}
                     </Box>
-                    {imagePreview && (
-                        <Box>
-                            <img src={imagePreview} alt="Image preview" width="100%" />
-                        </Box>
-                    )}
-                    <FormControl fullWidth sx={{ mb: 2 }}>
-                        <Typography variant="body2">Categories</Typography>
-                        <Divider sx={{ my: 2 }} />
-                        <Box display="flex" alignItems="center">
-                            {formData.categories.map((category) => (
-                                <Badge badgeContent={<Cancel />} sx={{ mr: 1, mb: 1 }} onClick={(e) => changeCategories(category)}>
-                                    <Chip key={category} label={category} />
-                                </Badge>
+                    <FormControl sx={{ width: '100%' }}>
+                        <Typography variant="body1" color='primary.main' gutterBottom>
+                            Categories
+                        </Typography>
+                        <FormGroup row sx={{ gap: 1, flexWrap: 'wrap' }}>
+                            {defaultCategories.map(category => (
+                                <FormControlLabel
+                                    key={category}
+                                    control={
+                                        <Checkbox
+                                            checked={formData.categories.includes(category)}
+                                            onChange={() => changeCategories(category)}
+                                        />
+                                    }
+                                    label={category}
+                                />
                             ))}
-                        </Box>
-                        <Select
-                            multiple
-                            native
-                            value={defaultCategories.filter(cat => !formData.categories.includes(cat))}
-                            onChange={(e) => changeCategories(e.target.value)}
-                            fullWidth
-                            sx={{ mt: 1 }}
-                        >
-                            {defaultCategories.map((category) => (
-                                <option key={category} value={category}>
-                                    {category}
-                                </option>
-                            ))}
-                        </Select>
+                        </FormGroup>
                     </FormControl>
-                    <FormControl fullWidth sx={{ mb: 2 }}>
-                        <Typography variant="body2">Tags</Typography>
-                        <Divider sx={{ my: 2 }} />
-                        <Box display="flex" alignItems="center">
-                            {formData.tags.map((tag) => (
-                                <Badge badgeContent={<Cancel />} sx={{ mr: 1, mb: 1 }} onClick={(e) => changeTags(tag)}>
-                                    <Chip key={tag} label={tag} />
-                                </Badge>
+                    <Box sx={{ mt: 2 }} />
+                    <FormControl sx={{ width: '100%' }}>
+                        <Typography variant="body1" color='primary.main' gutterBottom>
+                            Tags
+                        </Typography>
+                        <FormGroup row sx={{ gap: 1, flexWrap: 'wrap' }}>
+                            {defaultTags.map(tag => (
+                                <FormControlLabel
+                                    key={tag}
+                                    control={
+                                        <Checkbox
+                                            checked={formData.tags.includes(tag)}
+                                            onChange={() => changeTags(tag)}
+                                        />
+                                    }
+                                    label={tag}
+                                />
                             ))}
-                        </Box>
-                        <Select
-                            multiple
-                            native
-                            value={defaultTags.filter(tag => !formData.tags.includes(tag))}
-                            onChange={(e) => changeTags(e.target.value)}
-                            fullWidth
-                            sx={{ mt: 1 }}
-                        >
-                            {defaultTags.map((tag) => (
-                                <option key={tag} value={tag}>
-                                    {tag}
-                                </option>
-                            ))}
-                        </Select>
+                        </FormGroup>
                     </FormControl>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCloseDialog}>Cancel</Button>
-                    <Button onClick={handleSave}>Save</Button>
+                    <Button onClick={handleCloseDialog} color="primary" startIcon={<Cancel />}>
+                        Cancel
+                    </Button>
+                    <Button onClick={handleSave} color="primary" variant="contained" disabled={isLoading}>
+                        Save
+                    </Button>
                 </DialogActions>
             </Dialog>
         </Box>

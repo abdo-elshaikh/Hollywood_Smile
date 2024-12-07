@@ -7,6 +7,7 @@ import {
     Checkbox, FormControlLabel, FormGroup,
     FormControl, InputLabel, Select, MenuItem
 } from '@mui/material';
+import { arEG, enUS } from '@mui/material/locale';
 import { motion } from 'framer-motion';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -53,10 +54,23 @@ const ViewProfile = () => {
         fetchDoctor();
     }, [id, t]);
 
+    const groupedRatings = rating.reduce((acc, item) => {
+        if (!acc[item.name]) {
+            acc[item.name] = 0;
+        }
+        acc[item.name] += item.stars;
+        return acc;
+    }, {});
 
-    const handleAddRating = (response) => {
-        setDoctor(response.doctor);
-        setOpenDialog(false);
+
+    const handleAddRating = async (id, ratings) => {
+        try {
+            const data = await doctorService.addRating(id, ratings);
+            console.log('data:', data);
+            setRating(data.rating);
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     const handleTabChange = (event, newValue) => setActiveTab(newValue);
@@ -80,6 +94,15 @@ const ViewProfile = () => {
             </Container>
         );
     }
+
+    const ratingNames = {
+        'work skills': { ar: 'مهارات العمل', en: 'Work Skills' },
+        'communication skills': { ar: 'مهارات الاتصال', en: 'Communication Skills' },
+        'punctuality': { ar: 'الانضباط', en: 'Punctuality' },
+        'cleanliness': { ar: 'النظافة', en: 'Cleanliness' },
+        'professionalism': { ar: 'الاحترافية', en: 'Professionalism' },
+        'overall experience': { ar: 'التجربة العامة', en: 'Overall Experience' },
+    };
 
     return (
         <>
@@ -133,110 +156,110 @@ const ViewProfile = () => {
                 <Box sx={{ mt: 4 }}>
                     {activeTab === 0 && <AboutTab isArabic={isArabic} doctor={doctor} workingHours={workingHours} />}
                     {activeTab === 1 && <InfoTab isArabic={isArabic} doctor={doctor} />}
-                    {activeTab === 2 && <RatingTab isArabic={isArabic} ratings={rating} onAddRating={handleOpenDialog} />}
+                    {activeTab === 2 && <RatingTab isArabic={isArabic} ratings={groupedRatings} ratingNames={ratingNames} onAddRating={handleOpenDialog} />}
                 </Box>
-                <Dialog open={openDialog} onClose={handleCloseDialog}>
+                <Dialog dir={isArabic ? 'rtl' : 'ltr'} open={openDialog} onClose={handleCloseDialog}>
                     <DialogTitle>{isArabic ? 'أضف تقييمك' : 'Add Your Rating'}</DialogTitle>
                     <DialogContent>
-                        <RatingDialog isArabic={isArabic} onSubmit={handleAddRating} onClose={handleCloseDialog} id={id} />
+                        <RatingDialog isArabic={isArabic} onSubmit={handleAddRating} onClose={handleCloseDialog} id={id} ratingNames={ratingNames} />
                     </DialogContent>
                 </Dialog>
-
             </Container>
             <Footer />
         </>
     );
 };
 
-const RatingDialog = ({ isArabic, onSubmit, onClose, id }) => {
+const RatingDialog = ({ isArabic, onSubmit, onClose, id, ratingNames }) => {
     const { user } = useAuth();
-    const [newRate, setNewRate] = useState({
-        name: '',
-        stars: 0,
-        comment: '',
-        user: user?._id,
-    });
-
-    const handleChange = (event) => {
-        const { name, value } = event.target;
-        setNewRate((prevState) => ({
-            ...prevState,
-            [name]: value,
-        }));
-    };
-
-    const handleRatingChange = (event, newValue) => {
-        setNewRate((prevState) => ({
-            ...prevState,
-            stars: newValue,
-        }));
-    };
+    const [ratings, setRatings] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     const handleSubmit = async () => {
+        if (Object.keys(ratings).length === 0) return;
         if (!user) return;
+
+        setLoading(true);
         try {
-            const data = await doctorService.addRating(id, newRate);
-            setNewRate({ name: '', stars: 0, comment: '', user: '' });
-            onSubmit(data);
+            await onSubmit(id, ratings);
         } catch (error) {
-            console.error('Error adding rating:', error);
+            console.error(error);
+        } finally {
+            setLoading(false);
+            onClose();
         }
+    };
+
+    const handleRatingChange = (name, value) => {
+        if (!name || !value) return;
+        const newRating = { name, stars: value };
+        setRatings((prevRatings) => {
+            if (!prevRatings) return [newRating];
+            return [...prevRatings, newRating];
+        });
     };
 
     return (
         <Box sx={{ padding: 2 }}>
-            <FormControl fullWidth sx={{ mb: 2 }}>
-                <InputLabel id="rating-name-label">{isArabic ? 'اسم التقييم' : 'Rating Name'}</InputLabel>
-                <Select
-                    labelId="rating-name-label"
-                    id="rating-name"
-                    name="name"
-                    value={newRate.name}
-                    onChange={handleChange}
-                    label={isArabic ? 'اسم التقييم' : 'Rating Name'}
-                >
-                    <MenuItem value="work skills">{isArabic ? 'مهارات العمل' : 'Work Skills'}</MenuItem>
-                    <MenuItem value="communication skills">{isArabic ? 'مهارات الاتصال' : 'Communication Skills'}</MenuItem>
-                    <MenuItem value="punctuality">{isArabic ? 'الانضباط' : 'Punctuality'}</MenuItem>
-                    <MenuItem value="cleanliness">{isArabic ? 'النظافة' : 'Cleanliness'}</MenuItem>
-                    <MenuItem value="professionalism">{isArabic ? 'الاحترافية' : 'Professionalism'}</MenuItem>
-                    <MenuItem value="overall experience">{isArabic ? 'التجربة العامة' : 'Overall Experience'}</MenuItem>
-                </Select>
-            </FormControl>
+            <Typography
+                align="center"
+                variant="body2"
+                sx={{ color: 'text.secondary', mb: 2 }}
+            >
+                {isArabic ? 'قم بتقييم الطبيب' : 'Rate the doctor'}
+            </Typography>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                {Object.keys(ratingNames).map((name, index) => (
+                    <Box
+                        key={index}
+                        direction={isArabic ? 'rtl' : 'ltr'}
+                        sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 2,
+                            mb: 2,
+                            justifyContent: 'space-between',
+                            borderBottom: 1,
+                            borderColor: 'divider',
+                            pb: 1
+                        }}
+                    >
+                        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                            {isArabic ? ratingNames[name].ar : ratingNames[name].en} :
+                        </Typography>
+                        <Rating
+                            name={name}
+                            value={ratings[name]}
+                            onChange={(event, value) => handleRatingChange(name, value)}
+                            size="large"
+                            sx={{ color: 'secondary.main' }}
+                        />
 
-            <Box sx={{ mb: 2 }}>
-                <Rating
-                    name="stars"
-                    value={newRate.stars}
-                    onChange={handleRatingChange}
-                    precision={0.5}
-                    size="large"
-                />
+                    </Box>
+                ))}
             </Box>
 
-            <TextField
-                label={isArabic ? 'التعليق' : 'Comment'}
-                name="comment"
-                value={newRate.comment}
-                onChange={handleChange}
-                multiline
-                rows={4}
-                fullWidth
-                sx={{ mb: 2 }}
-            />
-
-            <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Button onClick={onClose} color="secondary" variant="outlined">
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 1 }}>
+                <Button
+                    onClick={onClose}
+                    color="secondary"
+                    variant="outlined"
+                    fullWidth
+                >
                     {isArabic ? 'إلغاء' : 'Cancel'}
                 </Button>
-                <Button onClick={handleSubmit} color="primary" variant="contained">
-                    {isArabic ? 'إرسال' : 'Submit'}
+                <Button
+                    onClick={handleSubmit}
+                    color="primary"
+                    variant="contained"
+                    fullWidth
+                >
+                    {loading ? <CircularProgress size={24} /> : isArabic ? 'إرسال' : 'Submit'}
                 </Button>
             </Box>
         </Box>
     );
 };
-
 
 const AboutTab = ({ isArabic, doctor, workingHours }) => (
     <Grid container spacing={4}>
@@ -245,11 +268,16 @@ const AboutTab = ({ isArabic, doctor, workingHours }) => (
                 <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'primary.dark', mb: 2 }}>
                     {isArabic ? 'ساعات العمل' : 'Working Hours'}
                 </Typography>
-                {workingHours.map((item, index) => (
+                {workingHours?.map((item, index) => (
                     <Typography key={index} variant="body2" sx={{ color: 'text.secondary' }}>
                         {item.day}: {item.startTime} - {item.endTime}
                     </Typography>
                 ))}
+                {!workingHours.length && (
+                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                        {isArabic ? 'لا يوجد ساعات عمل حتى الان' : 'No working hours yet'}
+                    </Typography>
+                )}
             </Paper>
         </Grid>
         <Grid item xs={12} md={6}>
@@ -307,27 +335,13 @@ const InfoTab = ({ isArabic, doctor }) => (
     </Grid>
 );
 
-const RatingTab = ({ isArabic, ratings, onAddRating }) => {
+const RatingTab = ({ isArabic, ratings, onAddRating, ratingNames }) => {
     const { user } = useAuth();
-    // Group ratings by name
-    const groupedRatings = ratings?.reduce((acc, rating) => {
-        if (!acc[rating.name]) {
-            acc[rating.name] = [];
-        }
-        acc[rating.name].push(rating);
-        return acc;
-    }, {});
-
-    // Calculate the average rating for each group
-    const calculateAverageRating = (ratings) => {
-        const totalStars = ratings?.reduce((acc, rating) => acc + rating.stars, 0);
-        return ratings?.length > 0 ? totalStars / ratings?.length : 0;
-    };
 
     // Check if there are no ratings at all
     const hasRatings = ratings?.length > 0;
 
-    console.log('groupedRatings:', groupedRatings);
+
     return (
         <Grid container spacing={4}>
             <Grid item xs={12} md={6}>
@@ -336,42 +350,39 @@ const RatingTab = ({ isArabic, ratings, onAddRating }) => {
                         {isArabic ? 'التقييم' : 'Rating'}
                     </Typography>
                     {/* Iterate through grouped ratings */}
-                    {hasRatings ? (
-                        Object.keys(groupedRatings).map((group, index) => {
-                            const groupRatings = groupedRatings[group];
-                            const averageRating = calculateAverageRating(groupRatings);
-                            return (
-                                <Box key={index} sx={{ mb: 2 }}>
-                                    <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: 'primary.dark' }}>
-                                        {group}
-                                    </Typography>
-                                    <Rating value={averageRating} readOnly size="medium" />
-                                    {groupRatings?.map((rating, index) => (
-                                        <Box key={index} sx={{ mt: 1 }}>
-                                            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                                                {rating.comment || '-'} - {rating.stars} stars
-                                            </Typography>
-                                        </Box>
-                                    ))}
-                                </Box>
-                            );
-                        })
-                    ) : (
+                    {Object.keys(ratingNames).map((name, index) => (
+                        <Box key={index} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+                            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                                {isArabic ? ratingNames[name].ar : ratingNames[name].en}
+                            </Typography>
+                            <RatingIcon value={ratings[name]} readOnly />
+                        </Box>
+                    ))}
+                    {!hasRatings && (
                         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                            {isArabic ? 'لا توجد تقييمات' : 'No Ratings Yet'}
+                            {isArabic ? 'لا يوجد تقييمات حتى الان' : 'No ratings yet'}
                         </Typography>
                     )}
                 </Paper>
             </Grid>
 
             <Grid item xs={12} md={6}>
-                <Paper sx={{ p: 3, boxShadow: 3 }}>
+                <Paper sx={{ p: 3, boxShadow: 3, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                     <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'primary.dark', mb: 2 }}>
                         {isArabic ? 'أضف تقييمك' : 'Add Your Rating'}
                     </Typography>
-                    <Button disabled={!user} onClick={onAddRating} variant="contained" color="primary" startIcon={<GradeIcon />}>
+                    <Button disabled={!user} onClick={onAddRating} variant="contained" color="primary" startIcon={<GradeIcon sx={{ mx: 2, color: 'white' }} />}>
                         {isArabic ? 'أضف تقييم' : 'Add Rating'}
                     </Button>
+                    <Typography variant="body2" sx={{ color: 'text.secondary', mt: 2 }}>
+                        {isArabic ? 'يمكنك اضافة تقييمك للطبيب' : 'You can add a rating for the doctor.'}
+                    </Typography>
+                    {/* you must be logged in */}
+                    {!user && (
+                        <Typography variant="body2" sx={{ color: 'primary.dark', mt: 2 }}>
+                            {isArabic ? 'يجب تسجيل الدخول لإضافة تقييم' : 'You must be logged in to add a rating'}
+                        </Typography>
+                    )}
                 </Paper>
             </Grid>
         </Grid>

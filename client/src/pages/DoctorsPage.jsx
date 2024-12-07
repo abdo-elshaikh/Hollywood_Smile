@@ -22,6 +22,7 @@ const DoctorsPage = () => {
         const fetchDoctors = async () => {
             try {
                 const data = await doctorService.fetchDoctors();
+                
                 setDoctors(data);
             } catch (error) {
                 console.error('Error fetching doctors:', error);

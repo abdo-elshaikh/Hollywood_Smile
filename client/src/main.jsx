@@ -6,7 +6,6 @@ import { CustomThemeProvider } from './contexts/ThemeProvider';
 import { ClinicProvider } from './contexts/ClinicContext';
 import SnackbarProvider from './contexts/SnackbarProvider';
 import AuthProvider from './contexts/AuthContext';
-import { CssBaseline } from '@mui/material';
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react"
 import "slick-carousel/slick/slick.css";
@@ -30,7 +29,6 @@ root.render(
           <SnackbarProvider>
             <Analytics />
             <SpeedInsights />
-            <CssBaseline />
             <App />
           </SnackbarProvider>
         </ClinicProvider>
