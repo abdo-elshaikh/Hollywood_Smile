@@ -50,8 +50,6 @@ import commentService from '../services/commentService';
 import ScrollToTopButton from '../components/common/ScrollToTopButton';
 
 const BlogDashboard = () => {
-    document.body.dir = 'ltr';
-
     // Destructuring from context
     const { logout, user } = useAuth();
     const { mode, toggleMode } = useCustomTheme();
@@ -164,7 +162,7 @@ const BlogDashboard = () => {
     );
 
     return (
-        <Box sx={{ display: 'flex', height: '100vh', backgroundColor: theme.palette.background.default }}>
+        <Box direction="ltr" sx={{ display: 'flex', height: '100vh', backgroundColor: theme.palette.background.default }}>
             <CssBaseline />
             <AppBar position="fixed" sx={{ zIndex: theme.zIndex.drawer + 1 }}>
                 <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>

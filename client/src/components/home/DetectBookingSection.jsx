@@ -65,7 +65,6 @@ const DetectBookingSection = () => {
                     zIndex: 1,
                 }}
             />
-
             {/* Content */}
             <Box
                 sx={{
@@ -97,7 +96,7 @@ const DetectBookingSection = () => {
                     </Grid>
                 </Grid>
             </Box>
-            {!isAuth && (
+            {!isAuth && user?.role !== 'visitor' && (
                 <Box
                     sx={{
                         position: 'absolute',
@@ -116,9 +115,8 @@ const DetectBookingSection = () => {
                     <Button
                         variant="text"
                         color="primary"
-                        endIcon={<ArrowForward sx={{ mx: 2 }} />}
-                        onClick={() => navigate('/auth/login')}
-                        sx={{ mt: 2, cursor: 'pointer' }}
+                        onClick={() => navigate('/auth/login', { state: { from: '/detect-booking' } })}
+                        startIcon={<ArrowForward sx={{ color: 'primary.main', mx: 1 }} />}
                     >
                         {t('detectBookingSection.login')}
                     </Button>

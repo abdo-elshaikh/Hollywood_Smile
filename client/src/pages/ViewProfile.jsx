@@ -5,7 +5,8 @@ import {
     CircularProgress, Rating, Dialog, DialogTitle,
     DialogContent, DialogActions, TextField,
     Checkbox, FormControlLabel, FormGroup,
-    FormControl, InputLabel, Select, MenuItem
+    FormControl, InputLabel, Select, MenuItem,
+    Link as MuiLink
 } from '@mui/material';
 import { arEG, enUS } from '@mui/material/locale';
 import { motion } from 'framer-motion';
@@ -301,39 +302,79 @@ const AboutTab = ({ isArabic, doctor, workingHours }) => (
 
 const InfoTab = ({ isArabic, doctor }) => (
     <Grid container spacing={4}>
+        {/* Description Section */}
         <Grid item xs={12} md={6}>
             <Paper sx={{ p: 3, boxShadow: 3 }}>
                 <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'primary.dark', mb: 2 }}>
                     {isArabic ? 'وصف' : 'Description'}
                 </Typography>
                 <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                    {isArabic ? doctor.description.ar : doctor.description.en}
+                    {isArabic ? doctor.description?.ar : doctor.description?.en}
                 </Typography>
             </Paper>
         </Grid>
+
+        {/* Social Links Section */}
         <Grid item xs={12} md={6}>
             <Paper sx={{ p: 3, boxShadow: 3 }}>
                 <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'primary.dark', mb: 2 }}>
                     {isArabic ? 'روابط التواصل الاجتماعي' : 'Social Links'}
                 </Typography>
                 <Grid container spacing={2}>
-                    <Grid item>
-                        <Facebook />
-                    </Grid>
-                    <Grid item>
-                        <Twitter />
-                    </Grid>
-                    <Grid item>
-                        <Instagram />
-                    </Grid>
-                    <Grid item>
-                        <LinkedIn />
-                    </Grid>
+                    {doctor.socialLinks?.facebook && (
+                        <Grid item>
+                            <MuiLink
+                                href={doctor.socialLinks.facebook}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label="Facebook"
+                            >
+                                <Facebook />
+                            </MuiLink>
+                        </Grid>
+                    )}
+                    {doctor.socialLinks?.twitter && (
+                        <Grid item>
+                            <MuiLink
+                                href={doctor.socialLinks.twitter}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label="Twitter"
+                            >
+                                <Twitter />
+                            </MuiLink>
+                        </Grid>
+                    )}
+                    {doctor.socialLinks?.instagram && (
+                        <Grid item>
+                            <MuiLink
+                                href={doctor.socialLinks.instagram}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label="Instagram"
+                            >
+                                <Instagram />
+                            </MuiLink>
+                        </Grid>
+                    )}
+                    {doctor.socialLinks?.linkedin && (
+                        <Grid item>
+                            <MuiLink
+                                href={doctor.socialLinks.linkedin}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label="LinkedIn"
+                            >
+                                <LinkedIn />
+                            </MuiLink>
+                        </Grid>
+                    )}
                 </Grid>
             </Paper>
         </Grid>
     </Grid>
 );
+
 
 const RatingTab = ({ isArabic, ratings, onAddRating, ratingNames }) => {
     const { user } = useAuth();

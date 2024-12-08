@@ -47,6 +47,7 @@ const DashboardPage = () => {
 
     return (
         <Box
+            direction='ltr'
             sx={{
                 display: "flex",
                 minHeight: "100vh",

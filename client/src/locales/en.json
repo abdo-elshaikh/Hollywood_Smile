@@ -511,7 +511,8 @@
         "description": "Access the Detect Booking page to view and manage your bookings. Log in if you haven’t already to continue.",
         "button": "Go to Detect Booking",
         "loginRequired": "You Can't Access Bookings until you log in.",
-        "login": "Login"
+        "login": "Login",
+        "goToDashboard": "Go to Dashboard"
     },
     "faqPage": {
         "title": "Frequently Asked Questions",

@@ -5,7 +5,9 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, A11y, EffectFade, Autoplay } from "swiper/modules";
 import { useCustomTheme } from "../../contexts/ThemeProvider";
 import { useTranslation } from "react-i18next";
+
 const baseUrl = import.meta.env.VITE_SUPABASE_VIEW_URL;
+
 const slides = [
     `${baseUrl}/uploads/slides/slide_1.jpg`,
     `${baseUrl}/uploads/slides/slide_2.jpg`,
@@ -13,12 +15,8 @@ const slides = [
     `${baseUrl}/uploads/slides/slide_4.jpg`,
     `${baseUrl}/uploads/slides/slide_5.jpg`,
 ];
-const MIN_SLIDES_FOR_LOOP = 5;
 
-const slideVariants = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1 },
-};
+const MIN_SLIDES_FOR_LOOP = 5;
 
 const slidesForLoop = slides.length < MIN_SLIDES_FOR_LOOP ? [...slides, ...slides] : slides;
 
@@ -64,9 +62,6 @@ const HeroSection = () => {
                                 position: "relative",
                                 height: "100%",
                                 width: "100%",
-                                backgroundImage: `url(${slide})`,
-                                backgroundSize: "cover",
-                                backgroundPosition: "center",
                                 display: "flex",
                                 alignItems: "center",
                                 justifyContent: "center",
@@ -84,6 +79,18 @@ const HeroSection = () => {
                                 },
                             }}
                         >
+                            <img
+                                src={slide}
+                                loading="lazy" // Native lazy loading
+                                alt={`Slide ${index + 1}`}
+                                style={{
+                                    width: "100%",
+                                    height: "100%",
+                                    objectFit: "cover",
+                                    position: "absolute",
+                                    zIndex: 0,
+                                }}
+                            />
                             <Container
                                 maxWidth="md"
                                 sx={{

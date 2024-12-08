@@ -162,8 +162,6 @@ const ManageBookingsPage = () => {
   };
 
   const handleContextMenu = (event, booking) => {
-    console.log(event);
-    console.log(booking);
     event.preventDefault();
     setSelectedBooking(booking);
     setContextMenu({
@@ -183,12 +181,12 @@ const ManageBookingsPage = () => {
       field: "actions", headerName: "#", flex: 0.2, renderCell: (params) => (
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <IconButton onClick={(event) => handleContextMenu(event, params.row)}>
-            <MoreVert />
+            <MoreVert color="primary.main" />
           </IconButton>
         </Box>
       )
     },
-    { field: "code", headerName: "ID", hide: true, flex: true,},
+    { field: "code", headerName: "ID", hide: true, flex: true, },
     {
       field: "status",
       headerName: "Status",
@@ -305,7 +303,6 @@ const ManageBookingsPage = () => {
             autoPageSize
             pagination
             autoHeight
-            checkboxSelection
             disableSelectionOnClick
             initialState={{
               density: "compact",
@@ -330,7 +327,7 @@ const ManageBookingsPage = () => {
                 quickFilterProps: { debounceMs: 500 },
               },
             }}
-            
+
           />
           :
           <Box sx={{ height: 'calc(100vh - 250px)', p: 2 }}>

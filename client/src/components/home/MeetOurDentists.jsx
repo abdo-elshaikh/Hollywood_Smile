@@ -191,6 +191,13 @@ const MeetOurDentists = () => {
                   </Stack>
                 </CardContent>
               </Card>
+              <Button
+                endIcon={<ArrowForwardIcon />}
+                sx={{ mt: 2, color: "primary.main" }}
+                onClick={() => navigate(`/rate-doctor/${member._id}`)}
+              >
+                {t("MeetOurDentists.rateDoctor")}
+              </Button>
             </motion.div>
           </Grid>
         ))}

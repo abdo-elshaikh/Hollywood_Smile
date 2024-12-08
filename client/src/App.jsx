@@ -29,6 +29,7 @@ import Error403Page from './pages/403Page';
 import Error500Page from './pages/500Page';
 import LoadingSpinner from './components/common/LoadingSpinner';
 import ErrorBoundary from './components/common/ErrorBoundary';
+import RateDoctorPage from './pages/RateDoctorPage';
 import './i18n';
 import { Box } from '@mui/material';
 
@@ -50,6 +51,9 @@ const ScrollToTop = () => {
     '/profile': { ar: 'الملف الشخصي | مركز هوليود سمايل', en: 'Profile | Hollywood Smile Center' },
     '/gallery': { ar: 'المعرض | مركز هوليود سمايل', en: 'Gallery | Hollywood Smile Center' },
     '/services': { ar: 'الخدمات | مركز هوليود سمايل', en: 'Services | Hollywood Smile Center' },
+    '/view-profile': { ar: 'عرض الملف الشخصي | مركز هوليود سمايل', en: 'View Profile | Hollywood Smile Center' },
+    '/client-bookings': { ar: 'حجوزات العملاء | مركز هوليود سمايل', en: 'Client Bookings | Hollywood Smile Center' },
+    '/rate-doctor': { ar: 'تقييم الدكتور | مركز هوليود سمايل', en: 'Rate Doctor | Hollywood Smile Center' },
     '/not-found': { ar: 'الصفحة غير موجودة | مركز هوليود سمايل', en: 'Page Not Found | Hollywood Smile Center' },
     '/unauthorized': { ar: 'غير مصرح لك | مركز هوليود سمايل', en: 'Unauthorized | Hollywood Smile Center' },
     '/server-error': { ar: 'خطأ في الخادم | مركز هوليود سمايل', en: 'Server Error | Hollywood Smile Center' },
@@ -111,7 +115,7 @@ const App = () => {
             <PrivateRoute element={<ProfilePage />} requiredRoles={['visitor', 'admin', 'support', 'editor', 'author']} />
           } />
           <Route path="/detect-booking" element={
-            <PrivateRoute element={<ClientBookings />} requiredRoles={['visitor', 'admin']} />
+            <PrivateRoute element={<ClientBookings />} requiredRoles={['visitor']} />
           } />
           <Route path="/about-us" element={<AboutUsPage />} />
           <Route path="/auth/*" element={<AuthPage />} />
@@ -122,6 +126,7 @@ const App = () => {
           <Route path="/faq" element={<FaqPage />} />
           <Route path="/contact-us" element={<ContactUsPage />} />
           <Route path="/doctors" element={<DoctorsPage />} />
+          <Route path="/rate-doctor/:id" element={<RateDoctorPage />} />
           <Route path="/gallery" element={<GalleryPage />} />
           <Route path="/gallery/:id" element={<ImageDetailsPage />} />
           <Route path="/services" element={<ServicesPage />} />

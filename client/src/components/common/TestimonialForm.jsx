@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Box, Button, TextField, Avatar, Typography, } from '@mui/material';
+import { Box, Button, TextField, Avatar, Typography, Divider } from '@mui/material';
 import { Rating } from '@mui/material';
 import axiosInstance from '../../services/axiosInstance';
 import { uploadFile } from '../../services/supabaseService';
@@ -12,7 +12,7 @@ const TestimonialForm = ({ testimonial = null }) => {
     const isArabic = i18n.language === 'ar';
     const qoute = {
         name: user ? user.name : '',
-        position: user ? user.role : '',
+        position: user ? user.role : 'visitor',
         quote: '',
         rating: 0,
         show: false, // Default to false
@@ -81,20 +81,21 @@ const TestimonialForm = ({ testimonial = null }) => {
             <TextField
                 label={isArabic ? 'المنصب' : 'Position'}
                 name="position"
+                sx={{ display: user ? 'block' : 'none' }}
                 value={formData.position}
                 onChange={handleChange}
                 fullWidth
                 margin="normal"
             />
             <TextField
-                label={isArabic ? 'الاقتباس' : 'Quote'}
+                label={isArabic ? 'التعليق' : 'Comment'}
                 name="quote"
                 value={formData.quote}
                 onChange={handleChange}
                 fullWidth
                 multiline
                 rows={4}
-                placeholder="Enter your quote here"
+                placeholder={isArabic ? 'أدخل تعليقك هنا' : 'Enter your comment here'}
                 margin="normal"
             />
             <Box sx={{
@@ -102,10 +103,12 @@ const TestimonialForm = ({ testimonial = null }) => {
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
-                flexDirection: 'column',
+                width: '100%',
+                textAlign: isArabic ? 'right' : 'left',
+                flexWrap: 'wrap',
                 direction: isArabic ? 'rtl' : 'ltr',
             }}>
-                <Typography sx={{ mr: 2 }}>{isArabic ? 'التقييم' : 'Rating'}</Typography>
+                <Typography sx={{ mr: 2 }}>{isArabic ? 'التقييم العام للخدمات' : 'Global Rating for Services'} : </Typography>
                 <Rating
                     name="rating"
                     size="large"
@@ -113,14 +116,14 @@ const TestimonialForm = ({ testimonial = null }) => {
                     onChange={(e) => setFormData({ ...formData, rating: e.target.value })}
                 />
             </Box>
-
+            <Divider sx={{ mt: 2 }} />
             <Button
                 variant="contained"
                 color="primary"
                 onClick={handleSubmit}
                 sx={{ mt: 2, width: '100%' }}
             >
-                Save
+                {isArabic ? "أرسل" : "Submit"}
             </Button>
         </Box>
     );

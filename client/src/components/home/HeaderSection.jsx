@@ -189,9 +189,10 @@ const HeaderSection = () => {
                 {/* Mobile Drawer */}
                 <Drawer
                     anchor={isArabic ? 'right' : 'left'}
-                    variant="temporary"
                     open={mobileMenuOpen}
                     onClose={closeMobileMenu}
+                    ModalProps={{ keepMounted: true }}
+                    sx={{ display: { xs: 'block', md: 'none' } }}
                 >
                     <Box sx={{ width: 250 }}>
                         <List>

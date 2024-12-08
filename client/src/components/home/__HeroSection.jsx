@@ -1,157 +1,163 @@
-import React from 'react';
-import { Box, Typography, Button, Container, Grid } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { useCustomTheme } from '../../contexts/ThemeProvider';
-import { useTranslation } from 'react-i18next';
-import heroImage from '../../assets/hero-person.png';
-import heroBg from '../../assets/images/hero-comp.png';
+import React from "react";
+import { Box, Typography, Button, Stack, Grid, Container } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination, Autoplay } from "swiper/modules";
+
+const baseUrl = import.meta.env.VITE_SUPABASE_VIEW_URL;
+const heroImages = [
+  `${baseUrl}/uploads/slides/slide_7.jpg`,
+  `${baseUrl}/uploads/slides/slide_8.jpg`,
+  `${baseUrl}/uploads/slides/slide_1.jpg`
+];
 
 const HeroSection = () => {
   const navigate = useNavigate();
-  const { mode } = useCustomTheme();
-  const { t } = useTranslation();
-  const isDark = mode === 'dark';
 
   return (
-    <Box
-      sx={{
-        background: isDark
-          ? 'linear-gradient(135deg, #0D324D, #7F5A83)'
-          : 'linear-gradient(135deg, #67B26F, #4ca2cd)',
-        mt: '60px',
-        height: '100vh',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        position: 'relative',
-        overflow: 'hidden',
-        display: 'flex',
-        alignItems: 'center',
-      }}
-    >
-      {/* Overlay for improved text readability */}
-      <Box
-        sx={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          backgroundColor: isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.4)',
-          zIndex: 1,
-        }}
-      />
-      <Container
-        maxWidth="lg"
-        sx={{
-          position: 'relative',
-          zIndex: 2,
-          display: 'flex',
-          alignItems: 'center',
-          height: '100%',
-          padding: { xs: '20px', md: '40px' },
-        }}
-      >
-        <Grid container alignItems="center">
-          {/* Text and Buttons Column */}
-          <Grid item xs={12} md={6}>
-            <Box
-              sx={{
-                textAlign: { xs: 'center', md: 'left' },
-                color: isDark ? '#f0f0f0' : '#333',
-              }}
-            >
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }}>
-                <Typography
-                  variant="h1"
-                  sx={{
-                    fontWeight: 'bold',
-                    fontSize: { xs: '2rem', md: '3rem' },
-                    lineHeight: 1.2,
-                    marginBottom: '20px',
-                  }}
-                >
-                  {t('heroSection.slide1.title')}
-                </Typography>
+    <Box sx={{ width: "100%", overflow: "hidden" }}>
+      <Container maxWidth="lg">
+        <Grid container spacing={4} sx={{ alignItems: "center", mt: 8 }}>
+          {/* Left Section: Text Content */}
+          <Grid item xs={12} sm={6}>
+            <Box sx={{ maxWidth: "md", p: 2 }}>
+              <motion.div
+                initial={{ opacity: 0, x: -50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 1 }}
+              >
                 <Typography
                   variant="h2"
                   sx={{
-                    fontSize: { xs: '1.5rem', md: '2rem' },
-                    marginBottom: '30px',
-                    fontWeight: 300,
+                    fontWeight: 700,
+                    fontSize: { xs: "2rem", sm: "3.5rem", md: "4rem" },
+                    lineHeight: 1.2,
+                    color: "text.primary",
+                    textShadow: "2px 2px 6px rgba(0,0,0,0.2)",
+                    letterSpacing: "0.1rem",
                   }}
                 >
-                  {t('heroSection.slide1.description')}
+                  Brighten Your Smile with Expert Care
                 </Typography>
               </motion.div>
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1, delay: 0.5 }}>
-                <Box
+
+              <motion.div
+                initial={{ opacity: 0, x: -50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 1.2 }}
+              >
+                <Typography
+                  variant="h6"
                   sx={{
-                    display: 'flex',
-                    gap: 2,
-                    flexDirection: { xs: 'column', sm: 'row' },
-                    justifyContent: { xs: 'center', md: 'flex-start' },
-                    alignItems: 'center',
-                    marginTop: '20px',
+                    fontWeight: 400,
+                    fontSize: { xs: "1rem", sm: "1.3rem" },
+                    color: "text.secondary",
+                    marginTop: "20px",
+                    marginBottom: "30px",
+                    lineHeight: 1.5,
+                  }}
+                >
+                  Join thousands of satisfied patients who trust us for their dental health.
+                  Our professional team ensures your comfort with the latest in dental technology.
+                </Typography>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1.5 }}
+              >
+                <Stack
+                  direction={{ xs: "column", sm: "row" }}
+                  spacing={3}
+                  sx={{
+                    justifyContent: "flex-start",
+                    gap: 3,
                   }}
                 >
                   <Button
                     variant="contained"
+                    color="primary"
+                    size="large"
+                    onClick={() => navigate("/book-appointment")}
                     sx={{
-                      backgroundColor: 'primary.main',
-                      color: '#fff',
-                      padding: '12px 30px',
-                      borderRadius: '30px',
-                      fontWeight: 'bold',
-                      textTransform: 'none',
-                      boxShadow: '0px 4px 12px rgba(0,0,0,0.3)',
-                      '&:hover': {
-                        backgroundColor: 'primary.dark',
+                      bgcolor: "primary.main",
+                      ":hover": {
+                        bgcolor: "#084298",
                       },
+                      borderRadius: "50px",
+                      paddingX: 4,
+                      paddingY: 2,
+                      boxShadow: "0px 8px 15px rgba(0,0,0,0.2)",
+                      textTransform: "none",
                     }}
-                    onClick={() => navigate('/contact')}
-                    aria-label="Request Appointment"
                   >
-                    {t('Request Appointment')}
+                    Book Your Appointment
                   </Button>
+
                   <Button
                     variant="outlined"
+                    color="primary"
+                    size="large"
+                    onClick={() => navigate("/services")}
                     sx={{
-                      color: 'primary.main',
-                      borderColor: 'primary.main',
-                      padding: '12px 30px',
-                      borderRadius: '30px',
-                      fontWeight: 'bold',
-                      textTransform: 'none',
-                      '&:hover': {
-                        backgroundColor: 'rgba(0,0,0,0.05)',
-                        color: 'primary.dark',
-                        borderColor: 'primary.dark',
+                      borderColor: "primary.main",
+                      ":hover": {
+                        bgcolor: "rgba(13, 110, 253, 0.1)",
                       },
+                      borderRadius: "50px",
+                      paddingX: 4,
+                      paddingY: 2,
+                      textTransform: "none",
                     }}
-                    href="tel:6019247441"
-                    aria-label="Call: (601) 924-7441"
                   >
-                    {t('Call: (601) 924-7441')}
+                    Explore Our Services
                   </Button>
-                </Box>
+                </Stack>
               </motion.div>
             </Box>
           </Grid>
 
-          {/* Image Column */}
-          <Grid item xs={12} md={6}>
-            <Box
-              sx={{
-                display: 'flex',
-                justifyContent: { xs: 'center', md: 'flex-end' },
-                alignItems: 'center',
-              }}
+          {/* Right Section: Swiper (Image Carousel) */}
+          <Grid item xs={12} sm={6}>
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 1 }}
             >
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1, delay: 0.7 }}>
-                <img src={heroBg} alt="Dentist" style={{ width: '100%', borderRadius: '10px' }} />
-              </motion.div>
-            </Box>
+              <Swiper
+                spaceBetween={10}
+                slidesPerView={1}
+                loop={true}
+                autoplay={{
+                  delay: 5000,
+                  disableOnInteraction: false,
+                }}
+                style={{
+                  width: "100%",
+                  height: "auto",
+                  borderRadius: "8px",
+                }}
+              >
+                {heroImages.map((image, index) => (
+                  <SwiperSlide key={index}>
+                    <Box
+                      component="img"
+                      src={image}
+                      alt={`Hero Image ${index}`}
+                      sx={{
+                        width: "100%",
+                        height: "auto",
+                        objectFit: "cover",
+                        borderRadius: 2,
+                        boxShadow: 6,
+                      }}
+                    />
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            </motion.div>
           </Grid>
         </Grid>
       </Container>
