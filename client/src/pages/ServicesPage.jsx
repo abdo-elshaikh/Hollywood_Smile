@@ -32,8 +32,10 @@ const ServicesPage = () => {
 
     useEffect(() => {
         const fetchServicesData = async () => {
-            const services = await fetchServices();
-            setServiceDetails(services);
+            fetchServices().then((services) => setServiceDetails(services))
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
         };
         fetchServicesData();
     }, []);
@@ -95,7 +97,7 @@ const ServicesPage = () => {
                                         </Typography>
                                     </CardContent>
                                     <CardActions sx={{ justifyContent: 'center' }}>
-                                        <Button variant="text"  color="primary">
+                                        <Button variant="text" color="primary">
                                             {t('servicesPage.learnMore')}
                                         </Button>
                                     </CardActions>

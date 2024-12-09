@@ -42,11 +42,11 @@ const ServicesSchema = new mongoose.Schema(
         },
         imageUrl: {
             type: String,
-            default: 'https://via.placeholder.com/150',
+            default: '',
         },
         icon: {
             type: String,
-            default: 'https://img.icons8.com/?size=100&id=107992&format=png&color=000000',
+            default: '',
         },
         isActive: {
             type: Boolean,

@@ -102,7 +102,7 @@ const ServicesSection = () => {
                 </motion.div>
 
                 <Grid container spacing={4} justifyContent="center">
-                    {services?.map((service, index) => (
+                    {services?.slice(0, 8).map((service, index) => (
                         <Grid item xs={12} sm={6} md={3} key={service._id}>
                             <motion.div
                                 initial={{ opacity: 0, y: 20 }}
@@ -129,7 +129,7 @@ const ServicesSection = () => {
                                             mx: 'auto',
                                             mb: 2,
                                             borderRadius: '50%',
-                                            background: 'linear-gradient(135deg, #2F8DF7, #2CB9BF)',
+                                            background: 'linear-gradient(135deg, #2F8DF7, #2CB9BF, #2CB9BF, #2F8DF7)',
                                         }}
                                     >
                                         <img src={service.icon} alt={service.title.en} style={{ width: '100%', height: '100%' }} />

@@ -90,7 +90,6 @@ const deleteFile = async (filePath, bucket = 'uploads') => {
     }
 
     return data;
-
 }
 
 // Move a file to a different location

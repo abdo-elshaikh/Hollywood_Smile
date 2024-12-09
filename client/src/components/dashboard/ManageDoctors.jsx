@@ -10,7 +10,7 @@ import {
 import { Add, Edit, Delete } from '@mui/icons-material';
 import { DataGrid } from '@mui/x-data-grid';
 import doctorService from '../../services/doctorService';
-import { uploadImage, deleteFile } from '../../services/uploadImage';
+import { uploadFile, replaceFile, deleteFile } from '../../services/supabaseService';
 import { useSnackbar } from '../../contexts/SnackbarProvider';
 import ConfirmationDialog from "../common/ConfirmationDialog";
 
@@ -49,6 +49,7 @@ const ManageDoctors = () => {
     const [loading, setLoading] = useState(false);
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [selectedDoctor, setSelectedDoctor] = useState(null);
+    const [uploading, setUploading] = useState(false);
     const showSnackbar = useSnackbar();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -146,33 +147,41 @@ const ManageDoctors = () => {
 
     const handleDeleteConfirm = async () => {
         setLoading(true);
-        try {
-            await doctorService.deleteDoctor(selectedDoctor._id);
+        deleteFile(selectedDoctor.imageUrl)
+            .then((data) => console.log('Image deleted successfully'))
+            .catch((error) => console.error(error));
+
+        doctorService.deleteDoctor(selectedDoctor._id).then((data) => {
             showSnackbar('Doctor deleted successfully', 'success');
             fetchDoctors();
-        } catch (error) {
+        }).catch((error) => {
             console.error(error);
-            showSnackbar(error.message, 'error');
-        } finally {
+            showSnackbar(error?.message || 'An unexpected error occurred', 'error');
+        }).finally(() => {
             setLoading(false);
             setConfirmOpen(false);
-        }
+        })
     };
 
-    const handleImageChange = async (event) => {
+    const handleImageChange = async (event, action) => {
         const file = event.target.files[0];
+        if (doctorData.name.en === '') {
+            showSnackbar('Please enter the name of the doctor first', 'error');
+            return;
+        }
+        const fileName = doctorData.name.en.replace(/\s+/g, '-').toLowerCase();
         const directoryPath = 'images/doctors';
+        setUploading(true);
         if (file) {
-            const data = await uploadImage(file, directoryPath);
-            if (data) {
-                const fileUrl = doctorData.imageUrl;
-                await deleteFile(fileUrl);
-            }
+            const data = action === 'upload' ?
+                await uploadFile(file, directoryPath, fileName) :
+                await replaceFile(file, directoryPath, fileName);
             setDoctorData((prev) => ({ ...prev, imageUrl: data.fullUrl }));
             showSnackbar('Image uploaded successfully', 'success');
         } else {
             showSnackbar('Please select an image', 'error');
         }
+        setUploading(false);
     };
 
     const columns = [
@@ -383,12 +392,21 @@ const ManageDoctors = () => {
                             {/* Image Upload */}
                             <Grid item xs={12} md={6}>
                                 <Box display="flex" alignItems="center">
-
+                                    {uploading && <CircularProgress size={20} />}
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        sx={{ ml: 2, textTransform: 'none', fontSize: 14, width: 150 }}
+                                        onClick={() => document.getElementById('image-upload').click()}
+                                    >
+                                        Upload Image
+                                    </Button>
                                     <input
+                                        id='image-upload'
                                         type="file"
                                         accept="image/*"
-                                        onChange={handleImageChange}
-                                        style={{ display: 'block', marginTop: '10px' }}
+                                        onChange={(e) => handleImageChange(e, doctorId ? 'replace' : 'upload')}
+                                        style={{ display: 'none' }}
                                     />
                                     {doctorData.imageUrl && (
                                         <Box mt={2}>

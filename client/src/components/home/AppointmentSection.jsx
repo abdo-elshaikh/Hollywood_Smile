@@ -17,6 +17,7 @@ import { useTranslation } from 'react-i18next';
 import axiosInstance from '../../services/axiosInstance';
 import notificationService from '../../services/notificationService';
 import SuccessMessage from '../common/SuccessMessage';
+import { fetchServices } from "../../services/servicesService";
 
 const AppointmentSection = () => {
     const { mode } = useCustomTheme();
@@ -144,17 +145,16 @@ const AppointmentSection = () => {
     }, [isSuccess]);
 
     useEffect(() => {
-        fetchServices();
+        fetchAllServices();
         fetchBookings();
     }, []);
 
-    const fetchServices = async () => {
-        try {
-            const { data } = await axiosInstance.get('/services');
-            setServices(data);
-        } catch (error) {
-            console.error('Failed to fetch services:', error);
-        }
+    const fetchAllServices = async () => {
+        fetchServices().then((services) => {
+            setServices(services.filter((service) => service.isActive));
+        }).catch((error) => {
+            console.error('Error fetching services:', error);
+        });
     };
 
     const fetchBookings = async () => {

@@ -15,11 +15,13 @@ import {
     CircularProgress,
     Grid,
     Switch,
+    LinearProgress,
 } from '@mui/material';
 import { Add, Edit, Delete } from '@mui/icons-material';
 import { fetchServices, createService, updateService, deleteService } from '../../services/servicesService';
-import { uploadImage } from '../../services/uploadImage';
+import { uploadFile, replaceFile, deleteFile } from '../../services/supabaseService';
 import { useSnackbar } from '../../contexts/SnackbarProvider';
+import { formatDate } from 'date-fns';
 
 
 const ManageServicesPage = () => {
@@ -28,8 +30,9 @@ const ManageServicesPage = () => {
     const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
     const [isEditable, setIsEditable] = useState(false);
+    const [uploading, setUploading] = useState(false);
     const [selectedServiceId, setSelectedServiceId] = useState(null);
-    const [formData, setFormData] = useState({
+    const [serviceData, setServiceData] = useState({
         title: { en: '', ar: '' },
         description: { en: '', ar: '' },
         details: { en: '', ar: '' },
@@ -60,12 +63,12 @@ const ManageServicesPage = () => {
     const handleChange = (e, language = null) => {
         const { name, value } = e.target;
         if (language) {
-            setFormData({
-                ...formData,
-                [name]: { ...formData[name], [language]: value },
+            setServiceData({
+                ...serviceData,
+                [name]: { ...serviceData[name], [language]: value },
             });
         } else {
-            setFormData({ ...formData, [name]: value });
+            setServiceData({ ...serviceData, [name]: value });
         }
     };
 
@@ -74,10 +77,10 @@ const ManageServicesPage = () => {
         setLoading(true);
         try {
             if (isEditable && selectedServiceId) {
-                await updateService(selectedServiceId, formData);
+                await updateService(selectedServiceId, serviceData);
                 showSnackBar('Service updated successfully', 'success');
             } else {
-                await createService(formData);
+                await createService(serviceData);
                 showSnackBar('Service created successfully', 'success');
             }
             fetchAllServices();
@@ -93,45 +96,61 @@ const ManageServicesPage = () => {
     const handleClickEdit = (service) => {
         setIsEditable(true);
         setSelectedServiceId(service._id);
-        setFormData(service);
+        setServiceData(service);
         setOpen(true);
     };
 
     // Handle the delete action
     const handleDeleteService = async (id) => {
         setLoading(true);
-        try {
-            await deleteService(id);
+        deleteFile(serviceData.imageUrl.split('/uploads/')[1], 'uploads').then((data) => {
+            console.log('Image deleted successfully', data);
+        }).catch((err) => {
+            console.error('Failed to delete image', err);
+        });
+
+        deleteService(id).then((data) => {
+            console.log('Service deleted successfully', data);
             showSnackBar('Service deleted successfully', 'success');
-            setServices((prevServices) => prevServices.filter((service) => service._id !== id));
-        } catch (err) {
+            fetchAllServices();
+        }).catch((err) => {
             showSnackBar('Failed to delete service', 'error');
-        } finally {
-            setLoading(false);
-        }
+        })
     };
 
     // Handle file upload
-    const handleUploadImage = (file) => {
-        const directoryPath = 'images/services/images';
-        uploadImage(file, directoryPath)
-            .then((data) => {
-                setFormData({ ...formData, imageUrl: data.fullUrl });
+    const handleUploadImage = async (file, type = 'imageUrl', action = 'upload') => {
+        const directoryPath = type === 'imageUrl' ? 'services/images' : 'services/icons';
+        if (!file) return;
+        if (serviceData.title.en === '') {
+            showSnackBar('Please enter title first', 'error');
+            return;
+        }
+        const fileName = serviceData.title.en.replace(/\s+/g, '-').toLowerCase();
+        setUploading(true);
+        if (action === 'upload') {
+            uploadFile(file, directoryPath, fileName).then((data) => {
+                setServiceData({ ...serviceData, [type]: data.fullUrl });
                 showSnackBar('Image uploaded successfully', 'success');
-            })
-            .catch(() => showSnackBar('Failed to upload image', 'error'));
+            }).catch((err) => {
+                console.error('Failed to upload image', err);
+                showSnackBar('Failed to upload image', 'error');
+            }).finally(() => {
+                setUploading(false);
+            });
+        } else if (action === 'replace') {
+            replaceFile(file, directoryPath, fileName).then((data) => {
+                setServiceData({ ...serviceData, [type]: data.fullUrl });
+                showSnackBar('Image replaced successfully', 'success');
+            }).catch((err) => {
+                console.error('Failed to replace image', err);
+                showSnackBar('Failed to replace image', 'error');
+            }).finally(() => {
+                setUploading(false);
+            });
+        }
     };
 
-    // Handle icon upload
-    const handleUploadIcon = (file) => {
-        const directoryPath = 'icons/services/icons';
-        uploadImage(file, directoryPath)
-            .then((data) => {
-                setFormData({ ...formData, icon: data.fullUrl });
-                showSnackBar('Icon uploaded successfully', 'success');
-            })
-            .catch(() => showSnackBar('Failed to upload icon', 'error'));
-    };
 
     // Toggle status
     const handleToggleStatus = async (id, status) => {
@@ -156,7 +175,7 @@ const ManageServicesPage = () => {
         setOpen(false);
         setIsEditable(false);
         setSelectedServiceId(null);
-        setFormData({
+        setServiceData({
             title: { en: '', ar: '' },
             description: { en: '', ar: '' },
             details: { en: '', ar: '' },
@@ -219,7 +238,7 @@ const ManageServicesPage = () => {
                                         {service.title.en}
                                     </Typography>
                                     <Typography variant="body2" color="textSecondary">
-                                        {service.description.en}
+                                        {service.description.en.slice(0, 50)}...
                                     </Typography>
                                     <Typography variant="subtitle1" color="textSecondary">
                                         Price: ${service.price}
@@ -260,7 +279,7 @@ const ManageServicesPage = () => {
                         name="title"
                         label="Title (EN)"
                         fullWidth
-                        value={formData.title.en}
+                        value={serviceData.title.en}
                         onChange={(e) => handleChange(e, 'en')}
                         required
                     />
@@ -269,7 +288,7 @@ const ManageServicesPage = () => {
                         name="title"
                         label="Title (AR)"
                         fullWidth
-                        value={formData.title.ar}
+                        value={serviceData.title.ar}
                         onChange={(e) => handleChange(e, 'ar')}
                         required
                     />
@@ -278,7 +297,7 @@ const ManageServicesPage = () => {
                         name="description"
                         label="Description (EN)"
                         fullWidth
-                        value={formData.description.en}
+                        value={serviceData.description.en}
                         onChange={(e) => handleChange(e, 'en')}
                         required
                     />
@@ -287,7 +306,7 @@ const ManageServicesPage = () => {
                         name="description"
                         label="Description (AR)"
                         fullWidth
-                        value={formData.description.ar}
+                        value={serviceData.description.ar}
                         onChange={(e) => handleChange(e, 'ar')}
                         required
                     />
@@ -296,7 +315,7 @@ const ManageServicesPage = () => {
                         name="details"
                         label="Details (EN)"
                         fullWidth
-                        value={formData.details.en}
+                        value={serviceData.details.en}
                         onChange={(e) => handleChange(e, 'en')}
                     />
                     <TextField
@@ -304,7 +323,7 @@ const ManageServicesPage = () => {
                         name="details"
                         label="Details (AR)"
                         fullWidth
-                        value={formData.details.ar}
+                        value={serviceData.details.ar}
                         onChange={(e) => handleChange(e, 'ar')}
                     />
                     <TextField
@@ -313,7 +332,7 @@ const ManageServicesPage = () => {
                         label="Price"
                         fullWidth
                         type="number"
-                        value={formData.price}
+                        value={serviceData.price}
                         onChange={handleChange}
                         required
                     />
@@ -322,17 +341,20 @@ const ManageServicesPage = () => {
                         name="duration"
                         label="Duration"
                         fullWidth
-                        value={formData.duration}
+                        value={serviceData.duration}
                         onChange={handleChange}
                     />
                     <Box mt={2}>
                         <Typography variant="h6">Choose Image</Typography>
-                        <input type="file" onChange={(e) => handleUploadImage(e.target.files[0])} />
-                        {formData.imageUrl && (
+                        <input type="file" accept="image/*" onChange={(e) => {
+                            isEditable ? handleUploadImage(e.target.files[0], 'imageUrl', 'replace') : handleUploadImage(e.target.files[0], 'imageUrl', 'upload')
+                        }} />
+                        {uploading && <LinearProgress />}
+                        {serviceData.imageUrl && !uploading && (
                             <Box mt={2}>
-                                <Typography variant="body2">Image Preview: {formData.imageUrl}</Typography>
+                                <Typography variant="body2">Image Preview: {serviceData.imageUrl}</Typography>
                                 <img
-                                    src={formData.imageUrl}
+                                    src={serviceData.imageUrl}
                                     alt="Service Preview"
                                     style={{ maxWidth: '100%', height: 'auto' }}
                                 />
@@ -341,12 +363,15 @@ const ManageServicesPage = () => {
                     </Box>
                     <Box mt={2}>
                         <Typography variant="h6">Choose Icon</Typography>
-                        <input type="file" onChange={(e) => handleUploadIcon(e.target.files[0])} />
-                        {formData.icon && (
+                        <input type="file" accept='image/*' onChange={(e) => {
+                            isEditable ? handleUploadImage(e.target.files[0], 'icon', 'replace') : handleUploadImage(e.target.files[0], 'icon', 'upload')
+                        }} />
+                        {uploading && <LinearProgress />}
+                        {serviceData.icon && !uploading && (
                             <Box mt={2}>
-                                <Typography variant="body2">Icon Preview: {formData.icon}</Typography>
+                                <Typography variant="body2">Icon Preview: {serviceData.icon}</Typography>
                                 <img
-                                    src={formData.icon}
+                                    src={serviceData.icon}
                                     alt="Service Icon"
                                     style={{ maxWidth: '100%', height: 'auto' }}
                                 />
