@@ -16,12 +16,11 @@ import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import Footer from '../components/home/Footer';
 import ScrollToTopButton from '../components/common/ScrollToTopButton';
-import MainHeaderPages from '../components/common/MainHeaderPages';
 import HeaderSection from '../components/home/HeaderSection';
 import TestimonySection from '../components/home/TestimonySection';
 import MapLocationSection from '../components/home/MapLocationSection';
 import { useNavigate } from 'react-router-dom';
-import bgVideo from '../assets/videos/main-header.mp4';
+import bgImage from '../assets/images/main-header.jpg';
 import { fetchServices } from '../services/servicesService';
 
 const ServicesPage = () => {
@@ -31,14 +30,21 @@ const ServicesPage = () => {
     const [serviceDetails, setServiceDetails] = useState([]);
 
     useEffect(() => {
-        const fetchServicesData = async () => {
-            fetchServices().then((services) => setServiceDetails(services))
-                .catch((error) => {
-                    console.error('Error:', error);
-                });
-        };
         fetchServicesData();
     }, []);
+
+    const fetchServicesData = async () => {
+        try {
+            const response = await fetchServices();
+            setServiceDetails(response);
+        } catch (error) {
+            console.error('Error fetching services data: ', error);
+        }
+    };
+
+    const handleServiceClick = (serviceId) => {
+        navigate(`/services/${serviceId}`);
+    };
 
     const cardVariant = {
         hidden: { opacity: 0, y: 20 },
@@ -48,22 +54,72 @@ const ServicesPage = () => {
     return (
         <>
             <HeaderSection />
-            <MainHeaderPages title={t('servicesPage.title')} page={t('servicesPage.title')} src={bgVideo} />
 
-            {/* Intro Section */}
-            <Box sx={{ py: 8, textAlign: 'center', backgroundColor: 'background.default', color: 'text.primary' }}>
-                <Container maxWidth="md">
-                    <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: 'bold' }}>
+            <Box
+                sx={{
+                    position: 'relative',
+                    width: '100%',
+                    height: '80vh',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: 'white',
+                    backgroundImage: `url(${bgImage})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    backgroundRepeat: 'no-repeat',
+                }}
+            >
+                <Box
+                    sx={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        background: 'linear-gradient(135deg, rgba(58,141,255,0.3), rgba(134,185,255,0.1))',
+                        zIndex: 2,
+                    }}
+                />
+                <Container
+                    sx={{
+                        position: 'relative',
+                        zIndex: 2,
+                        textAlign: 'center',
+                    }}
+                >
+                    <Typography
+                        variant="h3"
+                        component="h1"
+                        sx={{ fontWeight: 'bold', mb: 2, fontSize: { xs: '2rem', md: '3.5rem' } }}
+                    >
                         {t('servicesPage.title')}
                     </Typography>
-                    <Typography variant="body1" sx={{ maxWidth: '700px', mx: 'auto', mb: 4 }}>
+                    <Typography
+                        variant="h6"
+                        sx={{ maxWidth: '600px', mx: 'auto', mb: 4, fontSize: { xs: '1rem', md: '1.2rem' } }}
+                    >
                         {t('servicesPage.subtitle')}
                     </Typography>
+                    <Button
+                        variant="contained"
+                        color="secondary"
+                        sx={{
+                            px: 4,
+                            py: 1.5,
+                            fontSize: '1rem',
+                            borderRadius: '50px',
+                            textTransform: 'none',
+                        }}
+                        onClick={() => navigate('/booking')}
+                    >
+                        {isArabic ? 'احجز الآن' : 'Book Now'}
+                    </Button>
                 </Container>
             </Box>
 
             {/* Services Section */}
-            <Container maxWidth="lg" sx={{ py: 5 }}>
+            <Container maxWidth="lg" sx={{ py: 4 }}>
                 <Grid container spacing={4}>
                     {serviceDetails.map((service) => (
                         <Grid item xs={12} sm={6} md={4} key={service.id}>
@@ -83,7 +139,7 @@ const ServicesPage = () => {
                                 >
                                     <CardMedia
                                         component="img"
-                                        height="220"
+                                        height="300"
                                         image={service.imageUrl}
                                         alt={service.name}
                                         sx={{ borderTopLeftRadius: 12, borderTopRightRadius: 12 }}

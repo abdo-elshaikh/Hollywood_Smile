@@ -14,6 +14,12 @@ const slides = [
     `${baseUrl}/uploads/slides/slide_3.jpg`,
     `${baseUrl}/uploads/slides/slide_4.jpg`,
     `${baseUrl}/uploads/slides/slide_5.jpg`,
+    `${baseUrl}/uploads/slides/slide_6.jpg`,
+    `${baseUrl}/uploads/slides/slide_7.jpg`,
+    `${baseUrl}/uploads/slides/slide_8.jpg`,
+    `${baseUrl}/uploads/slides/slide_9.jpg`,
+    `${baseUrl}/uploads/slides/slide_10.jpg`,
+    `${baseUrl}/uploads/slides/slide_0.jpg`,
 ];
 
 const MIN_SLIDES_FOR_LOOP = 5;

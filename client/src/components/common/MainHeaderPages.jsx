@@ -51,7 +51,7 @@ const MainHeaderPages = ({ page, title, src = girlSmileVideo }) => {
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
-                height: '70vh',
+                height: '80vh',
                 backgroundColor: 'transparent',
                 mb: 4,
             }}
