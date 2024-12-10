@@ -30,7 +30,7 @@ const SmileLoveCare = () => {
                 transition={{ duration: 1.5 }}
                 style={{ position: 'absolute', bottom: 0, right: 0, zIndex: -1 }}
             >
-                <SquareIcon sx={{ fontSize: 500, color: '#f07167', opacity: 0.1 }} />
+                <SquareIcon sx={{ fontSize: 500, color: 'primary.main', opacity: 0.1 }} />
             </motion.div>
             <motion.div
                 initial={{ opacity: 0, scale: 0.3, rotate: 0 }}
@@ -38,7 +38,7 @@ const SmileLoveCare = () => {
                 transition={{ duration: 1.5 }}
                 style={{ position: 'absolute', top: 0, left: 0, zIndex: -1 }}
             >
-                <SquareIcon sx={{ fontSize: 500, color: '#f07167', opacity: 0.1 }} />
+                <SquareIcon sx={{ fontSize: 500, color: 'primary.main', opacity: 0.1 }} />
             </motion.div>
 
             {/* SMILE, LOVE, CARE Section */}
@@ -59,7 +59,7 @@ const SmileLoveCare = () => {
                         <React.Fragment key={text}>
                             <Grid item xs={12} md={3} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                    <Typography variant="h2" sx={{ fontWeight: 600, color: '#f07167', ml: 1, fontFamily: 'Poppins' }}>
+                                    <Typography variant="h2" sx={{ fontWeight: 600, color: 'primary.main', ml: 1, fontFamily: 'Poppins' }}>
                                         {t(`SmileLoveCare.${text}`)}
                                     </Typography>
                                 </Box>
@@ -77,7 +77,7 @@ const SmileLoveCare = () => {
                                                 repeatType: 'reverse',
                                             }}
                                         >
-                                            <FavoriteIcon sx={{ fontSize: 40, color: 'red', opacity: 0.6 }} />
+                                            <FavoriteIcon sx={{ fontSize: 40, color: 'primary.dark', opacity: 0.6 }} />
                                         </motion.div>
                                     </Grid>
                                 )
@@ -130,7 +130,7 @@ const SmileLoveCare = () => {
                                     }}
                                 >
                                     <CardContent>
-                                        <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#f07167' }}>
+                                        <Typography variant="h5" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
                                             {t(`SmileLoveCare.${text}Title`)}
                                         </Typography>
                                         <Typography variant="body2" color="text.secondary" mt={1}>
@@ -145,7 +145,7 @@ const SmileLoveCare = () => {
             </Container>
 
             {/* Call to Action Section */}
-            <motion.div
+            {/* <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 1 }}
@@ -168,7 +168,7 @@ const SmileLoveCare = () => {
                         mt: 2,
                         px: 4,
                         py: 1.5,
-                        bgcolor: '#f07167',
+                        bgcolor: 'primary.main',
                         color: '#ffffff',
                         '&:hover': { bgcolor: '#e35b56' },
                     }}
@@ -176,7 +176,7 @@ const SmileLoveCare = () => {
                 >
                     {t('SmileLoveCare.contactUs')}
                 </Button>
-            </motion.div>
+            </motion.div> */}
         </Box >
     );
 };

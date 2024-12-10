@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 
-const WhatsAppMessage = ({ phone, text }) => {
+const WhatsAppMessage = ({ phone, text, status }) => {
     const [phoneNumber, setPhoneNumber] = useState(phone);
     const [message, setMessage] = useState(text);
     const [open, setOpen] = useState(false);
@@ -103,7 +103,10 @@ const WhatsAppMessage = ({ phone, text }) => {
 
     return (
         <>
-            <MenuItem onClick={handleOpen}>
+            <MenuItem
+                onClick={handleOpen}
+                disabled={status !== "Confirmed"}
+            >
                 <ListItemIcon>
                     <WhatsAppIcon />
                 </ListItemIcon>

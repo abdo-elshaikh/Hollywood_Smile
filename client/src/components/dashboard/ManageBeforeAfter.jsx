@@ -4,7 +4,7 @@ import {
 } from '@mui/material';
 import { Add, Edit, Save, Cancel, Delete } from '@mui/icons-material';
 import axiosInstance from '../../services/axiosInstance';
-import {uploadImage} from '../../services/uploadImage';
+import { uploadFile, replaceFile, deleteFile } from '../../services/supabaseService';
 import { useSnackbar } from '../../contexts/SnackbarProvider';
 import { motion } from 'framer-motion';
 
@@ -38,15 +38,13 @@ const ManageBeforeAfter = () => {
     };
 
     const handleUploadImage = async (file, entryCode, fileName) => {
-        const renamedFile = new File([file], fileName, { type: file.type });
+        const dir = `before-after/${entryCode}`;
         try {
-            const data = await uploadImage(renamedFile, `images/before-after/${entryCode}`, 'uploads');
-            showSnackbar('Image uploaded successfully', 'success');
+            const data = editingId ? await replaceFile(file, dir, fileName) : await uploadFile(file, dir, fileName);
             return data.fullUrl;
         } catch (error) {
             console.error('Error uploading image:', error);
             showSnackbar('Error uploading image', 'error');
-            return null;
         }
     };
 
@@ -74,11 +72,13 @@ const ManageBeforeAfter = () => {
         }
     };
 
-    const handleDelete = async (id) => {
+    const handleDelete = async (item) => {
+        deleteFile(item.beforeImage.split('/uploads/')[1], 'uploads').then((data) => console.log(data)).catch((error) => console.error(error));
+        deleteFile(item.afterImage.split('/uploads/')[1], 'uploads').then((data) => console.log(data)).catch((error) => console.error(error));
         try {
-            await axiosInstance.delete(`/before-after/${id}`);
-            showSnackbar('Entry deleted successfully', 'success');
+            await axiosInstance.delete(`/before-after/${item._id}`);
             fetchData();
+            showSnackbar('Entry deleted successfully', 'success');
         } catch (error) {
             console.error('Error deleting entry:', error);
             showSnackbar('Error deleting entry', 'error');
@@ -206,7 +206,7 @@ const ManageBeforeAfter = () => {
                                                     </IconButton>
                                                 </Tooltip>
                                                 <Tooltip title='Delete'>
-                                                    <IconButton color="secondary" onClick={() => handleDelete(item._id)}>
+                                                    <IconButton color="secondary" onClick={() => handleDelete(item)}>
                                                         <Delete />
                                                     </IconButton>
                                                 </Tooltip>

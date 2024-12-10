@@ -27,11 +27,18 @@ import ScrollToTopButton from '../components/common/ScrollToTopButton';
 // import SendSMS from '../components/SendSMS';
 // import SendEmail from '../components/SendEmail';
 import { Box } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 const HomePage = () => {
-  
+  const { i18n } = useTranslation();
+
   return (
-    <Box >
+    <Box
+      sx={{
+        direction: i18n.dir(),
+        textAlign: i18n.dir() === 'rtl' ? 'right' : 'left',
+      }}
+    >
       <HeaderSection />
       <HeroSection />
       <NotificationSection />
@@ -48,7 +55,7 @@ const HomePage = () => {
       <BlogSection />
       <ContactSection />
       <BeforeAfterGallery />
-      <SmileLoveCare />
+      {/* <SmileLoveCare /> */}
       <MapLocationSection />
       <Footer />
       <ScrollToTopButton />

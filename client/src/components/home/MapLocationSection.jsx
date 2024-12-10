@@ -10,12 +10,13 @@ import {
     CardMedia,
     IconButton,
     Link,
+    Container,
 } from '@mui/material';
+import { motion } from 'framer-motion';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PhoneIcon from '@mui/icons-material/Phone';
 import EmailIcon from '@mui/icons-material/Email';
 import mapHeader from '../../assets/videos/map-header.mp4';
-
 
 const MapLocationSection = () => {
     const { clinicInfo } = useClinicContext();
@@ -24,11 +25,10 @@ const MapLocationSection = () => {
 
     return (
         <Box
-            sx={{
-                bgcolor: 'background.default',
-                position: 'relative',
-            }}
+            component="section"
+            sx={{ my: 4 }}
         >
+            {/* Header Section with Video Background */}
             <Box
                 sx={{
                     position: 'relative',
@@ -38,11 +38,9 @@ const MapLocationSection = () => {
                     height: 400,
                     color: 'white',
                     backgroundAttachment: 'fixed',
-                    clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 100%)',
                     mb: 4,
                 }}
             >
-                {/* Video Background with Motion */}
                 <video
                     autoPlay
                     loop
@@ -59,7 +57,6 @@ const MapLocationSection = () => {
                         zIndex: 0,
                     }}
                 />
-                {/* Dark Gradient Overlay for Readability */}
                 <Box
                     sx={{
                         position: 'absolute',
@@ -67,110 +64,126 @@ const MapLocationSection = () => {
                         left: 0,
                         width: '100%',
                         height: '100%',
-                        bgcolor: 'rgba(0,0,0,0.4)',
+                        bgcolor: 'rgba(0,0,0,0.5)',
                         zIndex: 1,
                     }}
                 />
 
-                {/* Content Container */}
                 <Box
                     sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        justifyContent: 'center',
-                        alignItems: 'center',
                         textAlign: 'center',
-                        position: 'relative',
                         zIndex: 2,
                     }}
                 >
-                    <Typography variant="h2" component="h1" fontWeight="bold" gutterBottom>
+                    <Typography
+                        variant="h2"
+                        fontWeight="bold"
+                        gutterBottom
+                        sx={{
+                            textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)',
+                            color: 'inherit',
+                        }}
+                        component={motion.div}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 1 }}
+                    >
                         {t('mapLocationSection.title')}
                     </Typography>
-                    <Typography variant="h5" fontWeight="bold" gutterBottom>
+                    <Typography
+                        variant="h5"
+                        gutterBottom
+                        sx={{
+                            textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)',
+                            color: 'inherit',
+                        }}
+                        component={motion.div}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 1 }}
+                    >
                         {t('mapLocationSection.description')}
                     </Typography>
                 </Box>
             </Box>
 
+            {/* Location Details Section */}
 
-
-            {/* Location Details */}
-            <Box
-                sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    minHeight: 500,
-                }}
+            <Container
+                maxWidth="xl"
             >
                 <Grid
                     container
-                    spacing={2}
-                    bgcolor={'background.default'}
-                    sx={{
-                        backdropFilter: 'blur(10px)',
-                        p: 2,
-
-                    }}
+                    spacing={3}
+                    justifyContent="center"
+                    alignItems="center"
                 >
-                    {/* Text Section */}
-                    <Grid item xs={12}>
-                        <Typography variant="h4" component="h1" fontWeight="bold" textAlign="center" gutterBottom>
-                            {isArabic ? clinicInfo.name.ar : clinicInfo.name.en} - {isArabic ? "الفرع الرئيسي" : "Main Branch"}
+
+                    {/* Clinic Info */}
+                    <Grid item xs={12} textAlign="center">
+                        <Typography
+                            variant="h4"
+                            fontWeight="bold"
+                            gutterBottom
+                            sx={{
+                                color: 'primary.main',
+                                textShadow: '2px 2px 4px rgba(0, 0, 0, 0.3)',
+                            }}
+                            component={motion.div}
+                            initial={{ y: 20, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ duration: 1 }}
+                        >
+                            {isArabic ? clinicInfo.name.ar : clinicInfo.name.en} - {isArabic ? "\u0627\u0644\u0641\u0631\u0639 \u0627\u0644\u0631\u0626\u064a\u0633\u064a" : "Main Branch"}
                         </Typography>
-                        <Typography variant="body1" color="text.secondary" textAlign="center" paragraph>
+                        <Typography variant="body1" color="text.secondary" paragraph>
                             {isArabic ? clinicInfo.description.ar : clinicInfo.description.en}
                         </Typography>
-                        <Divider sx={{ color: 'primary.main' }} />
+                        <Divider sx={{ my: 2, bgcolor: 'primary.main', mx: 'auto', width: '50%' }} />
                     </Grid>
-                    {/* Address, Phone, Email Section */}
-                    <Grid item container spacing={0}>
-                        <Grid item xs={12} md={4}>
-                            <Box elevation={3} sx={{ p: 2 }}>
-                                <Typography variant="body1" fontWeight="bold" gutterBottom>
-                                    <LocationOnIcon /> {isArabic ? "العنوان:" : "Address:"}
+                    {/* Address, Phone, Email */}
+                    <Grid item xs={12} textAlign="center">
+                        <Grid
+                            container
+                            spacing={2}
+                            justifyContent="center"
+                            alignItems="center"
+                            sx={{ mb: 4 }}
+                        >
+                            <Grid item xs={12} md={4} textAlign="center">
+                                <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                    <LocationOnIcon fontSize="large" color="primary" />
                                 </Typography>
-                                <Link href="https://goo.gl/maps/Frb65JWf7tF6aXh49" target="_blank" rel="noopener" underline="hover">
-                                    {isArabic ? clinicInfo.address.ar : clinicInfo.address.en}
-                                </Link>
-                            </Box>
-                        </Grid>
-                        <Divider orientation={'vertical'} flexItem />
-                        <Grid item xs={12} md={3}>
-                            <Box elevation={3} sx={{ p: 2 }}>
-                                <Typography variant="body1" fontWeight="bold" gutterBottom>
-                                    <PhoneIcon /> {isArabic ? "الهاتف:" : "Phone:"}
+                                <Typography variant="body1">{isArabic ? clinicInfo.address.ar : clinicInfo.address.en}</Typography>
+                            </Grid>
+                            <Grid item xs={12} md={4} textAlign="center">
+                                <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                    <PhoneIcon fontSize="large" color="primary" />
                                 </Typography>
-                                <Typography variant="body1">
-                                    <Link href={`tel:${clinicInfo?.phone}`} underline="hover">{clinicInfo?.phone}</Link>
+                                <Typography variant="body1">{clinicInfo.phone}</Typography>
+                            </Grid>
+                            <Grid item xs={12} md={4} textAlign="center">
+                                <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                    <EmailIcon fontSize="large" color="primary" />
                                 </Typography>
-                            </Box>
-                        </Grid>
-                        <Divider orientation={'vertical'} flexItem />
-                        <Grid item xs={12} md={4}>
-                            <Box elevation={3} sx={{ p: 2 }}>
-                                <Typography variant="body1" fontWeight="bold" gutterBottom>
-                                    <EmailIcon /> {isArabic ? "البريد الإلكتروني:" : "Email:"}
-                                </Typography>
-                                <Link href={`mailto:${clinicInfo?.email}`} underline="hover">
-                                    {clinicInfo?.email}
-                                </Link>
-                            </Box>
+                                <Typography variant="body1">{clinicInfo.email}</Typography>
+                            </Grid>
                         </Grid>
                     </Grid>
 
-                    {/* Map Section */}
+
+                    {/* Embedded Map */}
                     <Grid item xs={12}>
                         <CardMedia
                             component="iframe"
-                            src={clinicInfo?.mapLink} // locations.iframeSrc
-                            height="400"
+                            src={clinicInfo?.mapLink}
+                            height="450"
                             sx={{
                                 width: '100%',
                                 borderRadius: 2,
-                                boxShadow: 4,
-                                border: '2px solid'
+                                boxShadow: 3,
+                                border: '2px solid',
+                                borderColor: 'primary.main',
                             }}
                             allowFullScreen
                             loading="lazy"
@@ -178,8 +191,8 @@ const MapLocationSection = () => {
                         />
                     </Grid>
                 </Grid>
-            </Box>
-        </Box>
+            </Container>
+        </Box >
     );
 };
 

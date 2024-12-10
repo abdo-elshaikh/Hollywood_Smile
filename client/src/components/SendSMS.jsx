@@ -1,17 +1,22 @@
 // src/components/SendSMS.js
 import React, { useState, useEffect } from "react";
 import {
-    Box, TextField, Button, Typography, Paper, Tooltip, Container, MenuItem, ListItemIcon, ListItemText, IconButton, CircularProgress, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions
+    Box, TextField, Button, Typography,
+    Paper, Tooltip, Container, MenuItem,
+    ListItemIcon, ListItemText, IconButton,
+    CircularProgress, Dialog, DialogTitle, DialogContent,
+    DialogContentText, DialogActions
 } from "@mui/material";
 
-import { Message } from "@mui/icons-material";
+import { Message, Visibility, VisibilityOff } from "@mui/icons-material";
 import axiosInstance from "../services/axiosInstance";
 
-const SendSMS = ({ smsContent, phoneNumber }) => {
+const SendSMS = ({ smsContent, phoneNumber, status }) => {
 
     const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
     const [responseMessage, setResponseMessage] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
     const [messageData, setMessageData] = useState({
         url: "http://192.168.1.30:8080/SendSMS",
         username: "admin",
@@ -19,8 +24,6 @@ const SendSMS = ({ smsContent, phoneNumber }) => {
         phone: phoneNumber,
         message: smsContent,
     });
-
-
 
     useEffect(() => {
         setMessageData({
@@ -43,6 +46,10 @@ const SendSMS = ({ smsContent, phoneNumber }) => {
             phone: "",
             message: "",
         });
+    };
+
+    const handleShowPassword = () => {
+        setShowPassword(!showPassword);
     };
 
     const handleSendSMS = async () => {
@@ -70,7 +77,10 @@ const SendSMS = ({ smsContent, phoneNumber }) => {
 
     return (
         <>
-            <MenuItem onClick={handleOpen}>
+            <MenuItem
+                onClick={handleOpen}
+                disabled={status !== "Confirmed"}
+            >
                 <ListItemIcon>
                     <Message />
                 </ListItemIcon>
@@ -82,9 +92,55 @@ const SendSMS = ({ smsContent, phoneNumber }) => {
                     <DialogContentText>
                         Send SMS to the customer, Enter phone number and message.
                     </DialogContentText>
-                    <Typography variant="body1" component="p">
-                        {messageData.url} ? {messageData.username} :{messageData.password}
-                    </Typography>
+                    <Box
+                        display="flex"
+                        justifyContent="space-between"
+                        alignItems="center"
+                        bgcolor="background.default"
+                        borderBottom='1px solid'
+                        borderBottomColor="divider"
+                        p={1}
+                        gap={2}
+                        mb={2}
+                    >
+                        <TextField
+                            label="URL"
+                            name="url"
+                            value={messageData.url}
+                            onChange={handleChange}
+                            fullWidth
+                            margin="normal"
+                            size="small"
+                        />
+                        <TextField
+                            label="Username"
+                            name="username"
+                            value={messageData.username}
+                            onChange={handleChange}
+                            fullWidth
+                            margin="normal"
+                            size="small"
+                        />
+                        <TextField
+                            label="Password"
+                            name="password"
+                            type={showPassword ? "text" : "password"}
+                            value={messageData.password}
+                            onChange={handleChange}
+                            fullWidth
+                            margin="normal"
+                            size="small"
+                            InputProps={{
+                                endAdornment: (
+                                    <Tooltip title={showPassword ? "Hide Password" : "Show Password"}>
+                                        <IconButton onClick={handleShowPassword}>
+                                            {showPassword ? <Visibility /> : <VisibilityOff />}
+                                        </IconButton>
+                                    </Tooltip>
+                                ),
+                            }}
+                        />
+                    </Box>
                     <TextField
                         label="Phone"
                         name="phone"
@@ -92,6 +148,7 @@ const SendSMS = ({ smsContent, phoneNumber }) => {
                         onChange={handleChange}
                         fullWidth
                         margin="normal"
+                        size="small"
                     />
                     <TextField
                         label="Message"

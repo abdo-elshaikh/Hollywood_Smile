@@ -95,7 +95,10 @@ const ManageBookingsPage = () => {
 
   const handleChangeStatus = async (id, currentStatus) => {
     const newStatus = currentStatus === "Cancelled" ? null : getNewStatus(currentStatus);
-    if (!newStatus) return;
+    if (!newStatus) {
+      showSnackbar("Cannot update status.", "error");
+      return;
+    };
 
     try {
       await bookingService.updateBooking(id, { status: newStatus });
@@ -133,6 +136,16 @@ const ManageBookingsPage = () => {
   };
 
   const handleConfirmBooking = async () => {
+    if (!selectedBooking) return;
+    if (!selectedBooking.date || !selectedBooking.time) {
+      showSnackbar("Please select a date and time.", "error");
+      return;
+    }
+    if (new Date(selectedBooking.date) < new Date()) {
+      showSnackbar("Cannot confirm booking for a past date.", "error");
+      return;
+    }
+
     selectedBooking.status = "Confirmed";
     setLoadingConfirm(true);
     try {
@@ -364,42 +377,55 @@ const ManageBookingsPage = () => {
 
       {/* Confirm Dialog */}
       <Dialog open={ConfirmDialog} onClose={() => setConfirmDialog(false)}>
-        <DialogTitle>Confirm Booking</DialogTitle>
+        <DialogTitle
+          sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+        >
+          <Typography>Confirm Booking</Typography>
+          <IconButton onClick={() => setConfirmDialog(false)}>
+            <Cancel />
+          </IconButton>
+        </DialogTitle>
         <DialogContent>
           <Typography>Are you sure you want to confirm this booking?</Typography>
+          <Divider sx={{ my: 1 }} />
           <TextField
-            autoFocus
             margin="dense"
-            id="code"
-            label="Code"
+            id="name"
+            label="Patient Name"
             type="text"
-            fullWidth
             variant="outlined"
-            value={`Code: ${selectedBooking?.name}`}
+            value={selectedBooking?.name}
             disabled
+            fullWidth
+            size="small"
           />
 
           <TextField
-            margin="dense"
+            margin="normal"
             id="prferredDate"
             label="Preferred Date"
             type="text"
             variant="outlined"
             value={selectedBooking?.date.slice(0, 10)}
             disabled
+            size="small"
           />
 
           <TextField
-            margin="dense"
+            margin="normal"
             id="prferredTime"
             label="Preferred Time"
             type="text"
             variant="outlined"
             value={selectedBooking?.time}
             disabled
+            sx={{ ml: 2 }}
+            size="small"
           />
 
           {/* date */}
+          <Typography variant="body2">Change Date & Time</Typography>
+          <Divider sx={{ my: 1 }} />
           <TextField
             margin="dense"
             id="date"
@@ -423,23 +449,15 @@ const ManageBookingsPage = () => {
               }
             }}
           />
-
-          {/* Message */}
-          <TextField
-            margin="dense"
-            id="message"
-            label="Message"
-            type="textarea"
-            multiline
-            rows={4}
-            fullWidth
-            variant="outlined"
-            value={`Hello ${selectedBooking?.name},\nyour booking has been confirmed.\nDate: ${selectedBooking?.date.split("T")[0]},Time: ${selectedBooking?.time}\nPlease note your booking code: ${selectedBooking?.code}\nPlease be on time.`}
-          />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setConfirmDialog(false)}>Cancel</Button>
-          <Button variant="contained" onClick={handleConfirmBooking} color="primary" disabled={loadingConfirm}>
+          <Button
+            variant="contained"
+            onClick={handleConfirmBooking}
+            color="primary"
+            disabled={loadingConfirm}
+            startIcon={loadingConfirm && <CircularProgress size={24} />}
+          >
             {loadingConfirm ? <CircularProgress size={24} /> : "Confirm"}
           </Button>
         </DialogActions>
@@ -458,31 +476,38 @@ const ManageBookingsPage = () => {
       >
         <MenuItem
           onClick={() => {
-            setConfirmDialog(true);
+            handleChangeStatus(selectedBooking.id, selectedBooking?.status);
             handleCloseContextMenu();
           }}
+          disabled={selectedBooking?.status === "Completed"}
         >
           <ListItemIcon>
             <Done />
           </ListItemIcon>
-          <ListItemText>Confirm Booking</ListItemText>
+          <ListItemText>
+            {getNewStatus(selectedBooking?.status) || "Update Status"} Booking
+          </ListItemText>
         </MenuItem>
         <MenuItem
           onClick={() => {
-            handleChangeStatus(selectedBooking.id, selectedBooking.status);
+            setConfirmDialog(true);
             handleCloseContextMenu();
           }}
+          disabled={selectedBooking?.status !== "Pending"}
         >
           <ListItemIcon>
             <Edit />
           </ListItemIcon>
-          <ListItemText>Change Status</ListItemText>
+          <ListItemText>
+            Change Date & Time Booking
+          </ListItemText>
         </MenuItem>
         <MenuItem
           onClick={() => {
             handleCancelStatus(selectedBooking.id);
             handleCloseContextMenu();
           }}
+          disabled={selectedBooking?.status !== "Pending"}
         >
           <ListItemIcon>
             <Cancel />
@@ -494,6 +519,7 @@ const ManageBookingsPage = () => {
             setOpenDeleteDialog(true);
             handleCloseContextMenu();
           }}
+          disabled={selectedBooking?.status !== "Completed"}
         >
           <ListItemIcon>
             <Delete />
@@ -506,11 +532,13 @@ const ManageBookingsPage = () => {
           smsContent={`
             مرحبًا ${selectedBooking?.name} ، تم تأكيد حجزك. التاريخ: ${selectedBooking?.date.split("T")[0]}, الوقت: ${selectedBooking?.time}. يرجى ملاحظة رمز الحجز الخاص بك: ${selectedBooking?.code}. يرجى التأكد من الحضور في الوقت المحدد.
             `}
+          status={selectedBooking?.status}
         />
 
         <WhatsAppMessage
           phone={selectedBooking?.phone}
           text={`Hello ${selectedBooking?.name}, your booking has been confirmed. Date: ${selectedBooking?.date.split("T")[0]}, Time: ${selectedBooking?.time}. Please note your booking code: ${selectedBooking?.code}. Please be on time.`}
+          status={selectedBooking?.status}
         />
 
       </Menu>

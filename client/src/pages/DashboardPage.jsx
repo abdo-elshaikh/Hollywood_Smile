@@ -9,7 +9,6 @@ import MainContentPage from "../components/dashboard/MainContentPage";
 import ManageUsersPage from "../components/dashboard/ManageUsersPage";
 import ManageBookingsPage from "../components/dashboard/ManageBookingsPage";
 import ManageOffers from "../components/dashboard/ManageOffers";
-import ManageFilesPage from "../components/dashboard/ManageFilesPage";
 import ManageServicesPage from "../components/dashboard/ManageServicesPage";
 import ManageDoctors from "../components/dashboard/ManageDoctors";
 import ManageClinicInfoPage from "../components/dashboard/ManageClinicInfoPage";
@@ -24,7 +23,6 @@ import ManageBeforeAfter from '../components/dashboard/ManageBeforeAfter';
 
 
 const DashboardPage = () => {
-    document.body.dir = 'ltr';
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
     const [open, setOpen] = useState(!isMobile);
@@ -37,6 +35,9 @@ const DashboardPage = () => {
     };
 
     useEffect(() => {
+        document.body.dir = 'ltr';
+    }, []);
+    useEffect(() => {
         setSidebarWidth(open ? 240 : 60);
     }, [open]);
 
@@ -47,7 +48,6 @@ const DashboardPage = () => {
 
     return (
         <Box
-            direction='ltr'
             sx={{
                 display: "flex",
                 minHeight: "100vh",
@@ -55,7 +55,6 @@ const DashboardPage = () => {
                 transition: "background-color 0.3s ease",
             }}
         >
-            <CssBaseline />
             <Header onToggleDrawer={handleDrawerToggle} sidebarWidth={sidebarWidth} />
             <Sidebar
                 open={open}
@@ -102,7 +101,6 @@ const DashboardPage = () => {
                         <Route path="/online-bookings" element={<ManageBookingsPage />} />
                         <Route path="/offers" element={<ManageOffers />} />
                         <Route path="/services" element={<ManageServicesPage />} />
-                        <Route path="/files" element={<ManageFilesPage />} />
                         <Route path="/doctors" element={<ManageDoctors />} />
                         <Route path="/faqs" element={<ManageFAQPage />} />
                         <Route path="/clinic-info" element={<ManageClinicInfoPage />} />

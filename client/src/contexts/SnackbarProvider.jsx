@@ -2,6 +2,7 @@ import React, { useState, createContext, useContext } from 'react';
 import { Snackbar, Typography, Box, IconButton } from '@mui/material';
 import { Close, CheckCircle, Warning, Info, Error } from '@mui/icons-material';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 
 // Create a Context for Snackbar
 const SnackbarContext = createContext();
@@ -15,6 +16,8 @@ const SnackbarProvider = ({ children }) => {
     const [message, setMessage] = useState('');
     const [severity, setSeverity] = useState('success');
     const [position, setPosition] = useState({ vertical: 'top', horizontal: 'right' });
+    const { t, i18n } = useTranslation();
+    const isRTL = i18n.dir() === 'rtl';
 
     const showSnackbar = (msg, sev = 'success', pos = { vertical: 'top', horizontal: 'right' }) => {
         setMessage(msg);
@@ -81,7 +84,7 @@ const SnackbarProvider = ({ children }) => {
             }[severity],
             marginLeft: '8px',
             marginRight: '8px',
-            
+
         }
     };
 
@@ -95,6 +98,7 @@ const SnackbarProvider = ({ children }) => {
                 anchorOrigin={position}
                 TransitionComponent={Transition}
                 TransitionProps={{ onExited: handleExited }}
+                dir={isRTL ? 'rtl' : 'ltr'}
             >
                 <Box sx={styles.container}>
                     {severityIcons[severity]}

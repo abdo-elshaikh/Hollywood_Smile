@@ -4,12 +4,13 @@ import {
     CardContent, IconButton, Dialog, TextField, CircularProgress, Select,
     FormControl, FormHelperText, FormGroup, Chip, DialogActions, Badge,
     DialogContent, DialogContentText, DialogTitle, Pagination, Divider,
-    Checkbox, FormControlLabel, Accordion, AccordionSummary, AccordionDetails
+    Checkbox, FormControlLabel, Accordion, AccordionSummary, AccordionDetails,
+    LinearProgress
 } from '@mui/material';
 import { Add, Edit, Delete, Cancel } from '@mui/icons-material';
 import { useSnackbar } from '../../contexts/SnackbarProvider';
 import galleryService from '../../services/galleryService';
-import { uploadImage, deleteFile } from '../../services/uploadImage';
+import { uploadFile, replaceFile, deleteFile } from '../../services/supabaseService';
 import { motion } from 'framer-motion';
 import { useTheme } from '@mui/material/styles';
 import { useMediaQuery } from '@mui/material';
@@ -27,6 +28,7 @@ const ManageGalleryPage = () => {
     const [imagePreview, setImagePreview] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [categories, setCategories] = useState([]);
+    const [uploading, setUploading] = useState(false);
     const [tags, setTags] = useState([]);
     const [page, setPage] = useState(1);
     const itemsPerPage = 12;
@@ -56,28 +58,25 @@ const ManageGalleryPage = () => {
 
     const handleFileUpload = async (e) => {
         const file = e.target.files[0];
-        if (file && file.type.startsWith('image/')) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setImagePreview(reader.result);
-            };
-            reader.readAsDataURL(file);
-
-            try {
-                setIsLoading(true);
-                const data = await uploadImage(file, 'images/gallery');
-                if (selectedItem) {
-                    await deleteFile(selectedItem.imageUrl);
-                }
-                setFormData({ ...formData, imageUrl: data.fullUrl });
-                showSnackbar('File uploaded successfully', 'success');
-            } catch (error) {
-                console.error('Error uploading file:', error);
-            } finally {
-                setIsLoading(false);
-            }
-        } else {
-            alert("Please select a valid image file.");
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setImagePreview(reader.result);
+        };
+        reader.readAsDataURL(file);
+        const fileName = file.name;
+        const directoryPath = 'gallery';
+        setUploading(true);
+        try {
+            const data = selectedItem ?
+                await replaceFile(file, directoryPath, fileName) :
+                await uploadFile(file, directoryPath, fileName);
+            setFormData({ ...formData, imageUrl: data.fullUrl });
+            showSnackbar('Image uploaded successfully', 'success');
+        } catch (error) {
+            console.error('Error uploading image:', error);
+            showSnackbar('Error uploading image', 'error');
+        } finally {
+            setUploading(false);
         }
     };
 
@@ -97,11 +96,9 @@ const ManageGalleryPage = () => {
     const handleSave = async () => {
         setIsLoading(true);
         try {
-            if (selectedItem) {
-                await galleryService.updateGalleryItem(selectedItem._id, formData);
-            } else {
+            const data = selectedItem ?
+                await galleryService.updateGalleryItem(selectedItem._id, formData) :
                 await galleryService.createGalleryItem(formData);
-            }
             fetchGalleryItems();
             handleCloseDialog();
         } catch (error) {
@@ -111,16 +108,22 @@ const ManageGalleryPage = () => {
         }
     };
 
-    const handleDelete = async (id) => {
+    const handleDelete = async (item) => {
         setIsLoading(true);
-        try {
-            await galleryService.deleteGalleryItem(id);
-            fetchGalleryItems();
-        } catch (error) {
-            console.error('Error deleting gallery item:', error);
-        } finally {
+        deleteFile(item.imageUrl).then(async () => {
+            try {
+                await galleryService.deleteGalleryItem(item._id);
+                fetchGalleryItems();
+            } catch (error) {
+                console.error('Error deleting gallery item:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        }).catch(error => {
+            console.error('Error deleting image:', error);
+            showSnackbar('Error deleting image', 'error');
             setIsLoading(false);
-        }
+        });
     };
 
     const filteredGalleryItems = galleryItems.filter(item => {
@@ -280,7 +283,7 @@ const ManageGalleryPage = () => {
                                             </IconButton>
                                         </Tooltip>
                                         <Tooltip title="Delete">
-                                            <IconButton onClick={() => handleDelete(item._id)} sx={{ color: 'red' }}>
+                                            <IconButton onClick={() => handleDelete(item)} sx={{ color: 'red' }}>
                                                 <Delete />
                                             </IconButton>
                                         </Tooltip>
@@ -346,7 +349,12 @@ const ManageGalleryPage = () => {
                                 {selectedItem ? 'Change Image' : 'Upload Image'}
                             </Button>
                         </label>
-                        {imagePreview && <img src={imagePreview} alt="preview" style={{ maxWidth: '100%', marginTop: 10 }} />}
+                        {uploading && <LinearProgress sx={{ mt: 2 }} />}
+                        {formData.imageUrl && (
+                            <Box sx={{ mt: 2 }}>
+                                <img src={formData.imageUrl} alt="Uploaded" style={{ maxWidth: '100%' }} />
+                            </Box>
+                        )}
                     </Box>
                     <FormControl sx={{ width: '100%' }}>
                         <Typography variant="body1" color='primary.main' gutterBottom>
