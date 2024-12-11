@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import NotificationSection from '../components/home/NotificationSection';
 import HeaderSection from '../components/home/HeaderSection';
 import HeroSection from '../components/home/HeroSection';
+import AboutSection from '../components/home/AboutSection';
 import AppointmentSection from '../components/home/AppointmentSection';
 import ServicesSection from '../components/home/ServicesSection';
 import MeetOurDentists from '../components/home/MeetOurDentists';
@@ -42,7 +43,8 @@ const HomePage = () => {
       <HeaderSection />
       <HeroSection />
       <NotificationSection />
-      <AppointmentSection />
+      <AboutSection />
+      {/* <AppointmentSection /> */}
       <DetectBookingSection />
       <ServicesSection />
       <MeetOurDentists />

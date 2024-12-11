@@ -41,12 +41,15 @@ const NotificationSection = () => {
       sx={{
         width: '100%',
         height: '60px',
-        background: isDark ? '#F95454' : '#E3F2FD',
+        background: isDark
+          ? 'linear-gradient(135deg, #424242, #616161, #424242)'
+          : 'linear-gradient(135deg,  #BBDEFB, #E1F5FE, #BBDEFB)',
         display: 'flex',
         justifyContent: 'flex-start',
         alignItems: 'center',
         position: 'relative',
         overflow: 'hidden',
+        boxShadow: '0 0 10px rgba(0, 0, 0, 0.5)',
       }}
     >
       {notifications.length > 0 ? (

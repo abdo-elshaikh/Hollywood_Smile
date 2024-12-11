@@ -1,207 +1,177 @@
-import { Box, Button, Container, Stack, Typography, useTheme } from "@mui/material";
+import { Box, Container, Typography, Grid, useTheme, Button } from "@mui/material";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, A11y, EffectFade, Autoplay } from "swiper/modules";
-import { useCustomTheme } from "../../contexts/ThemeProvider";
 import { useTranslation } from "react-i18next";
+import { useCustomTheme } from "../../contexts/ThemeProvider";
+
 
 const baseUrl = import.meta.env.VITE_SUPABASE_VIEW_URL;
 
 const slides = [
-    `${baseUrl}/uploads/slides/slide_1.jpg`,
-    `${baseUrl}/uploads/slides/slide_2.jpg`,
-    `${baseUrl}/uploads/slides/slide_3.jpg`,
-    `${baseUrl}/uploads/slides/slide_4.jpg`,
-    `${baseUrl}/uploads/slides/slide_5.jpg`,
-    `${baseUrl}/uploads/slides/slide_6.jpg`,
-    `${baseUrl}/uploads/slides/slide_7.jpg`,
-    `${baseUrl}/uploads/slides/slide_8.jpg`,
-    `${baseUrl}/uploads/slides/slide_9.jpg`,
-    `${baseUrl}/uploads/slides/slide_10.jpg`,
-    `${baseUrl}/uploads/slides/slide_0.jpg`,
+  {
+    title: "heroSection.slide1.title",
+    description: "heroSection.slide1.description",
+    image: `${baseUrl}/uploads/slides/slide_1.jpg`,
+  },
+  {
+    title: "heroSection.slide2.title",
+    description: "heroSection.slide2.description",
+    image: `${baseUrl}/uploads/slides/slide_2.jpg`,
+  },
+  {
+    title: "heroSection.slide3.title",
+    description: "heroSection.slide3.description",
+    image: `${baseUrl}/uploads/slides/slide_3.jpg`,
+  },
 ];
 
-const MIN_SLIDES_FOR_LOOP = 5;
-
-const slidesForLoop = slides.length < MIN_SLIDES_FOR_LOOP ? [...slides, ...slides] : slides;
-
 const HeroSection = () => {
-    const { t, i18n } = useTranslation();
-    const { mode } = useCustomTheme();
-    const theme = useTheme();
-    const navigate = useNavigate();
-    const isArabic = i18n.language === "ar";
-    const isDark = mode === "dark";
+  const theme = useTheme();
+  const { mode } = useCustomTheme();
+  const { t, i18n } = useTranslation();
+  const isArabic = i18n.language === "ar";
+  const isDark = mode === "dark";
 
-    return (
-        <Box
-            sx={{
-                position: "relative",
-                height: { xs: "60vh", sm: "80vh", md: "90vh" },
-                overflow: "hidden",
-            }}
-        >
-            <Swiper
-                modules={[Navigation, Pagination, A11y, EffectFade, Autoplay]}
-                slidesPerView={1}
-                slidesPerGroup={1}
-                centeredSlides
-                loop={true}
-                effect="fade"
-                pagination={{
-                    clickable: true,
-                    dynamicBullets: true,
-                }}
-                autoplay={{
-                    delay: 5000,
-                    disableOnInteraction: false,
-                }}
-                style={{ height: "100%" }}
-                dir={isArabic ? "rtl" : "ltr"}
-                className="mySwiper"
+  return (
+    <Box
+      sx={{
+        height: "90vh",
+        position: "relative",
+        overflow: "hidden",
+        backgroundColor: theme.palette.background.default,
+      }}
+    >
+      <Box
+        sx={{
+          position: "absolute",
+          top: "0",
+          left: "0",
+          width: "100%",
+          height: "100%",
+          clipPath: "polygon(0% 0%, 75% 0%, 100% 50%, 75% 100%, 0% 100%)",
+          backgroundColor: 'linear-gradient(45deg, #fff 0%, #333 10%, #333 10%, #333 10%, #333 10%, #333 10',
+          opacity: 0.5,
+          zIndex: -1
+        }}
+      />
+      <Swiper
+        modules={[Navigation, Pagination, A11y, EffectFade, Autoplay]}
+        spaceBetween={0}
+        slidesPerView={1}
+        pagination={{ clickable: true }}
+        autoplay={{ delay: 5000, disableOnInteraction: false }}
+        loop
+        style={{
+          height: '100%',
+          width: '100%',
+        }}
+      >
+        {slides.map((slide, index) => (
+          <SwiperSlide key={index}>
+            <Grid
+              container
+              sx={{
+                height: '100%',
+                width: '100%',
+                backgroundColor: 'transparent',
+              }}
             >
-                {slidesForLoop.map((slide, index) => (
-                    <SwiperSlide key={index}>
-                        <Box
-                            sx={{
-                                position: "relative",
-                                height: "100%",
-                                width: "100%",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                flexDirection: "column",
-                                textAlign: "center",
-                                "&:before": {
-                                    content: '""',
-                                    position: "absolute",
-                                    top: 0,
-                                    left: 0,
-                                    width: "100%",
-                                    height: "100%",
-                                    bgcolor: isDark ? "rgba(0, 0, 0, 0.3)" : "rgba(255, 255, 255, 0.3)",
-                                    zIndex: 1,
-                                },
-                            }}
-                        >
-                            <img
-                                src={slide}
-                                loading="lazy" // Native lazy loading
-                                alt={`Slide ${index + 1}`}
-                                style={{
-                                    width: "100%",
-                                    height: "100%",
-                                    objectFit: "cover",
-                                    position: "absolute",
-                                    zIndex: 0,
-                                }}
-                            />
-                            <Container
-                                maxWidth="md"
-                                sx={{
-                                    zIndex: 2,
-                                    position: "relative",
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    px: 2,
-                                    py: 4,
-                                }}
-                            >
-                                <motion.div
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 1 }}
-                                >
-                                    <Typography
-                                        variant="h2"
-                                        sx={{
-                                            fontWeight: "bold",
-                                            color: "primary.main",
-                                            fontSize: {
-                                                xs: theme.typography.pxToRem(35),
-                                                sm: theme.typography.pxToRem(40),
-                                                md: theme.typography.pxToRem(60),
-                                            },
-                                            lineHeight: { xs: 1.2, md: 1.5 },
-                                            textShadow: "0px 4px 6px rgba(0, 0, 0, 0.5)",
-                                        }}
-                                    >
-                                        {t(`heroSection.slide${index + 1}.title`)}
-                                    </Typography>
-                                </motion.div>
-                                <motion.div
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 1.2 }}
-                                >
-                                    <Typography
-                                        variant="h6"
-                                        sx={{
-                                            color: "white",
-                                            fontSize: {
-                                                xs: theme.typography.pxToRem(20),
-                                                sm: theme.typography.pxToRem(22),
-                                                md: theme.typography.pxToRem(24),
-                                            },
-                                            mt: 2,
-                                            textShadow: "0px 3px 5px rgba(0, 0, 0, 0.5)",
-                                        }}
-                                    >
-                                        {t(`heroSection.slide${index + 1}.description`)}
-                                    </Typography>
-                                </motion.div>
-                                <Stack
-                                    direction={{ xs: "column", sm: "row" }}
-                                    spacing={2}
-                                    sx={{
-                                        mt: 4,
-                                        gap: 2,
-                                        justifyContent: "center",
-                                    }}
-                                >
-                                    <motion.div
-                                        initial={{ opacity: 0, scale: 0.9 }}
-                                        animate={{ opacity: 1, scale: 1 }}
-                                        transition={{ duration: 1.4 }}
-                                    >
-                                        <Button
-                                            variant="contained"
-                                            color="primary"
-                                            size="large"
-                                            fullWidth={{ xs: true, sm: false }}
-                                            onClick={() => navigate("/booking")}
-                                            aria-label={isArabic ? "احجز الآن" : "Book Now"}
-                                        >
-                                            {isArabic ? "احجز الآن" : "Book Now"}
-                                        </Button>
-                                    </motion.div>
-                                    <motion.div
-                                        initial={{ opacity: 0, scale: 0.9 }}
-                                        animate={{ opacity: 1, scale: 1 }}
-                                        transition={{ duration: 1.6 }}
-                                    >
-                                        <Button
-                                            variant="outlined"
-                                            color="primary"
-                                            size="large"
-                                            fullWidth={{ xs: true, sm: false }}
-                                            onClick={() => navigate("/contact-us")}
-                                            aria-label={isArabic ? "تواصل معنا" : "Contact Us"}
-                                        >
-                                            {isArabic ? "تواصل معنا" : "Contact Us"}
-                                        </Button>
-                                    </motion.div>
-                                </Stack>
-                            </Container>
-                        </Box>
-                    </SwiperSlide>
-                ))}
-            </Swiper>
-        </Box>
-    );
+              <Grid item xs={12} md={6}>
+                <Container
+                  maxWidth='sm'
+                  sx={{
+                    p: 4,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    width: '100%',
+                    height: '100%',
+                    flexDirection: 'column',
+                    flex: 1,
+                  }}
+                >
+                  <Typography
+                    align={isArabic ? 'right' : 'left'}
+                    variant="h2"
+                    component='h2'
+                    fontWeight='bold'
+                    color='primary.dark'
+                  >
+                    {t(slide.title)}
+                  </Typography>
+                  <Typography
+                    align={isArabic ? 'right' : 'left'}
+                    variant="h6"
+                    component='body1'
+                  >
+                    {t(slide.description)}
+                  </Typography>
+                  <Box
+                    sx={{
+                      width: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      gap: 2,
+                      mt: 2
+                    }}
+                  >
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      fullWidth
+                      sx={{
+                        borderRadius: '20px 0 20px 0',
+                        p: 2
+                      }}
+                    >
+                      {t('heroSection.booking')}
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      fullWidth
+                      sx={{
+                        borderRadius: '20px 0 20px 0',
+                        p: 2
+                      }}
+                    >
+                      {t('heroSection.call')}
+                    </Button>
+                  </Box>
+                </Container>
+              </Grid>
+              <Grid item xs={12} md={6}
+                sx={{
+                  background: isDark ?
+                    'linear-gradient(135deg, #fff, #f5f5f5) ' : 'linear-gradient(135deg, #fff, #f5f5f5)',
+                  position: 'relative',
+                }}
+              >
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    // top: '50%',
+                    // left: '50%',
+                    // transform: 'translateX(-50%)',
+                    // width: 200,
+                    // height: 300,
+                    backgroundImage: `url(${slide.image})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                  }}
+                />
+              </Grid>
+            </Grid>
+          </SwiperSlide>
+        ))}
+      </Swiper>
+    </Box>
+  );
 };
 
 export default HeroSection;

@@ -230,7 +230,6 @@ const AppointmentSection = () => {
                                                 {' - '}
                                                 <Typography variant="body1" sx={{ color: 'text.primary', fontWight: 'bold' }}>
                                                     <span>{t('days.to')}</span> {clinicInfo?.openHours[day]?.to.toLowerCase().replace(/am|pm/g, (e) => t(`days.${e}`))}
-
                                                 </Typography>
                                             </Box>
                                         ) : (
