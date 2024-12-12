@@ -68,24 +68,24 @@ const ServicesSection = () => {
                                 initial={{ opacity: 0, y: 20 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
-                                transition={{ duration: 0.5, delay: 0.3 }}
+                                transition={{ duration: 0.5, delay: index * 0.3 }}
                             >
                                 <Paper
                                     elevation={3}
                                     sx={{
-                                        p: 4,
+                                        p: 2,
                                         textAlign: 'center',
-                                        borderRadius: 2,
+                                        borderRadius: 1,
                                         transition: 'transform 0.3s',
-                                        height: 350,
+                                        minHeight: 300,
                                         bgcolor: themeMode === 'dark' ? '#2A2A2A' : '#fff',
                                         '&:hover': { transform: 'translateY(-8px)', boxShadow: 6 },
                                     }}
                                 >
                                     <Box
                                         sx={{
-                                            width: 80,
-                                            height: 80,
+                                            width: 100,
+                                            height: 100,
                                             mx: 'auto',
                                             mb: 2,
                                             borderRadius: '50%',
@@ -94,7 +94,8 @@ const ServicesSection = () => {
                                     >
                                         <img src={service.icon} alt={service.title.en} style={{ width: '100%', height: '100%' }} />
                                     </Box>
-                                    <Typography variant="h6" sx={{ fontWeight: 600, fontSize: '1.2rem', mb: 1, fontFamily: 'Poppins' }}>
+                                    <Divider sx={{ mb: 2 }} />
+                                    <Typography variant="h4" sx={{ fontWeight: 600, fontSize: '1.2rem', mb: 1, fontFamily: 'Poppins' }}>
                                         {isArabic ? service.title.ar : service.title.en}
                                     </Typography>
                                     <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#ccc' : '#555', mt: 1, fontWeight: 400 }}>
@@ -153,6 +154,7 @@ const ServicesSection = () => {
                                         textAlign: isArabic ? 'right' : 'left',
                                         fontFamily: 'Poppins',
                                         fontSize: { xs: '2rem', sm: '2.5rem' },
+                                        color: 'white',
                                         fontShadow: '2px 2px 4px rgba(0, 0, 0, 0.2)',
                                     }}
                                 >
@@ -169,6 +171,7 @@ const ServicesSection = () => {
                                     variant="body1"
                                     sx={{
                                         my: 3,
+                                        color: 'white',
                                         textAlign: isArabic ? 'right' : 'left',
                                     }}
                                 >
@@ -178,6 +181,31 @@ const ServicesSection = () => {
 
                             <Divider sx={{ width: '70%', my: 3, mx: 0 }} />
 
+                            {/* List Section */}
+                            <List>
+                                {services.map((item, index) => (
+                                    <motion.div
+                                        key={index}
+                                        initial={{ opacity: 0, x: 30 }}
+                                        whileInView={{ opacity: 1, x: 0 }}
+                                        viewport={{ once: true }}
+                                        transition={{ duration: 0.9, ease: 'easeOut', delay: 0.3 * index }}
+                                    >
+
+                                        <ListItem disablePadding>
+                                            <ListItemAvatar>
+                                                <CheckCircle color="#3B969F" fontSize="large" sx={{ mx: 2 }} />
+                                            </ListItemAvatar>
+                                            <ListItemText
+                                                primary={isArabic ? item.title.ar : item.title.en}
+                                                primaryTypographyProps={{ variant: 'h5', fontWeight: 600, align: isArabic ? 'right' : 'left', color: 'white' }}
+                                                secondary={(isArabic ? item.description.ar : item.description.en).slice(0, 100)}
+                                                secondaryTypographyProps={{ variant: 'subtitle1', fontWeight: 400, align: isArabic ? 'right' : 'left' }}
+                                            />
+                                        </ListItem>
+                                    </motion.div>
+                                ))}
+                            </List>
                         </Box>
                     </Grid>
                 </Grid>

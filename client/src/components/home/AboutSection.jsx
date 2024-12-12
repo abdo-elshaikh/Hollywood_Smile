@@ -58,8 +58,8 @@ const AboutSection = () => {
                     boxShadow: 0,
                     p: 4,
                     background: isDark
-                        ? 'linear-gradient(to top, #424242, #616161, #424242)'
-                        : 'linear-gradient(to top,  #BBDEFB, #E1F5FE, #BBDEFB)',
+                        ? 'linear-gradient(to top,rgb(124, 124, 124),rgb(99, 99, 99), #424242)'
+                        : 'linear-gradient(to top,rgb(224, 240, 253),rgb(215, 239, 251),rgb(182, 219, 249))',
                     borderColor: 'divider',
                     textAlign: 'center',
                 }}

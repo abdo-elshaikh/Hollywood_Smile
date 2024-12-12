@@ -33,7 +33,6 @@ import EnglishIcon from '../../assets/flags/english.svg';
 import ArabicIcon from '../../assets/flags/arabic.svg';
 import darkIcon from '../../assets/dark-mode.png';
 import lightIcon from '../../assets/light-mode.png';
-import settingsIcon from '../../assets/settings.png';
 import { useTranslation } from 'react-i18next';
 import { useClinicContext } from '../../contexts/ClinicContext';
 import { useNavigate } from 'react-router-dom';
@@ -61,7 +60,7 @@ const HeaderSection = () => {
     const isDark = mode === 'dark';
 
     useEffect(() => {
-        const handleScroll = () => setIsScrolled(window.scrollY > 50);
+        const handleScroll = () => setIsScrolled(window.scrollY > 80);
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
@@ -81,6 +80,7 @@ const HeaderSection = () => {
         setAdminMenuAnchor(event.currentTarget);
         setAdminMenuOpen(true);
     };
+
     const closeAdminMenu = () => setAdminMenuOpen(false);
 
     const items = [
@@ -109,7 +109,7 @@ const HeaderSection = () => {
     return (
         <AppBar
             position="fixed"
-            elevation={0}
+            elevation={3}
             color="transparent"
             className="header"
             sx={{
@@ -117,6 +117,7 @@ const HeaderSection = () => {
                 bgcolor: isScrolled ? 'background.paper' : 'transparent',
                 color: 'text.primary',
                 boxShadow: isScrolled ? '0 4px 8px rgba(0, 0, 0, 0.1)' : 'none',
+                mt: { xs: 0, md: isScrolled ? 0 : 8 },
             }}
         >
             <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -188,13 +189,24 @@ const HeaderSection = () => {
                 </IconButton>
                 {/* Mobile Drawer */}
                 <Drawer
-                    anchor={isArabic ? 'right' : 'left'}
+                    anchor='top'
                     open={mobileMenuOpen}
                     onClose={closeMobileMenu}
                     ModalProps={{ keepMounted: true }}
-                    sx={{ display: { xs: 'block', md: 'none' } }}
+                    sx={{
+                        display: { xs: 'block', md: 'none' },
+                        '& .MuiDrawer-paper': {
+                            width: '100%',
+                            bgcolor: 'background.paper',
+                        },
+                        zIndex: 1,
+                        '& .MuiDrawer-paper .MuiList-root': {
+                            padding: 0,
+                        },
+                    }}
                 >
-                    <Box sx={{ width: 250 }}>
+                    <Toolbar />
+                    <Box >
                         <List>
                             {items.map((item, index) => (
                                 <ListItem button="true" key={index} onClick={() => { navigate(item.href); closeMobileMenu(); }}>
@@ -334,7 +346,7 @@ const MenuItems = ({ items }) => {
                                 bottom: -5,
                                 left: 0,
                                 zIndex: -1,
-                                backgroundColor: 'secondary.dark',
+                                backgroundColor: 'secondary.main',
                                 transformOrigin: 'bottom right',
                                 transition: 'transform 0.25s ease-out',
                             },

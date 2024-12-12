@@ -25,6 +25,7 @@ import {
     Handyman,
     BookOnline,
 } from "@mui/icons-material";
+import CountUp from "react-countup";
 
 const iconList = {
     "Thumb Up": <ThumbUpOffAltSharp color="primary" fontSize="large" />,
@@ -52,14 +53,16 @@ const AchievementsSection = () => {
     return (
         <Box
             sx={{
-                background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+                background: isDark
+                    ? `linear-gradient(135deg, ${theme.palette.primary.dark}, ${theme.palette.secondary.dark})`
+                    : `linear-gradient(135deg, ${theme.palette.primary.light}, ${theme.palette.secondary.light})`,
                 color: theme.palette.text.primary,
                 py: { xs: 4, sm: 6 },
                 position: "relative",
             }}
         >
             {/* Section Title */}
-            <Container maxWidth="lg" sx={{ position: "relative", zIndex: 1, textAlign: "center" }}>
+            <Container maxWidth="lg" sx={{ textAlign: "center" }}>
                 <Typography
                     variant="h3"
                     sx={{
@@ -84,69 +87,67 @@ const AchievementsSection = () => {
             </Container>
 
             {/* Achievements Cards */}
-            <Container sx={{ position: "relative", zIndex: 1 }} maxWidth="lg">
+            <Container maxWidth="lg">
                 <Grid container spacing={4} justifyContent="center">
                     {achievements?.map((achievement, index) => (
                         <Grid item xs={12} sm={6} md={3} key={index}>
                             <Card
                                 sx={{
                                     textAlign: "center",
+                                    position: "relative",
                                     p: 3,
-                                    borderRadius: 2,
-                                    boxShadow: 4,
+                                    borderRadius: "16px",
+                                    boxShadow: 6,
                                     height: "100%",
+                                    background: isDark
+                                        ? theme.palette.grey[800]
+                                        : theme.palette.common.white,
                                     transition: "transform 0.3s ease, box-shadow 0.3s ease",
                                     "&:hover": {
-                                        boxShadow: 8,
+                                        transform: "scale(1.05)",
+                                        boxShadow: 12,
                                     },
                                 }}
                             >
-                                <CardMedia
-                                    component="div"
+                                <Box
                                     sx={{
-                                        height: 30,
+                                        position: "absolute",
+                                        top: 0,
+                                        right: 0,
+                                        width: 50,
+                                        height: 50,
+                                        color: theme.palette.primary.main,
                                         display: "flex",
                                         justifyContent: "center",
                                         alignItems: "center",
-                                        color: theme.palette.primary.main,
-                                        mb: 2,
-
+                                        borderRadius: '50%',
+                                        backgroundColor: theme.palette.common.white,
+                                        border: `1px solid ${theme.palette.primary.main}`,
                                     }}
                                 >
-                                    <Typography fontSize={50} variant="h2">{iconList[achievement.icon]}</Typography>
-                                </CardMedia>
+                                    {iconList[achievement.icon]}
+                                </Box>
+
                                 <CardContent>
                                     <Typography
-                                        variant="h3"
+                                        variant="h1"
                                         sx={{
                                             fontWeight: "bold",
                                             color: theme.palette.secondary.main,
                                             mb: 1,
                                         }}
                                     >
-                                        {achievement.number}
+                                        <CountUp start={0} end={achievement.number} duration={10} />
                                     </Typography>
                                     <Typography
                                         variant="h6"
                                         sx={{
                                             fontWeight: "bold",
                                             mb: 1,
-                                            color: isDark
-                                                ? theme.palette.common.white
-                                                : theme.palette.text.primary,
+                                            color: theme.palette.text.primary,
                                         }}
                                     >
                                         {isArabic ? achievement.label.ar : achievement.label.en}
-                                    </Typography>
-                                    <Typography
-                                        variant="body2"
-                                        sx={{
-                                            color: isDark
-                                                ? theme.palette.grey[400]
-                                                : theme.palette.text.secondary,
-                                        }}
-                                    >
-                                        {isArabic ? achievement.description.ar : achievement.description.en}
                                     </Typography>
                                 </CardContent>
                             </Card>

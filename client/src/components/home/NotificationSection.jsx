@@ -43,7 +43,7 @@ const NotificationSection = () => {
         height: '60px',
         background: isDark
           ? 'linear-gradient(135deg, #424242, #616161, #424242)'
-          : 'linear-gradient(135deg,  #BBDEFB, #E1F5FE, #BBDEFB)',
+          : 'linear-gradient(135deg,rgb(165, 212, 251),rgb(216, 243, 255), #BBDEFB)',
         display: 'flex',
         justifyContent: 'flex-start',
         alignItems: 'center',

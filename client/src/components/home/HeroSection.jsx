@@ -1,172 +1,243 @@
-import { Box, Container, Typography, Grid, useTheme, Button } from "@mui/material";
-import { motion } from "framer-motion";
+import React from "react";
+import { Box, Typography, Button, Container } from "@mui/material";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination, A11y, EffectFade, Autoplay } from "swiper/modules";
+import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import { useTranslation } from "react-i18next";
 import { useCustomTheme } from "../../contexts/ThemeProvider";
+import { useNavigate } from "react-router-dom";
+import { keyframes } from "@mui/system";
 
+// Keyframe animations
+const fadeIn = keyframes`
+  from { opacity: 0; }
+  to { opacity: 1; }
+`;
 
-const baseUrl = import.meta.env.VITE_SUPABASE_VIEW_URL;
+const slideInDown = keyframes`
+  from { transform: translateY(-100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+`;
 
-const slides = [
+const slideLeft = keyframes`
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+`;
+
+const slideRight = keyframes`
+  from { transform: translateX(-100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+`;
+
+const zoomIn = keyframes`
+  from { transform: scale(0); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+`;
+
+const buttonHover = keyframes`
+  from { transform: scale(1); }
+  to {transform: scale(1.1)}
+  `;
+
+// Carousel images and text
+const baseUrl = import.meta.env.VITE_SUPABASE_VIEW_URL + '/uploads/slides';
+const carouselItems = [
   {
-    title: "heroSection.slide1.title",
-    description: "heroSection.slide1.description",
-    image: `${baseUrl}/uploads/slides/slide_1.jpg`,
+    id: 1,
+    image: `${baseUrl}/slide_1.jpg`,
+    title: {
+      ar: "ابتسامة صحية",
+      en: "Healthy Smile"
+    },
+    subtitle: {
+      ar: "نحن هنا من أجلك لابتسامة مشرقة.",
+      en: "We are here for your bright smile."
+    }
   },
   {
-    title: "heroSection.slide2.title",
-    description: "heroSection.slide2.description",
-    image: `${baseUrl}/uploads/slides/slide_2.jpg`,
+    id: 2,
+    image: `${baseUrl}/slide_2.jpg`,
+    title: {
+      ar: "خدماتنا",
+      en: "Our Services"
+    },
+    subtitle: {
+      ar: "تقدم عيادتنا خدمات علاجية وفحص شامل.",
+      en: "Our clinic offers comprehensive treatments and check-ups."
+    }
   },
   {
-    title: "heroSection.slide3.title",
-    description: "heroSection.slide3.description",
-    image: `${baseUrl}/uploads/slides/slide_3.jpg`,
+    id: 3,
+    image: `${baseUrl}/slide_3.jpg`,
+    title: {
+      ar: "أفضل أطباء الأسنان",
+      en: "Best Dentists"
+    },
+    subtitle: {
+      ar: "فريقنا من المتخصصين يضمن لك أفضل رعاية.",
+      en: "Our team of specialists ensures the best care for you."
+    }
   },
+  {
+    id: 4,
+    image: `${baseUrl}/slide_7.jpg`,
+    title: {
+      ar: "ابتسامة جديدة",
+      en: "New Smile"
+    },
+    subtitle: {
+      ar: "ابدأ اليوم في تحويل ابتسامتك.",
+      en: "Start today in transforming your smile."
+    }
+  },
+  {
+    id: 5,
+    image: `${baseUrl}/slide_10.jpg`,
+    title: {
+      ar: "الراحة أولاً",
+      en: "Comfort First"
+    },
+    subtitle: {
+      ar: "نحن نقدم لك بيئة مريحة وآمنة.",
+      en: "We offer you a comfortable and safe environment."
+    }
+  }
 ];
 
+
 const HeroSection = () => {
-  const theme = useTheme();
-  const { mode } = useCustomTheme();
   const { t, i18n } = useTranslation();
-  const isArabic = i18n.language === "ar";
+  const { mode } = useCustomTheme();
+  const navigate = useNavigate();
   const isDark = mode === "dark";
+  const isArabic = i18n.language === "ar";
 
   return (
     <Box
       sx={{
+        width: "100%",
         height: "90vh",
-        position: "relative",
         overflow: "hidden",
-        backgroundColor: theme.palette.background.default,
+        position: "relative",
       }}
     >
-      <Box
-        sx={{
-          position: "absolute",
-          top: "0",
-          left: "0",
-          width: "100%",
-          height: "100%",
-          clipPath: "polygon(0% 0%, 75% 0%, 100% 50%, 75% 100%, 0% 100%)",
-          backgroundColor: 'linear-gradient(45deg, #fff 0%, #333 10%, #333 10%, #333 10%, #333 10%, #333 10',
-          opacity: 0.5,
-          zIndex: -1
-        }}
-      />
       <Swiper
-        modules={[Navigation, Pagination, A11y, EffectFade, Autoplay]}
-        spaceBetween={0}
-        slidesPerView={1}
+        modules={[Navigation, Pagination, Autoplay]}
+        navigation
         pagination={{ clickable: true }}
-        autoplay={{ delay: 5000, disableOnInteraction: false }}
+        autoplay={{ delay: 5000 }}
         loop
-        style={{
-          height: '100%',
-          width: '100%',
-        }}
+        style={{ height: "100%" }}
       >
-        {slides.map((slide, index) => (
-          <SwiperSlide key={index}>
-            <Grid
-              container
+        {carouselItems.map((item) => (
+          <SwiperSlide key={item.id}>
+            {/* Background image */}
+            <Box
               sx={{
-                height: '100%',
-                width: '100%',
-                backgroundColor: 'transparent',
+                width: "100%",
+                height: "100%",
+                backgroundImage: `url(${item.image})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                position: "relative",
+                animation: `${fadeIn} 2s ease-in-out`,
               }}
             >
-              <Grid item xs={12} md={6}>
-                <Container
-                  maxWidth='sm'
-                  sx={{
-                    p: 4,
-                    display: 'flex',
-                    justifyContent: 'center',
-                    width: '100%',
-                    height: '100%',
-                    flexDirection: 'column',
-                    flex: 1,
-                  }}
-                >
-                  <Typography
-                    align={isArabic ? 'right' : 'left'}
-                    variant="h2"
-                    component='h2'
-                    fontWeight='bold'
-                    color='primary.dark'
-                  >
-                    {t(slide.title)}
-                  </Typography>
-                  <Typography
-                    align={isArabic ? 'right' : 'left'}
-                    variant="h6"
-                    component='body1'
-                  >
-                    {t(slide.description)}
-                  </Typography>
-                  <Box
-                    sx={{
-                      width: '100%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      gap: 2,
-                      mt: 2
-                    }}
-                  >
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      fullWidth
-                      sx={{
-                        borderRadius: '20px 0 20px 0',
-                        p: 2
-                      }}
-                    >
-                      {t('heroSection.booking')}
-                    </Button>
-                    <Button
-                      variant="outlined"
-                      color="primary"
-                      fullWidth
-                      sx={{
-                        borderRadius: '20px 0 20px 0',
-                        p: 2
-                      }}
-                    >
-                      {t('heroSection.call')}
-                    </Button>
-                  </Box>
-                </Container>
-              </Grid>
-              <Grid item xs={12} md={6}
+              {/* Overlay */}
+              <Box
                 sx={{
-                  background: isDark ?
-                    'linear-gradient(135deg, #fff, #f5f5f5) ' : 'linear-gradient(135deg, #fff, #f5f5f5)',
-                  position: 'relative',
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  height: "100%",
+                  backgroundColor: isDark
+                    ? "rgba(0, 0, 0, 0.5)"
+                    : "rgba(255, 255, 255, 0.5)",
+                  zIndex: 1,
+                }}
+              />
+              {/* Content */}
+              <Container
+                maxWidth="sm"
+                sx={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                  zIndex: 2,
+                  textAlign: "center",
+                  color: isDark ? "#fff" : "#000",
                 }}
               >
+                <Typography
+                  variant="h3"
+                  color="primary.main"
+                  sx={{
+                    fontWeight: "bold",
+                    textShadow: isDark
+                      ? "2px 2px 4px rgba(0, 0, 0, 0.7)"
+                      : "2px 2px 4px rgba(255, 255, 255, 0.7)",
+                    mb: 2,
+                    animation: `${slideInDown} 1s ease-in-out forwards`,
+                  }}
+                >
+                  {isArabic ? item.title.ar : item.title.en}
+                </Typography>
+                <Typography
+                  variant="h5"
+                  sx={{
+                    mb: 4,
+                    fontStyle: "italic",
+                    animation: `${zoomIn} 1.5s ease-in-out forwards`,
+                  }}
+                >
+                  {isArabic ? item.subtitle.ar : item.subtitle.en}
+                </Typography>
                 <Box
                   sx={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    height: '100%',
-                    // top: '50%',
-                    // left: '50%',
-                    // transform: 'translateX(-50%)',
-                    // width: 200,
-                    // height: 300,
-                    backgroundImage: `url(${slide.image})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    gap: 2,
                   }}
-                />
-              </Grid>
-            </Grid>
+                >
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    size="large"
+                    fullWidth
+                    sx={{
+                      animation: `${isArabic ? slideLeft : slideRight} 1.5s ease-in-out`,
+                      borderRadius: 0,
+                      fontWeight: "bold",
+                      "&:hover": {
+                        animation: `${buttonHover} 0.3s`,
+                      },
+                    }}
+                    onClick={() => navigate("/booking")}
+                  >
+                    {isArabic ? 'احجز الان' : 'Book Now'}
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    size="large"
+                    fullWidth
+                    sx={{
+                      animation: `${isArabic ? slideRight : slideLeft} 1.5s ease-in-out`,
+                      borderRadius: 0,
+                      fontWeight: "bold",
+                      "&:hover": {
+                        animation: `${buttonHover} 0.3s ease-in-out forwards`,
+                      },
+                    }}
+                    onClick={() => navigate("/contact-us")}
+                  >
+                    {isArabic ? 'تواصل معنا' : 'Contact Us'}
+                  </Button>
+                </Box>
+              </Container>
+            </Box>
           </SwiperSlide>
         ))}
       </Swiper>

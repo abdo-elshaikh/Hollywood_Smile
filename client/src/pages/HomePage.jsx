@@ -1,15 +1,18 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import NotificationSection from '../components/home/NotificationSection';
+import TopbarSection from '../components/home/TopbarSection';
 import HeaderSection from '../components/home/HeaderSection';
 import HeroSection from '../components/home/HeroSection';
 import AboutSection from '../components/home/AboutSection';
 import AppointmentSection from '../components/home/AppointmentSection';
 import ServicesSection from '../components/home/ServicesSection';
 import MeetOurDentists from '../components/home/MeetOurDentists';
+import TeamSection from '../components/home/TeamSection';
 import AchievementsSection from '../components/home/AchievementsSection';
 import PricingSection from '../components/home/PricingSection';
 import NewsletterSection from '../components/home/NewsletterSection';
 import TestimonySection from '../components/home/TestimonySection';
+import TestimonialSection from '../components/home/TestimonialSection';
 import GallerySection from '../components/home/GallerySection';
 import BlogSection from '../components/home/BlogSection';
 import ContactSection from '../components/home/ContactSection';
@@ -40,6 +43,7 @@ const HomePage = () => {
         textAlign: i18n.dir() === 'rtl' ? 'right' : 'left',
       }}
     >
+      <TopbarSection />
       <HeaderSection />
       <HeroSection />
       <NotificationSection />
@@ -47,13 +51,16 @@ const HomePage = () => {
       {/* <AppointmentSection /> */}
       <DetectBookingSection />
       <ServicesSection />
-      <MeetOurDentists />
-      <AchievementsSection />
-      <OffersSection />
+      {/* <MeetOurDentists /> */}
+      <TeamSection />
       <NewsletterSection />
+      <PricingSection />
+      {/* <OffersSection /> */}
+      {/* <TestimonialSection /> */}
+      <AchievementsSection />
       <TestimonySection />
-      <FAQSection />
       <GallerySection />
+      <FAQSection />
       <BlogSection />
       <ContactSection />
       <BeforeAfterGallery />
