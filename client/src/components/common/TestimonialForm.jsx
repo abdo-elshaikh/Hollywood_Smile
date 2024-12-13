@@ -5,18 +5,23 @@ import axiosInstance from '../../services/axiosInstance';
 import { uploadFile } from '../../services/supabaseService';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
+import { useSnackbar } from '../../contexts/SnackbarProvider';
+import { useNavigate } from 'react-router-dom';
 
 const TestimonialForm = ({ testimonial = null }) => {
     const { user } = useAuth();
     const { t, i18n } = useTranslation();
     const isArabic = i18n.language === 'ar';
+    const showSnackbar = useSnackbar();
+    const navigate = useNavigate();
     const qoute = {
         name: user ? user.name : '',
         position: user ? user.role : 'visitor',
         quote: '',
         rating: 0,
-        show: false, // Default to false
+        show: false,
         imgUrl: user ? user.avatarUrl : '',
+        user: user ? user._id : null,
     }
     const [formData, setFormData] = useState(qoute);
 
@@ -33,14 +38,22 @@ const TestimonialForm = ({ testimonial = null }) => {
     };
 
     const handleSubmit = async () => {
+        if (!user) {
+            showSnackbar(t('loginRequired'), 'error');
+            return;
+        };
         try {
             if (testimonial) {
                 await axiosInstance.put(`/testimonials/${testimonial._id}`, formData);
             } else {
                 await axiosInstance.post('/testimonials', formData);
             }
+            showSnackbar(t('testimonialSubmitted'), 'success');
+            navigate('/');
         } catch (error) {
             console.error('Failed to save testimonial:', error);
+        } finally {
+            setFormData(qoute);
         }
     };
 
@@ -49,6 +62,7 @@ const TestimonialForm = ({ testimonial = null }) => {
             const fileName = `${Date.now()}_${file.name}`;
             const data = await uploadFile(file, 'testimonials', fileName);
             setFormData({ ...formData, imgUrl: data.fullUrl });
+            showSnackbar(t('imageUploaded'), 'success');
         } catch (error) {
             console.error('Failed to upload image:', error);
         }
@@ -58,7 +72,6 @@ const TestimonialForm = ({ testimonial = null }) => {
         <Box
             component="form"
             autoComplete="off"
-
         >
             <Box display="flex" alignItems="center" flexDirection='column'>
                 <Avatar

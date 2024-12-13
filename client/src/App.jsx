@@ -126,11 +126,11 @@ const App = () => {
           <Route path="/faq" element={<FaqPage />} />
           <Route path="/contact-us" element={<ContactUsPage />} />
           <Route path="/doctors" element={<DoctorsPage />} />
+          <Route path="/doctors/:id" element={<ViewProfile />} />
           <Route path="/rate-doctor/:id" element={<RateDoctorPage />} />
           <Route path="/gallery" element={<GalleryPage />} />
           <Route path="/gallery/:id" element={<ImageDetailsPage />} />
           <Route path="/services" element={<ServicesPage />} />
-          <Route path="/doctors/:id" element={<ViewProfile />} />
           <Route path="/not-found" element={<NotFoundPage />} />
           <Route path="/unauthorized" element={<Error403Page />} />
           <Route path="/server-error" element={<Error500Page />} />

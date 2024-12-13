@@ -32,7 +32,7 @@ router.get('/:id', async (req, res) => {
 // @route   POST /api/testimonials
 // @desc    Create new testimonial
 // @access  Protected
-router.post('/', protect, async (req, res) => {
+router.post('/', async (req, res) => {
     try {
         const testimonial = await Testimony.create(req.body);
         if (!testimonial) return res.status(404).json({ message: 'Testimonial not found' });
@@ -45,7 +45,7 @@ router.post('/', protect, async (req, res) => {
 // @route   PUT /api/testimonials/:id
 // @desc    Update testimonial
 // @access  Protected
-router.put('/:id', protect, async (req, res) => {
+router.put('/:id', async (req, res) => {
     try {
         const testimonial = await Testimony.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (!testimonial) return res.status(404).json({ message: 'Testimonial not found' });
@@ -58,7 +58,7 @@ router.put('/:id', protect, async (req, res) => {
 // @route   DELETE /api/testimonials/:id
 // @desc    Delete testimonial
 // @access  Protected
-router.delete('/:id', protect, async (req, res) => {
+router.delete('/:id', async (req, res) => {
     try {
         const testimonial = await Testimony.findByIdAndDelete(req.params.id);
         if (!testimonial) return res.status(404).json({ message: 'Testimonial not found' });

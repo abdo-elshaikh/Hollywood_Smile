@@ -54,7 +54,7 @@ const TestimonySection = () => {
       </Box>
 
       <Grid container spacing={0}>
-        {/* Testimonials Slider */}
+
         <Swiper
           modules={[Autoplay, Navigation, Pagination]}
           autoplay={{ delay: 5000, disableOnInteraction: false }}
@@ -68,18 +68,25 @@ const TestimonySection = () => {
           loop
           dir={isArabic ? "rtl" : "ltr"}
         >
-          {cardData.map((item) => (
-            <SwiperSlide key={item.id}>
-              <TestimonyCard
-                name={item.name}
-                position={item.position}
-                quote={item.quote}
-                imgUrl={item.imgUrl}
-                rating={item.rating}
-                t={t}
-                isArabic={isArabic}
-              />
-            </SwiperSlide>
+          {cardData.map((item, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <SwiperSlide key={item.id}>
+                <TestimonyCard
+                  name={item.name}
+                  position={item.position}
+                  quote={item.quote}
+                  imgUrl={item.imgUrl}
+                  rating={item.rating}
+                  t={t}
+                  isArabic={isArabic}
+                />
+              </SwiperSlide>
+            </motion.div>
           ))}
         </Swiper>
       </Grid>
@@ -89,9 +96,9 @@ const TestimonySection = () => {
 
 const TestimonyCard = ({ name, position, quote, imgUrl, rating, t, isArabic }) => (
   <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.5 }}
+    initial={{ opacity: 0, scale: 0.7 }}
+    whileInView={{ opacity: 1, scale: 1 }}
+    transition={{ duration: 0.5, type: "spring" }}
   >
     <Box
       sx={{

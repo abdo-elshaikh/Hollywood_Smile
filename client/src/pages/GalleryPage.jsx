@@ -152,7 +152,7 @@ const GalleryPage = () => {
                                     variants={{
                                         initial: { opacity: 0, x: Math.random(), y: Math.random(), scale: Math.random() },
                                         animate: { opacity: 1, x: 0, y: 0, scale: 1, duration: 3, delay: index * 0.3 },
-                                        whileHover: { opacity: 0.7, x: Math.random(), y: Math.random(), scale: 1.1, transition: { duration: 0.3 } },
+                                        whileHover: { scale: 1.05, transition: { duration: 0.3, type: 'spring' } },
                                     }}
                                 >
                                     <Box
@@ -188,7 +188,7 @@ const GalleryPage = () => {
 
                                         <Box
                                             component={motion.div}
-                                            whileHover={{ scale: 1.1, opacity: 1 }}
+                                            whileHover={{ scale: 1.05, opacity: 1 }}
                                             sx={{
                                                 position: 'absolute',
                                                 inset: 0,

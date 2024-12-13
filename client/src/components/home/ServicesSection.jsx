@@ -194,13 +194,25 @@ const ServicesSection = () => {
 
                                         <ListItem disablePadding>
                                             <ListItemAvatar>
-                                                <CheckCircle color="#3B969F" fontSize="large" sx={{ mx: 2 }} />
+                                                <CheckCircle fontSize="large" sx={{ mx: 2, color: '#fff' }} />
                                             </ListItemAvatar>
                                             <ListItemText
-                                                primary={isArabic ? item.title.ar : item.title.en}
-                                                primaryTypographyProps={{ variant: 'h5', fontWeight: 600, align: isArabic ? 'right' : 'left', color: 'white' }}
-                                                secondary={(isArabic ? item.description.ar : item.description.en).slice(0, 100)}
-                                                secondaryTypographyProps={{ variant: 'subtitle1', fontWeight: 400, align: isArabic ? 'right' : 'left' }}
+                                                primary={
+                                                    <Typography
+                                                        variant="h6"
+                                                        align={isArabic ? 'right' : 'left'}
+                                                        sx={{ fontWeight: 'bold', color: 'white', fontFamily: 'sans-serif' }}>
+                                                        {isArabic ? item.title.ar : item.title.en}
+                                                    </Typography>
+                                                }
+                                                secondary={
+                                                    <Typography
+                                                        variant="body2"
+                                                        align={isArabic ? 'right' : 'left'}
+                                                        sx={{ color: 'white' }}>
+                                                        {(isArabic ? item.description.ar : item.description.en).slice(0, 100)}
+                                                    </Typography>
+                                                }
                                             />
                                         </ListItem>
                                     </motion.div>

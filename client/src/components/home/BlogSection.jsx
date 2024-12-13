@@ -24,23 +24,23 @@ import PersonIcon from "@mui/icons-material/Person";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import axiosInstance from "../../services/axiosInstance";
 
-
 // Blog Section Component
 const BlogSection = () => {
   const { mode } = useCustomTheme();
   const { t, i18n } = useTranslation();
+  const isArabic = i18n.language === "ar";
 
   const navigate = useNavigate();
-  const [blogs, setBlogs] = React.useState([]);
+  const [blogs, setBlogs] = useState([]);
 
   // Fetch blogs from the server
   const fetchBlogs = async () => {
     try {
       const res = await axiosInstance.get("/blogs");
-
-      const latestBlogs = res.data.filter((blog) => blog.published).sort((a, b) => new Date(b.date) - new Date(a.date));
-      const mostLikesAndLoves = await latestBlogs.sort((a, b) => (b.likes + b.loves + b.views) - (a.likes + a.loves + a.views)).slice(0, 3);
-      setBlogs(mostLikesAndLoves);
+      console.log("Fetched blogs:", res.data);
+      const mostVisitedBlogs = res.data.sort((a, b) => b.views - a.views).slice(0, 6);
+      console.log("Most visited blogs:", mostVisitedBlogs);
+      setBlogs(mostVisitedBlogs);
     } catch (error) {
       console.error("Error fetching blogs:", error);
     }
@@ -50,13 +50,13 @@ const BlogSection = () => {
     fetchBlogs();
   }, []);
 
-
   return (
     <Box
       component="section"
       sx={{
         py: 8,
         bgcolor: mode === "dark" ? "background.default" : "background.light",
+        transition: "background-color 0.5s ease",
       }}
     >
       <Container>
@@ -74,14 +74,23 @@ const BlogSection = () => {
         </Box>
 
         {/* Blog Grid */}
-        <BlogContent blogs={blogs} />
-        {/* reade more */}
+        <BlogContent blogs={blogs} t={t} />
+        {/* Read More Button */}
         <Box textAlign="center" sx={{ mt: 4 }}>
           <Button
             variant="contained"
             color="primary"
             size="large"
             onClick={() => navigate("/blog")}
+            sx={{
+              padding: "12px 24px",
+              borderRadius: "30px",
+              transition: "all 0.3s ease",
+              "&:hover": {
+                backgroundColor: "secondary.main",
+                transform: "translateY(-5px)",
+              },
+            }}
           >
             {t("BlogSection.readMore")}
           </Button>
@@ -91,15 +100,15 @@ const BlogSection = () => {
   );
 };
 
-const BlogContent = ({ blogs }) => (
+const BlogContent = ({ blogs = [], t }) => (
   <Grid container spacing={4}>
-    {blogs.map((blog) => (
+    {blogs?.map((blog) => (
       <Grid item xs={12} sm={6} md={4} key={blog._id}>
         <motion.div
           variants={{
             initial: { opacity: 0, y: 30 },
             animate: { opacity: 1, y: 0, transition: { duration: 0.5 } },
-            whileHover: { scale: 1.05, boxShadow: "0px 15px 30px rgba(0,0,0,0.2)" },
+            whileHover: { scale: 1.05 },
           }}
           initial="initial"
           animate="animate"
@@ -114,6 +123,8 @@ const BlogContent = ({ blogs }) => (
               position: "relative",
               overflow: "hidden",
               cursor: "pointer",
+              transition: "box-shadow 0.3s ease-in-out",
+              "&:hover": { boxShadow: "0px 15px 30px rgba(0, 0, 0, 0.1)" },
             }}
           >
             {/* Blog Image */}
@@ -138,12 +149,12 @@ const BlogContent = ({ blogs }) => (
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
+                  flexDirection: "column",
                   transition: "all 0.5s ease-in-out",
                   transform: "translateY(100%)",
                   opacity: 0,
                 }}
               >
-                <Typography id='blog-link' component={Link} to={`/blog/post/${blog._id}`} variant="h5" sx={{ color: "white" }} />
                 <ArrowForwardIosIcon
                   fontSize="large"
                   onClick={() => document.getElementById('blog-link').click()}
@@ -159,7 +170,9 @@ const BlogContent = ({ blogs }) => (
                     "&:hover": { transform: "rotate(360deg)", bgcolor: "secondary.main" },
                   }}
                 />
-
+                <Typography id="blog-link" component={Link} to={`/blog/${blog._id}`} variant="h5" sx={{ color: "white" }}>
+                  {t("BlogSection.readMore")}
+                </Typography>
               </Box>
             </CardMedia>
 
@@ -195,7 +208,7 @@ const BlogContent = ({ blogs }) => (
                   },
                 }}
               >
-                <Link to={`/blog/post/${blog._id}`}>{blog.title}</Link>
+                <Link to={`/blog/${blog._id}`}>{blog.title}</Link>
               </Typography>
               {/* Blog Description */}
               <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>

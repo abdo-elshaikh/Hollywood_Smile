@@ -37,11 +37,8 @@ import { useTranslation } from 'react-i18next';
 import { useClinicContext } from '../../contexts/ClinicContext';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import TopbarSection from './TopbarSection';
 
-const languageIcons = {
-    en: EnglishIcon,
-    ar: ArabicIcon,
-};
 
 // Header Section
 const HeaderSection = () => {
@@ -60,7 +57,7 @@ const HeaderSection = () => {
     const isDark = mode === 'dark';
 
     useEffect(() => {
-        const handleScroll = () => setIsScrolled(window.scrollY > 80);
+        const handleScroll = () => setIsScrolled(window.scrollY > 100);
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
@@ -107,22 +104,24 @@ const HeaderSection = () => {
     };
 
     return (
-        <AppBar
-            position="fixed"
-            elevation={3}
-            color="transparent"
-            className="header"
-            sx={{
-                transition: 'background 0.3s ease',
-                bgcolor: isScrolled ? 'background.paper' : 'transparent',
-                color: 'text.primary',
-                boxShadow: isScrolled ? '0 4px 8px rgba(0, 0, 0, 0.1)' : 'none',
-                mt: { xs: 0, md: isScrolled ? 0 : 8 },
-            }}
-        >
-            <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                {/* Desktop Menu */}
-                <Box sx={{ display: 'flex', gap: 3, alignItems: 'center' }}>
+        <>
+            <TopbarSection />
+            <AppBar
+                position="fixed"
+                elevation={3}
+                color="transparent"
+                className="header"
+                sx={{
+                    transition: 'background 0.3s ease',
+                    bgcolor: isScrolled ? 'background.paper' : 'transparent',
+                    color: 'text.primary',
+                    boxShadow: isScrolled ? '0 4px 8px rgba(0, 0, 0, 0.1)' : 'none',
+                    mt: { xs: 0, md: isScrolled ? 0 : 8 },
+                }}
+            >
+                <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    {/* Desktop Menu */}
+
                     <Box
                         onClick={() => navigate('/')}
                         sx={{ display: 'flex', alignItems: 'center', gap: 2, cursor: 'pointer' }}
@@ -145,168 +144,306 @@ const HeaderSection = () => {
                             </Typography>
                         </Box>
                     </Box>
+
                     <MenuItems items={items} />
-                </Box>
 
-                {/* Language and Theme Toggle Buttons */}
-                <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 2, alignItems: 'center', flexShrink: 0 }}>
-                    <Tooltip title={isArabic ? 'ترجم إلى الإنجليزية' : 'Translate to Arabic'}>
-                        <IconButton sx={{ width: 30, height: 30 }} onClick={handleLanguageChange}>
-                            <Avatar src={isArabic ? EnglishIcon : ArabicIcon} alt={isArabic ? 'en' : 'ar'} sx={{ width: 30, height: 30 }} />
-                        </IconButton>
-                    </Tooltip>
-                    <Tooltip title={isDark ? (isArabic ? 'الوضع النهاري' : 'Light Mode') : (isArabic ? 'الوضع الليلى' : 'Dark Mode')}>
-                        <IconButton sx={{ width: 30, height: 30 }} onClick={handleThemeToggle} aria-label="Toggle theme">
-                            <Avatar src={isDark ? lightIcon : darkIcon} alt={isDark ? 'light' : 'dark'} sx={{ width: 30, height: 30 }} />
-                        </IconButton>
-                    </Tooltip>
-
-                    {user ? (
-                        <Tooltip title={t('app.profile')}>
-                            <IconButton sx={{ width: 30, height: 30 }} onClick={handleAdminMenuClick}>
-                                <Avatar src={user.avatarUrl} alt={user.username[0]} sx={{ width: 30, height: 30 }} />
+                    {/* Language and Theme Toggle Buttons */}
+                    <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 2, alignItems: 'center', flexShrink: 0 }}>
+                        <Tooltip title={isArabic ? 'ترجم إلى الإنجليزية' : 'Translate to Arabic'}>
+                            <IconButton sx={{ width: 30, height: 30 }} onClick={handleLanguageChange}>
+                                <Avatar src={isArabic ? EnglishIcon : ArabicIcon} alt={isArabic ? 'en' : 'ar'} sx={{ width: 30, height: 30 }} />
                             </IconButton>
                         </Tooltip>
-                    ) : (
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            onClick={handleLogin}
-                            sx={{ display: { xs: 'none', md: 'flex' } }}
-                        >
-                            {t('app.login')}
-                        </Button>
-                    )}
+                        <Tooltip title={isDark ? (isArabic ? 'الوضع النهاري' : 'Light Mode') : (isArabic ? 'الوضع الليلى' : 'Dark Mode')}>
+                            <IconButton sx={{ width: 30, height: 30 }} onClick={handleThemeToggle} aria-label="Toggle theme">
+                                <Avatar src={isDark ? lightIcon : darkIcon} alt={isDark ? 'light' : 'dark'} sx={{ width: 30, height: 30 }} />
+                            </IconButton>
+                        </Tooltip>
 
-                </Box>
+                        {user ? (
+                            <Tooltip title={t('app.profile')}>
+                                <IconButton sx={{ width: 30, height: 30 }} onClick={handleAdminMenuClick}>
+                                    <Avatar src={user.avatarUrl} alt={user.username[0]} sx={{ width: 30, height: 30 }} />
+                                </IconButton>
+                            </Tooltip>
+                        ) : (
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={handleLogin}
+                                sx={{ display: { xs: 'none', md: 'flex' } }}
+                            >
+                                {t('app.login')}
+                            </Button>
+                        )}
 
-                {/* Mobile Menu */}
-                <IconButton
-                    sx={{ display: { xs: 'flex', md: 'none' } }}
-                    onClick={toggleMobileMenu}
-                >
-                    <MenuIcon />
-                </IconButton>
-                {/* Mobile Drawer */}
-                <Drawer
-                    anchor='top'
-                    open={mobileMenuOpen}
-                    onClose={closeMobileMenu}
-                    ModalProps={{ keepMounted: true }}
-                    sx={{
-                        display: { xs: 'block', md: 'none' },
-                        '& .MuiDrawer-paper': {
-                            width: '100%',
-                            bgcolor: 'background.paper',
-                        },
-                        zIndex: 1,
-                        '& .MuiDrawer-paper .MuiList-root': {
-                            padding: 0,
-                        },
-                    }}
-                >
-                    <Toolbar />
-                    <Box >
-                        <List>
-                            {items.map((item, index) => (
-                                <ListItem button="true" key={index} onClick={() => { navigate(item.href); closeMobileMenu(); }}>
-                                    <ListItemIcon>{item.icon}</ListItemIcon>
-                                    <ListItemText align={isArabic ? 'right' : 'left'} primary={item.label} />
+                    </Box>
+
+                    {/* Mobile Menu Icon */}
+                    <IconButton
+                        sx={{ display: { xs: 'flex', md: 'none' } }}
+                        onClick={toggleMobileMenu}
+                    >
+                        <MenuIcon sx={{ fontSize: 40 }} />
+                    </IconButton>
+
+                    {/* Mobile Menu Drawer */}
+                    <Drawer
+                        anchor="top"
+                        open={mobileMenuOpen}
+                        onClose={closeMobileMenu}
+                        sx={{
+                            display: { xs: 'block', md: 'none' },
+                            '& .MuiDrawer-paper': {
+                                width: '100%',
+                                bgcolor: 'background.paper',
+                                paddingTop: '16px',  // Add some padding for better spacing
+                                transition: 'transform 0.3s ease', // Smooth transition for opening/closing
+                            },
+                            zIndex: 10,
+                            '& .MuiDrawer-paper .MuiList-root': {
+                                padding: 0,
+                            },
+                        }}
+                    >
+                        <Toolbar />
+                        <Box sx={{ padding: 2 }}>
+                            <List>
+                                {/* Menu Items */}
+                                {items.map((item, index) => (
+                                    <ListItem
+                                        button
+                                        key={index}
+                                        onClick={() => { navigate(item.href); closeMobileMenu(); }}
+                                        sx={{
+                                            cursor: 'pointer',
+                                            paddingY: 1,
+                                            transition: 'background-color 0.3s',
+                                            '&:hover': {
+                                                bgcolor: 'background.default',
+                                                transition: 'background-color 0.3s',
+                                                transform: 'translateX(5px)',
+                                            },
+                                        }}
+
+                                    >
+                                        <ListItemIcon>{item.icon}</ListItemIcon>
+                                        <ListItemText
+                                            align={isArabic ? 'right' : 'left'}
+                                            primary={
+                                                <Typography variant="body1" fontWeight="bold">
+                                                    {item.label}
+                                                </Typography>
+                                            }
+                                        />
+                                    </ListItem>
+                                ))}
+
+                                <Divider sx={{ my: 1 }} />
+
+                                {/* Conditional Admin, Support, and Blog Items */}
+                                {user?.role === 'admin' && (
+                                    <ListItem button onClick={() => navigate('/dashboard')}>
+                                        <ListItemIcon>
+                                            <SettingsApplications />
+                                        </ListItemIcon>
+                                        <ListItemText align={isArabic ? 'right' : 'left'}
+                                            primary={
+                                                <Typography variant="body1" fontWeight="bold">
+                                                    {t('app.adminDashboard')}
+                                                </Typography>
+                                            }
+                                        />
+                                    </ListItem>
+                                )}
+
+                                {user?.role === 'support' && (
+                                    <ListItem button onClick={() => navigate('/support-dashboard')}>
+                                        <ListItemIcon>
+                                            <SettingsApplications />
+                                        </ListItemIcon>
+                                        <ListItemText align={isArabic ? 'right' : 'left'}
+                                            primary={
+                                                <Typography variant="body1" fontWeight="bold">
+                                                    {t('app.supportDashboard')}
+                                                </Typography>
+                                            }
+                                        />
+                                    </ListItem>
+                                )}
+
+                                {(user?.role === 'author' || user?.role === 'editor') && (
+                                    <ListItem button onClick={() => navigate('/blog-dashboard')}>
+                                        <ListItemIcon>
+                                            <DriveFileMove />
+                                        </ListItemIcon>
+                                        <ListItemText align={isArabic ? 'right' : 'left'}
+                                            primary={
+                                                <Typography variant="body1" fontWeight="bold">
+                                                    {t('app.blogDashboard')}
+                                                </Typography>
+                                            }
+                                        />
+                                    </ListItem>
+                                )}
+
+                                {/* Profile and Settings */}
+                                {user && (
+                                    <ListItem button onClick={() => navigate('/profile')}>
+                                        <ListItemIcon>
+                                            <AccountCircle />
+                                        </ListItemIcon>
+                                        <ListItemText align={isArabic ? 'right' : 'left'}
+                                            primary={
+                                                <Typography variant="body1" fontWeight="bold">
+                                                    {t('app.profile')}
+                                                </Typography>
+                                            }
+                                        />
+                                    </ListItem>
+                                )}
+
+                                {/* Language and Theme Settings */}
+                                <ListItem button onClick={handleLanguageChange}>
+                                    <ListItemIcon>
+                                        <Language />
+                                    </ListItemIcon>
+                                    <ListItemText align={isArabic ? 'right' : 'left'}
+                                        primary={
+                                            <Typography variant="body1" fontWeight="bold">
+                                                {isArabic ? 'انجليزي' : 'Arabic'}
+                                            </Typography>
+                                        }
+                                    />
                                 </ListItem>
-                            ))}
-                            <Divider sx={{ my: 1 }} />
-                            <ListItem
-                                button="true"
-                                sx={{ cursor: 'pointer', display: user && user?.role === 'admin' ? 'flex' : 'none' }}
+
+                                <ListItem button onClick={handleThemeToggle}>
+                                    <ListItemIcon>
+                                        {isDark ? <LightModeOutlined /> : <DarkModeOutlined />}
+                                    </ListItemIcon>
+                                    <ListItemText
+                                        align={isArabic ? 'right' : 'left'}
+                                        primary={
+                                            <Typography variant="body1" fontWeight="bold">
+                                                {isArabic ? (isDark ? 'الوضع النهاري' : 'الوضع الليلي') : (isDark ? 'Light Mode' : 'Dark Mode')}
+                                            </Typography>
+                                        }
+                                    />
+                                </ListItem>
+
+                                {/* Login/Logout Button */}
+                                <ListItem button onClick={user ? handleLogout : handleLogin}>
+                                    <ListItemIcon>
+                                        {user ? <Logout /> : <Login />}
+                                    </ListItemIcon>
+                                    <ListItemText align={isArabic ? 'right' : 'left'}
+                                        primary={
+                                            <Typography variant="body1" fontWeight="bold">
+                                                {user ? t('app.logout') : t('app.login')}
+                                            </Typography>
+                                        } />
+                                </ListItem>
+                            </List>
+                        </Box>
+                    </Drawer>
+
+
+                    {/* Admin Menu */}
+                    <Menu
+                        anchorEl={adminMenuAnchor}
+                        open={adminMenuOpen}
+                        onClose={closeAdminMenu}
+                        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                        PaperProps={{
+                            style: {
+                                minWidth: 180, // Adjusted to make the menu wider
+                                borderRadius: 8, // Rounded corners for a modern look
+                                boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)', // Subtle shadow for depth
+                            },
+                        }}
+                    >
+                        {/* Role-based Dashboard Links */}
+                        {user && user.role === 'admin' && (
+                            <MenuItem
+                                sx={{
+                                    cursor: 'pointer',
+                                    paddingY: 1,
+                                    '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.08)' },
+                                    fontWeight: 500, // Bold text for important links
+                                }}
                                 onClick={() => navigate('/dashboard')}
                             >
-                                <ListItemIcon>
-                                    <SettingsApplications />
-                                </ListItemIcon>
-                                <ListItemText align={isArabic ? 'right' : 'left'} primary={t('app.adminDashboard')} />
-                            </ListItem>
+                                <Typography fontWeight='bold' variant="body1">{t('app.adminDashboard')}</Typography>
+                            </MenuItem>
+                        )}
 
-                            <ListItem
-                                button="true"
-                                sx={{ cursor: 'pointer', display: user && user?.role === 'support' ? 'flex' : 'none' }}
+                        {user && user.role === 'support' && (
+                            <MenuItem
+                                sx={{
+                                    cursor: 'pointer',
+                                    paddingY: 1,
+                                    '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.08)' },
+                                    fontWeight: 500,
+                                }}
                                 onClick={() => navigate('/support-dashboard')}
                             >
-                                <ListItemIcon>
-                                    <SettingsApplications />
-                                </ListItemIcon>
-                                <ListItemText align={isArabic ? 'right' : 'left'} primary={t('app.supportDashboard')} />
-                            </ListItem>
+                                <Typography fontWeight='bold' variant="body1">
+                                    {t('app.supportDashboard')}
+                                </Typography>
+                            </MenuItem>
+                        )}
 
-                            <ListItem
-                                button="true"
-                                sx={{ cursor: 'pointer', display: user && (user?.role === 'author' || user?.role === 'editor') ? 'flex' : 'none' }}
+                        {(user && (user.role === 'author' || user.role === 'editor')) && (
+                            <MenuItem
+                                sx={{
+                                    cursor: 'pointer',
+                                    paddingY: 1,
+                                    '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.08)' },
+                                    fontWeight: 500,
+                                }}
                                 onClick={() => navigate('/blog-dashboard')}
                             >
-                                <ListItemIcon>
-                                    <DriveFileMove />
-                                </ListItemIcon>
-                                <ListItemText align={isArabic ? 'right' : 'left'} primary={t('app.blogDashboard')} />
-                            </ListItem>
+                                <Typography fontWeight='bold' variant="body1">
+                                    {t('app.blogDashboard')}
+                                </Typography>
+                            </MenuItem>
+                        )}
 
-                            <ListItem
-                                button="true"
-                                onClick={() => navigate('/profile')}
-                                sx={{ cursor: 'pointer', display: user ? 'flex' : 'none' }}
-                            >
-                                <ListItemIcon><AccountCircle /></ListItemIcon>
-                                <ListItemText align={isArabic ? 'right' : 'left'} primary={t('app.profile')} />
-                            </ListItem>
+                        {/* Divider for better grouping */}
+                        {user && user.role !== 'visitor' && (
+                            <Divider sx={{ my: 1 }} />
+                        )}
 
-                            <ListItem button="true" onClick={handleLanguageChange}>
-                                <ListItemIcon><Language /></ListItemIcon>
-                                <ListItemText align={isArabic ? 'right' : 'left'} primary={isArabic ? 'انجليزي' : 'Arabic'} />
-                            </ListItem>
+                        {/* User Profile and Logout Options */}
+                        <MenuItem
+                            sx={{
+                                cursor: 'pointer',
+                                paddingY: 1,
+                                '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.08)' },
+                            }}
+                            onClick={() => navigate('/profile')}
+                        >
+                            {t('app.profile')}
+                        </MenuItem>
 
-                            <ListItem button="true" onClick={handleThemeToggle}>
-                                <ListItemIcon>{isDark ? <LightModeOutlined /> : <DarkModeOutlined />}</ListItemIcon>
-                                <ListItemText align={isArabic ? 'right' : 'left'} primary={
-                                    isArabic && isDark ? 'الوضع النهاري' : isArabic && !isDark ? 'الوضع الليلي' : !isArabic && isDark ? 'Light Mode' : 'Dark Mode'
-                                } />
-                            </ListItem>
+                        <MenuItem
+                            sx={{
+                                cursor: 'pointer',
+                                paddingY: 1,
+                                color: 'red',
+                                fontWeight: 'bold',
+                                '&:hover': { backgroundColor: 'rgba(255, 0, 0, 0.1)' }, // Red hover effect for logout
+                            }}
+                            onClick={handleLogout}
+                        >
+                            {t('app.logout')}
+                        </MenuItem>
+                    </Menu>
 
-                            <ListItem button="true" onClick={user ? handleLogout : handleLogin}>
-                                <ListItemIcon>{user ? <Logout /> : <Login />}</ListItemIcon>
-                                <ListItemText align={isArabic ? 'right' : 'left'} primary={user ? t('app.logout') : t('app.login')} />
-                            </ListItem>
-                        </List>
-                    </Box>
-                </Drawer>
-
-                {/* admin menu */}
-                <Menu
-                    anchorEl={adminMenuAnchor}
-                    open={adminMenuOpen}
-                    onClose={closeAdminMenu}
-                    anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                    transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-                    PaperProps={{
-                        style: {
-                            minWidth: 150,
-                        },
-                    }}
-                >
-                    {user && user?.role === 'admin' && (
-                        <MenuItem sx={{ cursor: 'pointer' }} onClick={() => navigate('/dashboard')}>{t('app.adminDashboard')}</MenuItem>
-                    )}
-                    {user && user?.role === 'support' && (
-                        <MenuItem sx={{ cursor: 'pointer' }} onClick={() => navigate('/support-dashboard')}>{t('app.supportDashboard')}</MenuItem>
-                    )}
-                    {user && (user?.role === 'author' || user?.role === 'editor') && (
-                        <MenuItem sx={{ cursor: 'pointer' }} onClick={() => navigate('/blog-dashboard')}>{t('app.blogDashboard')}</MenuItem>
-                    )}
-                    {user && user.role !== 'visitor' && (
-                        <Divider sx={{ my: 1 }} />
-                    )}
-                    <MenuItem sx={{ cursor: 'pointer' }} onClick={() => navigate('/profile')}>{t('app.profile')}</MenuItem>
-                    <MenuItem sx={{ cursor: 'pointer', color: 'red', fontWeight: 'bold' }} onClick={handleLogout}>{t('app.logout')}</MenuItem>
-                </Menu>
-            </Toolbar>
-        </AppBar>
+                </Toolbar>
+            </AppBar>
+        </>
     );
 };
 
@@ -318,37 +455,48 @@ const MenuItems = ({ items }) => {
     };
 
     return (
-        <Box sx={{
-            display: { xs: 'none', md: 'flex' },
-            gap: 3,
-            alignItems: 'center',
-            flexGrow: 1,
-            justifyContent: 'space-between'
-        }}
+        <Box
+            sx={{
+                display: { xs: 'none', md: 'flex' },
+                gap: 3, // Increased gap for better spacing
+                alignItems: 'center',
+                flexGrow: 1,
+                justifyContent: 'center',
+            }}
         >
             {items.map((item, index) => (
-                <motion.div key={index} whileHover={{ scale: 1.05 }} transition={{ type: 'spring', stiffness: 300, damping: 12 }}>
+                <motion.div
+                    key={index}
+                    // whileHover={{ scale: 1.05 }} // Slightly larger hover effect
+                    transition={{ type: 'spring', stiffness: 250, damping: 15 }}
+                >
                     <Link
                         onClick={() => onClick(item.href)}
                         underline="none"
                         sx={{
-                            fontSize: 18,
-                            fontWeight: 'bold',
-                            color: 'inherit',
+                            fontSize: 22, // Adjusted for a more balanced look
+                            fontWeight: 'bold', // Refined font weight
+                            color: 'text.primary', // Ensuring the color is appropriate for text
                             position: 'relative',
                             cursor: 'pointer',
+                            textTransform: 'uppercase', // Adding uppercase for a sleek design
+                            fontFamily: 'sans-serif', // Using a sans-serif font for a modern look               
                             '&:after': {
                                 content: '""',
                                 position: 'absolute',
                                 width: '100%',
                                 transform: 'scaleX(0)',
-                                height: '5px',
-                                bottom: -5,
+                                height: '7px', // Reduced height for a subtle effect
+                                bottom: -4,
                                 left: 0,
                                 zIndex: -1,
                                 backgroundColor: 'secondary.main',
                                 transformOrigin: 'bottom right',
-                                transition: 'transform 0.25s ease-out',
+                                transition: 'transform 0.3s ease-out',
+                            },
+                            '&:focus': {
+                                outline: 'none',
+                                borderBottom: '2px solid secondary.main', // Adding focus outline for accessibility
                             },
                             '&:hover:after': {
                                 transform: 'scaleX(1)',
@@ -363,6 +511,7 @@ const MenuItems = ({ items }) => {
         </Box>
     );
 };
+
 
 
 export default HeaderSection;

@@ -13,6 +13,10 @@ import {
     Alert,
     Fade,
     Stack,
+    Dialog,
+    DialogContent,
+    DialogActions,
+    DialogTitle,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useSnackbar } from '../contexts/SnackbarProvider';
@@ -21,10 +25,11 @@ import Footer from '../components/home/Footer';
 import HeaderSection from '../components/home/HeaderSection';
 import ScrollToTopButton from '../components/common/ScrollToTopButton';
 import TestimonialForm from '../components/common/TestimonialForm';
-
+import { useAuth } from '../contexts/AuthContext';
 const RateDoctorPage = () => {
     const { t, i18n } = useTranslation();
     const { id } = useParams();
+    const { user } = useAuth();
     const isArabic = i18n.language === 'ar';
     const showSnackbar = useSnackbar();
     const navigate = useNavigate();
@@ -34,11 +39,9 @@ const RateDoctorPage = () => {
     const [newRatings, setNewRatings] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [openDialog, setOpenDialog] = useState(false);
 
-    const averageRating =
-        rating.length > 0
-            ? rating.reduce((acc, item) => acc + item.stars, 0) / rating.length
-            : 0;
+    const averageRating = rating?.length > 0 ? rating.reduce((acc, curr) => acc + curr.stars, 0) / rating.length : 0;
 
     const ratingCriteria = {
         'work skills': { ar: 'مهارات العمل', en: 'Work Skills' },
@@ -71,8 +74,7 @@ const RateDoctorPage = () => {
         setNewRatings([...updatedRatings, { name, stars: value }]);
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const handleSubmit = async () => {
         if (newRatings.length === 0) {
             showSnackbar(isArabic ? 'يرجى تقييم الطبيب' : 'Please rate the doctor', 'error');
             return;
@@ -80,9 +82,11 @@ const RateDoctorPage = () => {
         setLoading(true);
         try {
             const data = await doctorService.addRating(id, newRatings);
-            // setRating(data.rating);
+            setRating(data.rating);
             showSnackbar(isArabic ? 'تم حفظ التقييم بنجاح' : 'Ratings saved successfully', 'success');
-            navigate('/');
+            setNewRatings([]);
+            if (!user) navigate('/');
+            else setOpenDialog(true);
         } catch {
             showSnackbar(isArabic ? 'حدث خطأ' : 'An error occurred', 'error');
         } finally {
@@ -165,69 +169,115 @@ const RateDoctorPage = () => {
                                 </Box>
                             </Fade>
                         </Grid>
-
+                        <Grid item xs={12} md={4}>
+                            <Fade in timeout={1250}>
+                                <Paper elevation={3} sx={{ p: 4, boxShadow: 4 }}>
+                                    <Typography variant="h4" align="center" gutterBottom>
+                                        {isArabic ? "معلومات الطبيب" : "Doctor's Info"}
+                                    </Typography>
+                                    <Divider sx={{ mb: 3 }} />
+                                    <Stack spacing={2}>
+                                        <Typography variant="body1">
+                                            {isArabic ? 'العنوان' : 'Address'}: {doctor.address[isArabic ? 'ar' : 'en']}
+                                        </Typography>
+                                        <Typography variant="body1">
+                                            {isArabic ? 'البريد الإلكتروني' : 'Email'}: {doctor.email}
+                                        </Typography>
+                                        <Typography variant="body1">
+                                            {isArabic ? 'رقم الهاتف' : 'Phone Number'}: {doctor.phone}
+                                        </Typography>
+                                        <Typography variant="body1">
+                                            {isArabic ? 'الموقع الإلكتروني' : 'Website'}: {doctor.website}
+                                        </Typography>
+                                    </Stack>
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        fullWidth
+                                        sx={{ mt: 3, py: 1.5, boxShadow: 2, '&:hover': { boxShadow: 4 } }}
+                                        onClick={() => navigate(`/doctors/${id}`)}
+                                    >
+                                        {isArabic ? 'عرض الملف الشخصي' : 'View Profile'}
+                                    </Button>
+                                </Paper>
+                            </Fade>
+                        </Grid>
                         {/* Rating Form Section */}
                         <Grid item xs={12} md={4}>
                             <Fade in timeout={1500}>
                                 <Paper elevation={3} sx={{ p: 4, boxShadow: 4, height: '100%' }}>
                                     <Typography variant="h4" align="center" gutterBottom>
-                                        {isArabic ? 'تقييم الطبيب' : 'Rate the Doctor'}
+                                        {isArabic ? 'قيم الطبيب' : 'Rate the Doctor'}
+                                    </Typography>
+                                    <Typography variant="body1" align="center" gutterBottom>
+                                        {isArabic ? 'قيم الطبيب بناءً على الخبرة الشخصية' : 'Rate the doctor based on personal experience'}
                                     </Typography>
                                     <Divider sx={{ mb: 3 }} />
-                                    <form onSubmit={handleSubmit}>
-                                        {Object.keys(ratingCriteria).map((criteria) => (
-                                            <Box
-                                                key={criteria}
-                                                display="flex"
-                                                alignItems="center"
-                                                justifyContent="space-between"
-                                                sx={{ mb: 2 }}
-                                            >
-                                                <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                                                    {ratingCriteria[criteria][isArabic ? 'ar' : 'en']}
-                                                </Typography>
-                                                <Rating
-                                                    name={criteria}
-                                                    value={
-                                                        newRatings.find((r) => r.name === criteria)?.stars || 0
-                                                    }
-                                                    onChange={(e, value) =>
-                                                        handleRatingChange(criteria, value)
-                                                    }
-                                                    size="large"
-                                                />
-                                            </Box>
-                                        ))}
-                                        <Divider sx={{ my: 3 }} />
-                                        <Button
-                                            type="submit"
-                                            variant="contained"
-                                            color="primary"
-                                            fullWidth
-                                            disabled={loading}
-                                            sx={{
-                                                py: 1.5,
-                                                boxShadow: 2,
-                                                '&:hover': { boxShadow: 4 },
-                                            }}
+                                    {Object.keys(ratingCriteria).map((criteria) => (
+                                        <Box
+                                            key={criteria}
+                                            display="flex"
+                                            alignItems="center"
+                                            justifyContent="space-between"
+                                            sx={{ mb: 2 }}
                                         >
-                                            {isArabic ? 'أرسل' : 'Submit'}
-                                        </Button>
-                                    </form>
+                                            <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+                                                {ratingCriteria[criteria][isArabic ? 'ar' : 'en']}
+                                            </Typography>
+                                            <Rating
+                                                name={criteria}
+                                                value={
+                                                    newRatings.find((r) => r.name === criteria)?.stars || 0
+                                                }
+                                                onChange={(e, value) =>
+                                                    handleRatingChange(criteria, value)
+                                                }
+                                                size="large"
+                                            />
+                                        </Box>
+                                    ))}
+                                    <Divider sx={{ my: 3 }} />
+                                    <Button
+                                        onClick={handleSubmit}
+                                        variant="contained"
+                                        color="primary"
+                                        fullWidth
+                                        disabled={loading}
+                                        sx={{
+                                            py: 1.5,
+                                            boxShadow: 2,
+                                            '&:hover': { boxShadow: 4 },
+                                        }}
+                                    >
+                                        {isArabic ? 'أرسل' : 'Submit'}
+                                    </Button>
                                 </Paper>
                             </Fade>
                         </Grid>
-                        <Grid item xs={12} md={4}>
-                            <Paper elevation={3} sx={{ p: 4, boxShadow: 4 }}>
-                                <Typography variant="h4" align="center" gutterBottom>
-                                    {isArabic ? 'أضف توصياتك' : 'Add your Testimonial'}
-                                </Typography>
-                                <TestimonialForm />
-                            </Paper>
-                        </Grid>
+
                     </Grid>
                 )}
             </Container>
+            {/* testonal dialog */}
+            <Dialog
+                open={openDialog}
+                onClose={() => setOpenDialog(false)}
+                fullWidth
+                maxWidth="sm"
+            >
+                <DialogTitle>
+                    <Box display="flex" justifyContent="space-between" alignItems="center">
+                        <Typography variant="h5">
+                            {isArabic ? 'أضف توصياتك' : 'Add your Testimonial'}
+                        </Typography>
+                        <Button onClick={() => setOpenDialog(false)}>{isArabic ? 'إغلاق' : 'Close'}</Button>
+                    </Box>
+                </DialogTitle>
+                <DialogContent>
+                    <TestimonialForm doctorId={id} />
+                </DialogContent>
+            </Dialog>
+            <ScrollToTopButton />
             <Footer />
         </Box>
     );

@@ -115,14 +115,14 @@ const HeroSection = () => {
     <Box
       sx={{
         width: "100%",
-        height: "90vh",
+        height: { xs: '70vh', md: '80vh' },
         overflow: "hidden",
         position: "relative",
       }}
     >
       <Swiper
         modules={[Navigation, Pagination, Autoplay]}
-        navigation
+        // navigation
         pagination={{ clickable: true }}
         autoplay={{ delay: 5000 }}
         loop

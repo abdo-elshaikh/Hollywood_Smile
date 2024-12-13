@@ -22,7 +22,7 @@ const DoctorsPage = () => {
         const fetchDoctors = async () => {
             try {
                 const data = await doctorService.fetchDoctors();
-                
+
                 setDoctors(data);
             } catch (error) {
                 console.error('Error fetching doctors:', error);
@@ -130,12 +130,12 @@ const DoctorsPage = () => {
                     <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'text.primary', mb: 1 }}>
                         {isArabic ? doctor.name.ar : doctor.name.en}
                     </Typography>
-                    <Rating 
-                    name="read-only" 
-                    value={(doctor.rating?.reduce((acc, item) => acc + item.stars, 0) / doctor.rating?.length) || 0} 
-                    readOnly
-                    size="large"
-                    sx={{ mb: 1 }}
+                    <Rating
+                        name="read-only"
+                        value={(doctor.rating?.reduce((acc, item) => acc + item.stars, 0) / doctor.rating?.length) || 0}
+                        readOnly
+                        size="large"
+                        sx={{ mb: 1 }}
                     />
                     <Typography variant="subtitle1" sx={{ color: 'text.secondary', fontStyle: 'italic', mb: 2 }}>
                         {isArabic ? doctor.position.ar : doctor.position.en}
@@ -145,6 +145,9 @@ const DoctorsPage = () => {
                     </Typography>
                     <Button onClick={() => navigate(`/doctors/${doctor._id}`)} variant="contained" color="primary" sx={{ mt: 1 }}>
                         {t('doctorsPage.learnMore')}
+                    </Button>
+                    <Button onClick={() => navigate(`/rate-doctor/${doctor._id}`)} variant="outlined" color="primary" sx={{ mt: 1 }}>
+                        {isArabic ? 'تقييم' : 'Rate'} {isArabic ? 'الدكتور' : 'Doctor'}
                     </Button>
                 </CardContent>
             </Card>

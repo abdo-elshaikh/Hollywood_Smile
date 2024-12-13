@@ -26,6 +26,7 @@ import {
     BookOnline,
 } from "@mui/icons-material";
 import CountUp from "react-countup";
+import { motion } from "framer-motion";
 
 const iconList = {
     "Thumb Up": <ThumbUpOffAltSharp color="primary" fontSize="large" />,
@@ -91,66 +92,67 @@ const AchievementsSection = () => {
                 <Grid container spacing={4} justifyContent="center">
                     {achievements?.map((achievement, index) => (
                         <Grid item xs={12} sm={6} md={3} key={index}>
-                            <Card
-                                sx={{
-                                    textAlign: "center",
-                                    position: "relative",
-                                    p: 3,
-                                    borderRadius: "16px",
-                                    boxShadow: 6,
-                                    height: "100%",
-                                    background: isDark
-                                        ? theme.palette.grey[800]
-                                        : theme.palette.common.white,
-                                    transition: "transform 0.3s ease, box-shadow 0.3s ease",
-                                    "&:hover": {
-                                        transform: "scale(1.05)",
-                                        boxShadow: 12,
-                                    },
-                                }}
+                            <motion.div
+                                initial={{ opacity: 0, y: 30 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                whileHover={{ y: -10 }}
+                                transition={{ duration: index * 0.7, delay: 0.2, type: "spring" }}
                             >
-                                <Box
+                                <Card
                                     sx={{
-                                        position: "absolute",
-                                        top: 0,
-                                        right: 0,
-                                        width: 50,
-                                        height: 50,
-                                        color: theme.palette.primary.main,
-                                        display: "flex",
-                                        justifyContent: "center",
-                                        alignItems: "center",
-                                        borderRadius: '50%',
-                                        backgroundColor: theme.palette.common.white,
-                                        border: `1px solid ${theme.palette.primary.main}`,
+                                        textAlign: "center",
+                                        position: "relative",
+                                        p: 3,
+                                        borderRadius: "16px",
+                                        boxShadow: 6,
+                                        height: "100%",
+                                        background: isDark
+                                            ? theme.palette.grey[800]
+                                            : theme.palette.common.white,
+                                        transition: "transform 0.3s ease, box-shadow 0.3s ease",
                                     }}
                                 >
-                                    {iconList[achievement.icon]}
-                                </Box>
-
-                                <CardContent>
-                                    <Typography
-                                        variant="h1"
+                                    <CardMedia
+                                        component="div"
                                         sx={{
-                                            fontWeight: "bold",
+                                            display: "flex",
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                            height: 50,
                                             color: theme.palette.secondary.main,
-                                            mb: 1,
                                         }}
                                     >
-                                        <CountUp start={0} end={achievement.number} duration={10} />
-                                    </Typography>
-                                    <Typography
-                                        variant="h6"
-                                        sx={{
-                                            fontWeight: "bold",
-                                            mb: 1,
-                                            color: theme.palette.text.primary,
-                                        }}
-                                    >
-                                        {isArabic ? achievement.label.ar : achievement.label.en}
-                                    </Typography>
-                                </CardContent>
-                            </Card>
+                                        {iconList[achievement.icon]}
+                                    </CardMedia>
+
+                                    <CardContent>
+                                        <Typography
+                                            variant="h1"
+                                            sx={{
+                                                fontWeight: "bold",
+                                                color: theme.palette.secondary.main,
+                                                mb: 1,
+                                            }}
+                                        >
+                                            <CountUp
+                                                start={0}
+                                                end={achievement.number}
+                                                duration={10}
+                                            />
+                                        </Typography>
+                                        <Typography
+                                            variant="h6"
+                                            sx={{
+                                                fontWeight: "bold",
+                                                mb: 1,
+                                                color: theme.palette.text.primary,
+                                            }}
+                                        >
+                                            {isArabic ? achievement.label.ar : achievement.label.en}
+                                        </Typography>
+                                    </CardContent>
+                                </Card>
+                            </motion.div>
                         </Grid>
                     ))}
                 </Grid>

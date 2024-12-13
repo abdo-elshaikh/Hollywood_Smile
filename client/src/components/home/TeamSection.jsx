@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import {
     Box, Grid, Typography, Button, IconButton,
     Divider, Container, Card, CardContent,
-    CardMedia, Stack, Rating
+    CardMedia, Stack, Rating, Tooltip
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -55,8 +55,8 @@ const TeamSection = () => {
                 <Grid container spacing={3}>
                     <Grid item xs={12} md={4}>
                         <motion.div
-                            initial={{ opacity: 0, y: 50 }}
-                            animate={{ opacity: 1, y: 0 }}
+                            initial={{ opacity: 0, y: 60 }}
+                            whileInView={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.5 }}
                             style={{
                                 position: "relative",
@@ -64,20 +64,31 @@ const TeamSection = () => {
                                 boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
                                 padding: "20px",
                                 borderRadius: 0,
-                                border: "none",
+                                border: "1px solid #ddd",
+                                height: "100%",
+                                display: "flex",
+                                flexDirection: "column",
+                                // justifyContent: "space-between",
                             }}
                         >
-                            <Typography gutterBottom variant="h3" fontWeight="bold" component="div" mb={2}>
-                                {isArabic ? "فريقنا" : "Meet Our Team"}
-                            </Typography>
-                            <Divider sx={{ bgcolor: "text.primary" }} />
-                            <Typography variant="subtitle1" mt={2}>
-                                {isArabic ? "نحن نعمل معًا لتقديم أفضل الخدمات لك" : "We work together to provide the best services for you"}
-                            </Typography>
+                            <Stack direction="column" spacing={2} justifyContent="center" mb={10}>
+                                <Typography gutterBottom variant="h3" fontWeight="bold" component="div" mb={2}>
+                                    {isArabic ? "فريقنا" : "Meet Our Team"}
+                                </Typography>
+                                <Divider sx={{ bgcolor: "text.primary" }} />
+                                <Typography variant="subtitle1" mt={2}>
+                                    {isArabic ? "نحن نعمل معًا لتقديم أفضل الخدمات لك" : "We work together to provide the best services for you"}
+                                </Typography>
+                            </Stack>
                             <Button
                                 variant="contained"
                                 color="primary"
-                                sx={{ mt: 4, width: "100%", border: "1px solid #ddd", borderRadius: 0, }}
+                                sx={{
+                                    mt: 4,
+                                    width: "100%",
+                                    border: "1px solid #ddd",
+                                    borderRadius: 0,
+                                }}
                                 onClick={() => navigate("/contact-us")}
                             >
                                 {isArabic ? "تواصل معنا" : "Contact Us"}
@@ -88,8 +99,8 @@ const TeamSection = () => {
                     {teamMembers.map((member, index) => (
                         <Grid item xs={12} md={4} key={member.id}>
                             <motion.div
-                                initial={{ opacity: 0, y: 50 }}
-                                animate={{ opacity: 1, y: 0 }}
+                                initial={{ opacity: 0, y: 60 }}
+                                whileInView={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.5, delay: index * 0.3 }}
                             >
                                 <Card
@@ -111,8 +122,13 @@ const TeamSection = () => {
                                         alt={member.name}
                                         title={member.name}
                                         onClick={() => navigate(`/doctors/${member.id}`)}
-                                        bgcolor={darkMode ? "#333" : "#E3F2FD"}
-                                        sx={{ height: "400px", objectFit: "cover", borderBottom: "1px solid #ddd", cursor: "pointer" }}
+                                        sx={{
+                                            height: "400px",
+                                            objectFit: "cover",
+                                            borderBottom: "1px solid #ddd",
+                                            cursor: "pointer",
+                                            aspectRatio: '16/9',
+                                        }}
                                     />
                                     <Box
                                         display="flex"
@@ -127,31 +143,30 @@ const TeamSection = () => {
                                         }}
                                     >
                                         {Object.keys(member.socials).map((social, index) => (
-                                            <IconButton
-                                                key={index}
-                                                component="a"
-                                                href={member.socials[social]}
-                                                target="_blank"
-                                                sx={{
-                                                    border: "1px solid",
-                                                    borderColor: "divider",
-                                                    bgcolor: socialIcons[social].color,
-                                                    color: "common.white",
-                                                    mx: 0.7,
-                                                    boxShadow: 4,
-                                                    transition: "background-color 0.3s, color 0.3s",
-                                                    '&:hover': {
-                                                        bgcolor: "common.white",
-                                                        color: socialIcons[social].color,
-                                                        border: `1px solid ${socialIcons[social].color}`,
+                                            <Tooltip title={social.charAt(0).toUpperCase() + social.slice(1)} key={index}>
+                                                <IconButton
+                                                    component="a"
+                                                    href={member.socials[social]}
+                                                    target="_blank"
+                                                    sx={{
+                                                        border: "1px solid",
+                                                        borderColor: "divider",
+                                                        bgcolor: socialIcons[social].color,
+                                                        color: "common.white",
+                                                        mx: 0.7,
+                                                        boxShadow: 4,
                                                         transition: "background-color 0.3s, color 0.3s",
-                                                    },
-                                                }}
-                                            >
-                                                {socialIcons[social].icon}
-                                            </IconButton>
+                                                        '&:hover': {
+                                                            bgcolor: "common.white",
+                                                            color: socialIcons[social].color,
+                                                            border: `1px solid ${socialIcons[social].color}`,
+                                                        },
+                                                    }}
+                                                >
+                                                    {socialIcons[social].icon}
+                                                </IconButton>
+                                            </Tooltip>
                                         ))}
-
                                     </Box>
                                     <CardContent sx={{ flexGrow: 1, pt: 4, backgroundColor: darkMode ? "#333" : "#E3F2FD" }}>
                                         <Typography gutterBottom variant="h4" fontWeight="bold" component="div">
@@ -169,13 +184,16 @@ const TeamSection = () => {
                                             {member.description}
                                         </Typography>
                                         <Typography align="center" variant="body2" fontFamily='"Open Sans", sans-serif' color="text.secondary" mt={2}>
-                                            <Rating
-                                            
-                                                name="read-only"
-                                                size="large"
-                                                value={member.rating.reduce((acc, rating) => acc + rating.stars, 0) / member.rating.length}
-                                                readOnly
-                                            />
+                                            {member.rating && member.rating.length > 0 ? (
+                                                <Rating
+                                                    name="read-only"
+                                                    size="large"
+                                                    value={member.rating.reduce((acc, rating) => acc + rating.stars, 0) / member.rating.length}
+                                                    readOnly
+                                                />
+                                            ) : (
+                                                <Typography variant="body2" color="text.secondary">No ratings yet</Typography>
+                                            )}
                                         </Typography>
                                     </CardContent>
                                 </Card>
