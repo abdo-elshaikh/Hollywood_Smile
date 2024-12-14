@@ -8,16 +8,37 @@ import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 import { Add, Edit, Delete } from "@mui/icons-material";
 import axiosInstance from '../../services/axiosInstance';
 import { useSnackbar } from '../../contexts/SnackbarProvider';
+import { useAuth } from '../../contexts/AuthContext';
+
+
+
 
 const ManageFAQPage = () => {
+    const { user } = useAuth();
     const [faqs, setFaqs] = useState([]);
     const [open, setOpen] = useState(false);
-    const [editData, setEditData] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [tags, setTags] = useState([]);
+    const [openDetails, setOpenDetails] = useState(false);
     const showSnackbar = useSnackbar();
     const theme = useTheme();
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+    const [editData, setEditData] = useState({
+        _id: null,
+        question_en: "",
+        question_ar: "",
+        answer_en: "",
+        answer_ar: "",
+        showInHome: false,
+        available: true,
+        tags: [],
+        name: user?.name || "",
+        email: user?.email || "",
+        phone: user?.phone || ""
+    });
+
+      
+    
 
     useEffect(() => {
         fetchFAQs();
@@ -39,8 +60,7 @@ const ManageFAQPage = () => {
         setIsLoading(false);
     };
 
-    const handleOpenDialog = (faq = null) => {
-        setEditData(faq);
+    const handleOpenDialog = () => {
         setOpen(true);
     };
 
@@ -56,7 +76,7 @@ const ManageFAQPage = () => {
             } else {
                 await axiosInstance.post("/faqs", editData);
             }
-            setFaqs(faqs.map((faq) => (faq._id === editData._id ? editData : faq)));
+            fetchFAQs();
             showSnackbar("FAQ saved successfully", "success");
             handleCloseDialog();
         } catch (error) {
@@ -76,8 +96,8 @@ const ManageFAQPage = () => {
 
     const handleToggleShowInHome = async (faq) => {
         try {
-            await axiosInstance.put(`/faqs/${faq._id}`, { ...faq, showInHome: !faq.showInHome });
-            setFaqs(faqs.map((f) => (f._id === faq._id ? { ...f, showInHome: !f.showInHome } : f)));
+            await axiosInstance.put(`/faqs/${faq.id}`, { ...faq, showInHome: !faq.showInHome });
+            setFaqs(faqs.map((f) => (f._id === faq.id ? { ...f, showInHome: !f.showInHome } : f)));
             showSnackbar("FAQ toggled successfully", "success");
         } catch (error) {
             console.error("Error toggling showInHome:", error);
@@ -86,8 +106,8 @@ const ManageFAQPage = () => {
 
     const handleToggleAvailable = async (faq) => {
         try {
-            await axiosInstance.put(`/faqs/${faq._id}`, { ...faq, available: !faq.available });
-            setFaqs(faqs.map((f) => (f._id === faq._id ? { ...f, available: !f.available } : f)));
+            await axiosInstance.put(`/faqs/${faq.id}`, { ...faq, available: !faq.available });
+            setFaqs(faqs.map((f) => (f._id === faq.id ? { ...f, available: !f.available } : f)));
             showSnackbar("FAQ toggled successfully", "success");
         } catch (error) {
             console.error("Error toggling available:", error);
@@ -96,8 +116,6 @@ const ManageFAQPage = () => {
 
     const columns = [
         { field: 'name', headerName: 'Name', flex: 1 },
-        { field: 'email', headerName: 'Email', flex: 1 },
-        { field: 'phone', headerName: 'Phone', flex: 1 },
         { field: 'question_en', headerName: 'Question (EN)', flex: 2 },
         { field: 'question_ar', headerName: 'Question (AR)', flex: 2 },
         {
@@ -134,12 +152,40 @@ const ManageFAQPage = () => {
                 <GridActionsCellItem
                     icon={<Delete />}
                     label="Delete"
-                    onClick={() => handleDeleteFAQ(params.row._id)}
+                    onClick={() => handleDeleteFAQ(params.row.id)}
                     color="error"
                 />
             ]
         }
     ];
+
+    const rows = faqs.map((faq) => ({
+        id: faq._id,
+        name: faq.name,
+        email: faq.email,
+        phone: faq.phone,
+        question_en: faq.question_en,
+        question_ar: faq.question_ar,
+        answer_en: faq.answer_en,
+        answer_ar: faq.answer_ar,
+        showInHome: faq.showInHome,
+        available: faq.available
+    }));
+
+
+    // const addDemoData = async () => {
+    //     try {
+    //         await Promise.all(demoData.map(async (faq) => {
+    //             if (!faqs.find((f) => f.question_en === faq.question_en)) {
+    //                 await axiosInstance.post("/faqs", faq);
+    //             }
+    //         }));
+    //         fetchFAQs();
+    //         showSnackbar("Demo data added successfully", "success");
+    //     } catch (error) {
+    //         console.error("Error adding demo data:", error);
+    //     }
+    // }
 
     return (
         <Box >
@@ -147,11 +193,22 @@ const ManageFAQPage = () => {
                 variant="contained"
                 color="primary"
                 startIcon={<Add />}
-                onClick={() => handleOpenDialog()}
+                onClick={handleOpenDialog}
                 sx={{ mb: 2 }}
             >
                 Add FAQ
             </Button>
+            {/* add demo data */}
+            {/* <Button
+                variant="contained"
+                color="secondary"
+                startIcon={<Add />} 
+                onClick={addDemoData}
+                sx={{ mb: 2, ml: 2 }}
+            >
+                Add Demo Data
+            </Button> */}
+
 
             <Box sx={{ height: 500, width: '100%', backgroundColor: 'background.default', overflow: 'auto' }}>
                 {isSmallScreen ? (
@@ -196,7 +253,7 @@ const ManageFAQPage = () => {
                     </List>
                 ) : (
                     <DataGrid
-                        rows={faqs}
+                        rows={rows}
                         columns={columns}
                         pageSize={10}
                         rowsPerPageOptions={[10]}
@@ -207,6 +264,7 @@ const ManageFAQPage = () => {
             </Box>
 
             <FAQDialog open={open} onClose={handleCloseDialog} faqData={editData} setFaqData={setEditData} onSave={handleSaveFAQ} />
+            <FaqDetails open={openDetails} onClose={() => setOpenDetails(false)} faq={editData} />
         </Box>
     );
 };
@@ -269,6 +327,39 @@ const FAQDialog = ({ open, onClose, faqData, setFaqData, onSave }) => {
             <DialogActions>
                 <Button onClick={onClose}>Cancel</Button>
                 <Button onClick={onSave} variant="contained" color="primary">Save</Button>
+            </DialogActions>
+        </Dialog>
+    );
+};
+
+const FaqDetails = ({ faq, onClose, open }) => {
+    return (
+        <Dialog open={open} onClose={onClose}>
+            <DialogTitle>{faq.question_en}</DialogTitle>
+            <DialogContent>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                    <Typography variant="body1">Name: {faq.name}</Typography>
+                    <Typography variant="body1">Email: {faq.email}</Typography>
+                    <Typography variant="body1">Phone: {faq.phone}</Typography>
+                </Box>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                    <Typography variant="body1">Question (EN): {faq.question_en}</Typography>
+                    <Typography variant="body1">Question (AR): {faq.question_ar}</Typography>
+                </Box>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                    <Typography variant="body1">Answer (EN): {faq.answer_en}</Typography>
+                    <Typography variant="body1">Answer (AR): {faq.answer_ar}</Typography>
+                </Box>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                    <Typography variant="body1">Show on Home: {faq.showInHome ? 'Yes' : 'No'}</Typography>
+                    <Typography variant="body1">Available: {faq.available ? 'Yes' : 'No'}</Typography>
+                </Box>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                    <Typography variant="body1">Tags: {faq.tags.join(', ')}</Typography>
+                </Box>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={onClose}>Close</Button>
             </DialogActions>
         </Dialog>
     );

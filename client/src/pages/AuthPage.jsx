@@ -58,7 +58,13 @@ const AuthPage = () => {
                             <Typography
                                 variant="h3"
                                 gutterBottom
-                                sx={{ color: isDarkMode ? "#ffffff" : "primary.main" }}
+                                sx={{
+                                    color: isDarkMode ? "#ffffff" : "primary.main",
+                                    fontWeight: "bold",
+                                    fontFamily: "Almarai Mono",
+                                    textShadow: "1px 1px 4px rgba(0, 0, 0, 0.2)",
+                                    mb: 2,
+                                }}
                             >
                                 {t("app.welcome")}
                             </Typography>
@@ -69,6 +75,8 @@ const AuthPage = () => {
                                     color: isDarkMode ? "#f0f0f0" : "secondary.main",
                                     fontWeight: "bold",
                                     fontFamily: "Almarai Mono",
+                                    textShadow: "1px 1px 4px rgba(0, 0, 0, 0.2)",
+                                    mb: 2,
                                 }}
                             >
                                 {t("app.name")}
@@ -76,7 +84,13 @@ const AuthPage = () => {
                             <Typography
                                 variant="h6"
                                 align={document.documentElement.dir === "rtl" ? "right" : "left"}
-                                sx={{ color: isDarkMode ? "#bbbbbb" : "text.secondary", mt: 2, fontFamily: "Quicksand" }}
+                                sx={{
+                                    color: isDarkMode ? "#bbbbbb" : "text.secondary",
+                                    mt: 2,
+                                    fontFamily: "Quicksand",
+                                    display: { xs: "none", md: "block" },
+                                    textShadow: "1px 1px 4px rgba(0, 0, 0, 0.2)",
+                                }}
                             >
                                 {t("app.description")}
                             </Typography>

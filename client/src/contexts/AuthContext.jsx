@@ -113,9 +113,11 @@ const AuthProvider = ({ children }) => {
         }
     }, [user]);
 
+    const value = { user, loading, error, register, login, logout, fetchUserProfile, changeUserPassword, EditUserProfile };
+
 
     return (
-        <AuthContext.Provider value={{ user, loading, error, register, login, logout, fetchUserProfile, changeUserPassword, EditUserProfile }}>
+        <AuthContext.Provider value={value}>
             {!loading && children}
         </AuthContext.Provider>
     );

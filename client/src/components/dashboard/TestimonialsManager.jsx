@@ -20,8 +20,9 @@ const TestimonialsManager = () => {
     // Fetch testimonials from the service
     const fetchTestimonials = async () => {
         try {
-            const { data } = await axiosInstance.get('/testimonials');
-            setTestimonials(data.sort((a, b) => b.createdAt - a.createdAt));
+            const res = await axiosInstance.get('/testimonials');
+            const sortedTestimonials = res.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            setTestimonials(sortedTestimonials);
         } catch (error) {
             console.error('Failed to fetch testimonials:', error);
         }

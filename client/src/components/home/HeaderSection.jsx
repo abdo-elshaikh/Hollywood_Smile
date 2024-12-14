@@ -24,7 +24,7 @@ import {
     Settings, Language, Logout, Login,
     SettingsApplications, AccountCircle, RssFeed,
     Info, People, PhotoLibrary, ContactMail, Call,
-    Home, LocalOffer, BookOnline, Medication,
+    Home, LocalOffer, BookOnline, Medication, Close,
     MedicalInformation, Handyman, DriveFileMove
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
@@ -57,7 +57,7 @@ const HeaderSection = () => {
     const isDark = mode === 'dark';
 
     useEffect(() => {
-        const handleScroll = () => setIsScrolled(window.scrollY > 100);
+        const handleScroll = () => setIsScrolled(window.scrollY > 60);
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
@@ -184,7 +184,7 @@ const HeaderSection = () => {
                         sx={{ display: { xs: 'flex', md: 'none' } }}
                         onClick={toggleMobileMenu}
                     >
-                        <MenuIcon sx={{ fontSize: 40 }} />
+                        {mobileMenuOpen ? <Close sx={{ color: 'text.primary', width: 30, height: 30 }} /> : <MenuIcon sx={{ color: 'text.primary', width: 30, height: 30 }} />}
                     </IconButton>
 
                     {/* Mobile Menu Drawer */}
@@ -480,7 +480,7 @@ const MenuItems = ({ items }) => {
                             position: 'relative',
                             cursor: 'pointer',
                             textTransform: 'uppercase', // Adding uppercase for a sleek design
-                            fontFamily: 'sans-serif', // Using a sans-serif font for a modern look               
+                            fontFamily: 'sans-serif ', // Using a sans-serif font for a modern look               
                             '&:after': {
                                 content: '""',
                                 position: 'absolute',

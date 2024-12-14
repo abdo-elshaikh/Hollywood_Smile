@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Accordion, AccordionSummary, AccordionDetails, TextField, Button, Grid, Divider, Card, CardContent, IconButton } from '@mui/material';
+import {
+    Box, Typography, Accordion, AccordionSummary, AccordionDetails,
+    TextField, Button, Grid, Divider, Card, CardContent, IconButton, Chip,
+} from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { motion } from 'framer-motion';
 import { useClinicContext } from '../contexts/ClinicContext';
@@ -17,7 +20,7 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 
 // Main FAQ Page
 const FaqPage = () => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     return (
         <>
             <HeaderSection />
@@ -33,13 +36,13 @@ const FaqPage = () => {
 // Layout for FAQ Sections and Form
 const FaqLayout = () => (
     <Grid container spacing={3} justifyContent="center" sx={{ p: 3 }}>
-        <Grid item xs={12} md={7}>
+        <Grid item xs={12} >
             <FaqSection />
         </Grid>
-        <Grid item xs={12} md={5}>
+        {/* <Grid item xs={12} md={5}>
             <FaqForm />
             <AdditionalInfo />
-        </Grid>
+        </Grid> */}
     </Grid>
 );
 
@@ -47,6 +50,7 @@ const FaqLayout = () => (
 const AdditionalInfo = () => {
     const { clinicInfo } = useClinicContext();
     const { t, i18n } = useTranslation();
+
 
     return (
         <Box sx={{ my: 4, p: 3, backgroundColor: 'background.default', borderRadius: 2 }}>
@@ -107,87 +111,126 @@ const AdditionalInfo = () => {
 };
 
 
-// FAQ Section with Accordion
+// FAQ Section Component
 const FaqSection = () => {
-    const [faqs, setFaqs] = useState([]);
     const { t, i18n } = useTranslation();
     const isArabic = i18n.language === 'ar';
 
-    const faqData = [
-        {
-            category: 'General',
-            questions: [
-                { question: 'What is the clinic working hours?', answer: 'The clinic is open from 9:00 AM to 5:00 PM, Sunday to Thursday.' },
-                { question: 'Do I need to book an appointment?', answer: 'Yes, we recommend booking an appointment to avoid waiting time.' },
-                { question: 'What are the accepted payment methods?', answer: 'We accept cash, credit cards, and insurance.' }
-            ]
-        },
-        {
-            category: 'Services',
-            questions: [
-                { question: 'What services do you offer?', answer: 'We offer a wide range of services including dental, dermatology, and general medicine.' },
-                { question: 'Do you provide home visits?', answer: 'Yes, we provide home visits for elderly and disabled patients.' },
-                { question: 'Can I get a prescription without visiting the clinic?', answer: 'Yes, you can get a prescription by contacting our support team.' }
-            ]
-        },
-        {
-            category: 'Appointments',
-            questions: [
-                { question: 'How can I book an appointment?', answer: 'You can book an appointment by calling our clinic or using the online booking system.' },
-                { question: 'Can I reschedule my appointment?', answer: 'Yes, you can reschedule your appointment by contacting our support team.' },
-                { question: 'What is the cancellation policy?', answer: 'You can cancel your appointment up to 24 hours before the scheduled time.' }
-            ]
+    const [tags, setTags] = useState([]);
+    const [faqs, setFaqs] = useState([]);
+    const [selectedTag, setSelectedTag] = useState('');
+
+    const fetchFaqs = async () => {
+        try {
+            const response = await axiosInstance.get('/faqs');
+            if (response.status === 200) {
+                setFaqs(response.data);
+                setTags([...new Set(response.data.flatMap(faq => faq.tags))]);
+            } else {
+                console.error('Failed to fetch FAQs');
+            }
+        } catch (error) {
+            console.error('Failed to fetch FAQs', error);
         }
-    ];
+    };
 
     useEffect(() => {
-        const fetchFaqs = async () => {
-            try {
-                const response = await axiosInstance.get('/faqs');
-                const faqs = response.data.filter(faq => faq.available);
-                setFaqs(faqs);
-            } catch (error) {
-                console.error('Error fetching FAQs:', error);
-            }
-        };
         fetchFaqs();
     }, []);
+
+    const faqsData = faqs.map((faq) => ({
+        id: faq._id,
+        question: isArabic ? faq.question_ar : faq.question_en,
+        answer: isArabic ? faq.answer_ar : faq.answer_en,
+        tags: faq.tags,
+    }));
+
+    // Group FAQs by tag
+    const groupedFaqs = faqsData.reduce((groups, faq) => {
+        faq.tags.forEach((tag) => {
+            if (!groups[tag]) groups[tag] = [];
+            groups[tag].push(faq);
+        });
+        return groups;
+    }, {});
 
     return (
         <motion.div
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
-            style={{ padding: '24px', backgroundColor: 'background.paper', borderRadius: 8, border: '1px solid', height: '100%' }}
+            style={{
+                padding: '24px',
+                borderRadius: 8,
+                border: '1px solid #ccc',
+                backgroundColor: 'background.paper',
+                animationIterationCount: 1,
+            }}
         >
-            <Typography variant="h4" align="center" gutterBottom>
-                {t('faqPage.title')}
-            </Typography>
-            <Typography variant="body1" align="center" color="textSecondary" paragraph>
-                {t('faqPage.subtitle')}
-            </Typography>
-            {faqData.map((section, index) => (
-                <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.2 }}
-                >
-                    <Typography variant="h6" sx={{ mt: 4, fontWeight: 'bold', textTransform: 'uppercase', color: 'primary.main' }}>
-                        {section.category}
+            <Grid container spacing={3} justifyContent="center">
+                <Grid item xs={12} md={6}>
+                    <Typography variant="h4" align="center" gutterBottom>
+                        {isArabic ? 'الأسئلة الشائعة' : 'Frequently Asked Questions'}
                     </Typography>
-                    {section.questions.map((item, i) => (
-                        <Accordion key={i} sx={{ mt: 2, backgroundColor: 'rgba(0, 0, 0, 0.05)' }}>
-                            <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ bgcolor: 'transparent' }}>
-                                <Typography>{item.question}</Typography>
-                            </AccordionSummary>
-                            <AccordionDetails>
-                                <Typography color="textSecondary">{item.answer}</Typography>
-                            </AccordionDetails>
-                        </Accordion>
+                    <Typography variant="body1" align="center" color="textSecondary" paragraph>
+                        {isArabic ? 'هنا يمكنك العثور على الأسئلة الشائعة حول خدماتنا' : 'Here you can find frequently asked questions about our services'}
+                    </Typography>
+                    {/* Tag Filters */}
+                    {tags.length > 0 && (
+                        <Box sx={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: 1, mb: 2 }}>
+                            <Chip label={isArabic ? 'الكل' : 'All'} onClick={() => setSelectedTag('')} color={selectedTag ? 'default' : 'primary'} />
+                            {groupedFaqs && Object.keys(groupedFaqs).map((tag) => (
+                                <Chip key={tag} label={tag} onClick={() => setSelectedTag(tag)} color={selectedTag === tag ? 'primary' : 'default'} />
+                            ))}
+                        </Box>
+                    )}
+                </Grid>
+                <Grid item xs={12} md={6}
+                    sx={{
+                        height: '100vh',
+                        overflow: 'auto',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 2,
+                        px: { xs: 2, md: 0 },
+                        borderLeft: isArabic ? '1px solid #ddd' : 'none',
+                        borderRight: isArabic ? 'none' : '1px solid #ddd',
+                    }}
+                >
+                    {Object.keys(groupedFaqs).map((tag) => (
+                        (!selectedTag || selectedTag === tag) && (
+                            <Box key={tag} sx={{ mb: 2 }}>
+                                <Typography variant="h5" color="primary" sx={{ mb: 2 }}>
+                                    {tag}
+                                </Typography>
+                                <Box sx={{ mt: 2 }}>
+                                    {groupedFaqs[tag].map((faq) => (
+                                        <Card key={faq.id} sx={{ mb: 2, boxShadow: 3 }}>
+                                            <Accordion sx={{ border: 'none' }}>
+                                                <AccordionSummary
+                                                    expandIcon={<ExpandMoreIcon />}
+                                                    aria-controls="panel1a-content"
+                                                    id="panel1a-header"
+                                                    sx={{ backgroundColor: 'background.default' }}
+                                                >
+                                                    <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                                                        {faq.question}
+                                                    </Typography>
+                                                </AccordionSummary>
+                                                <AccordionDetails>
+                                                    <Typography variant="body1" sx={{ color: '#333' }}>
+                                                        {faq.answer}
+                                                    </Typography>
+                                                </AccordionDetails>
+                                            </Accordion>
+                                        </Card>
+                                    ))}
+                                </Box>
+                            </Box>
+                        )
                     ))}
-                </motion.div>
-            ))}
+                </Grid>
+            </Grid>
         </motion.div>
     );
 };

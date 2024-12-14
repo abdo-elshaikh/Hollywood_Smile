@@ -17,6 +17,7 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
     try {
         const faq = await FAQ.create(req.body);
+        if (!faq) return res.status(404).json({ message: 'FAQ not found' });
         res.status(201).json(faq);
     } catch (error) {
         res.status(500).json({ message: error.message });
