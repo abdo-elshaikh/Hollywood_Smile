@@ -194,16 +194,8 @@ const HeaderSection = () => {
                         onClose={closeMobileMenu}
                         sx={{
                             display: { xs: 'block', md: 'none' },
-                            '& .MuiDrawer-paper': {
-                                width: '100%',
-                                bgcolor: 'background.paper',
-                                paddingTop: '16px',  // Add some padding for better spacing
-                                transition: 'transform 0.3s ease', // Smooth transition for opening/closing
-                            },
                             zIndex: 10,
-                            '& .MuiDrawer-paper .MuiList-root': {
-                                padding: 0,
-                            },
+                            animation: 'slide-down 0.8s ease',
                         }}
                     >
                         <Toolbar />

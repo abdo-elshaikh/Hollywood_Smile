@@ -123,12 +123,11 @@ const PricingSection = () => {
                     >
                         <Swiper
                             modules={[Autoplay, Pagination]}
-                            spaceBetween={20}
+                            spaceBetween={15}
                             slidesPerView={1}
                             autoplay={{
-                                delay: 3000,
+                                delay: 5000,
                                 disableOnInteraction: false,
-                                pauseOnMouseEnter: false,
                                 pauseOnMouseEnter: false,
                             }}
                             loop={true}

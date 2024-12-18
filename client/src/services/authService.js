@@ -1,17 +1,12 @@
 import axiosInstance from './axiosInstance';
 
 
-const loginUser = async (userData, rememberMe) => {
+const loginUser = async (userData) => {
     try {
         const response = await axiosInstance.post('/auth/login', userData);
         if (response.status === 200 && response.data.token) {
-            if (!rememberMe) {
-                sessionStorage.setItem('token', response.data.token);
-                sessionStorage.setItem('user', JSON.stringify(response.data.user));
-            } else {
-                localStorage.setItem('token', response.data.token);
-                localStorage.setItem('user', JSON.stringify(response.data.user));
-            }
+            localStorage.setItem('token', response.data.token);
+            localStorage.setItem('user', JSON.stringify(response.data.user));
         }
         return response.data;
     } catch (error) {

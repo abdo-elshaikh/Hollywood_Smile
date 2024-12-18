@@ -64,6 +64,7 @@ const AuthPage = () => {
                                     fontFamily: "Almarai Mono",
                                     textShadow: "1px 1px 4px rgba(0, 0, 0, 0.2)",
                                     mb: 2,
+                                    fontSize: { xs: "2.5rem", sm: "3rem" },
                                 }}
                             >
                                 {t("app.welcome")}
@@ -77,6 +78,7 @@ const AuthPage = () => {
                                     fontFamily: "Almarai Mono",
                                     textShadow: "1px 1px 4px rgba(0, 0, 0, 0.2)",
                                     mb: 2,
+                                    fontSize: { xs: "2.5rem", sm: "3rem" },
                                 }}
                             >
                                 {t("app.name")}

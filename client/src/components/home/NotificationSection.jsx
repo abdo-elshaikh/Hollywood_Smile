@@ -29,7 +29,10 @@ const NotificationSection = () => {
           margin: isArabic ? '0 300px 0 0' : '0 0 0 300px',
         }}
       >
-        <Typography sx={{ color: 'inherit', fontWeight: 'bold', fontSize: '20px' }}>
+        <Typography sx={{ color: 'inherit', fontWeight: 'bold', fontSize: { xs: '1.3rem', sm: '1.5rem' } }}>
+          <strong>
+            {isArabic ? notification.title.ar : notification.title.en} :{' '}
+          </strong>
           {isArabic ? notification.description.ar : notification.description.en}
         </Typography>
       </Box>

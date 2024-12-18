@@ -6,15 +6,22 @@ import { useTranslation } from "react-i18next";
 import { useCustomTheme } from "../../contexts/ThemeProvider";
 import { useNavigate } from "react-router-dom";
 import { keyframes } from "@mui/system";
+import bgImage from '../../assets/header-logo.jpeg';
+
 
 // Keyframe animations
 const fadeIn = keyframes`
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from { opacity: 0; scale: 0.8; }
+  to { opacity: 1; scale: 1; }
 `;
 
 const slideInDown = keyframes`
   from { transform: translateY(-100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+`;
+
+const slideInUp = keyframes`
+  from { transform: translateY(100%); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 `;
 
@@ -43,7 +50,8 @@ const baseUrl = import.meta.env.VITE_SUPABASE_VIEW_URL + '/uploads/slides';
 const carouselItems = [
   {
     id: 1,
-    image: `${baseUrl}/slide_1.jpg`,
+    image: `${baseUrl}/slide_4.jpg`,
+    // image: bgImage,
     title: {
       ar: "ابتسامة صحية",
       en: "Healthy Smile"
@@ -122,11 +130,13 @@ const HeroSection = () => {
     >
       <Swiper
         modules={[Navigation, Pagination, Autoplay]}
-        // navigation
         pagination={{ clickable: true }}
         autoplay={{ delay: 5000 }}
         loop
-        style={{ height: "100%" }}
+        style={{
+          height: "100%",
+          width: "100%",
+        }}
       >
         {carouselItems.map((item) => (
           <SwiperSlide key={item.id}>
@@ -135,13 +145,23 @@ const HeroSection = () => {
               sx={{
                 width: "100%",
                 height: "100%",
-                backgroundImage: `url(${item.image})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
                 position: "relative",
-                animation: `${fadeIn} 2s ease-in-out`,
               }}
             >
+              {/* Background image */}
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  height: "100%",
+                  backgroundImage: `url(${item.image})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                  zIndex: 0,
+                }}
+              />
               {/* Overlay */}
               <Box
                 sx={{

@@ -6,6 +6,8 @@ import { useTranslation } from 'react-i18next';
 import { ArrowForward } from '@mui/icons-material';
 import { useCustomTheme } from '../../contexts/ThemeProvider';
 import detectImage from '../../assets/images/detect-booking.jpg';
+import coverImage from '../../assets/cover_pafe.jpg';
+
 
 const DetectBookingSection = () => {
     const navigate = useNavigate();

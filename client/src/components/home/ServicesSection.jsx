@@ -183,7 +183,7 @@ const ServicesSection = () => {
 
                             {/* List Section */}
                             <List>
-                                {services.map((item, index) => (
+                                {services.slice(0, 7).map((item, index) => (
                                     <motion.div
                                         key={index}
                                         initial={{ opacity: 0, x: 30 }}

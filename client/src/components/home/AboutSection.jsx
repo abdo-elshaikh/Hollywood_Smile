@@ -54,148 +54,173 @@ const AboutSection = () => {
         };
 
     return (
-        <Container maxWidth="lg" sx={{ py: 6 }}>
-            <Grid container spacing={4} justifyContent="center">
-                {/* Left Column (Why Choose Us Section) */}
-                <Grid item xs={12} md={6}>
-                    <Box
-                        elevation={3}
-                        sx={{
-                            padding: 3,
-                            display: 'flex',
-                            flexDirection: 'column',
-                            justifyContent: 'flex-start',
-                            // alignItems: 'center',
-                            height: '100%',
-                        }}
-                    >
-                        <Typography align={isArabic ? 'right' : 'left'} variant="h4" fontWeight="bold" color="primary.main" mb={2}>
-                            {content.whyChooseUs}
-                        </Typography>
-                        <Divider sx={{ mb: 2, width: '50%', mx: 0, borderColor: 'primary.light' }} />
-                        <List>
-                            {content.chooseUsDetails.map((item, index) => (
-                                <motion.div
-                                    key={index}
-                                    initial={{ opacity: 0, x: 50 }}
-                                    whileInView={{ opacity: 1, x: 0 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ duration: 0.5, delay: index * 0.2 }}
-                                >
-                                    <ListItem
-                                        key={index}
-                                        sx={{
-                                            alignItems: 'center',
-                                            borderBottom: '1px solid',
-                                            '&:hover': {
-                                                backgroundColor: 'action.hover',
-                                                borderRadius: 1,
-                                            },
-                                            mb: 2,
-                                        }}
-                                    >
-                                        <ListItemIcon sx={{ minWidth: 50, color: 'primary.main' }}>
-                                            {[<LooksOne />, <LooksTwo />, <Looks3 />, <Looks4 />][index]}
-                                        </ListItemIcon>
-                                        <ListItemText
-                                            primary={
-                                                <Typography align={isArabic ? 'right' : 'left'} variant="h6" fontWeight="bold" color="text.primary">
-                                                    {item.title}
-                                                </Typography>
-                                            }
-                                            secondary={
-                                                <Typography align={isArabic ? 'right' : 'left'} variant="body2" color="text.secondary">
-                                                    {item.description}
-                                                </Typography>
-                                            }
-                                            primaryTypographyProps={{ variant: 'h6', fontWeight: 'bold', color: 'text.primary' }}
-                                            secondaryTypographyProps={{ variant: 'body2', color: 'text.secondary' }}
-                                        />
-                                    </ListItem>
-                                </motion.div>
-                            ))}
-                        </List>
-                        <Button
-                            variant="text"
-                            color="primary"
-                            text="primary"
-                            sx={{ mt: 2, px: 4, py: 1, alignSelf: 'start' }}
-                        >
-                            {isArabic ? 'اقرأ المزيد' : 'Read More'}
-                        </Button>
-                    </Box>
-                </Grid>
+        <Box
+            component={motion.div}
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
 
-                {/* Right Column (Open Hours Section) */}
-                <Grid item xs={12} md={6}
-                    sx={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        px: { xs: 0, md: 2 },
-                    }}
-                >
-                    <Card
-                        elevation={3}
-                        sx={{
-                            borderRadius: 2,
-                            boxShadow: 4,
-                            backgroundColor: isDark ? "#333" : "#E3F2FD",
-                            py: 3,
-                            px: { xs: 0, md: 2 },
-                            display: 'flex',
-                            flexDirection: 'column',
-                            // alignItems: 'center',
-                            height: '100%',
-                        }}
-                    >
-                        <CardContent>
-                            <Typography align="center" variant="h4" fontWeight="bold" color="primary.main" mb={2}>
-                                {t('appointmentSection.openHours.title')}
+        >
+            <Container maxWidth="lg" sx={{ py: 6 }}>
+                <Grid container spacing={4} justifyContent="center">
+                    {/* Left Column (Why Choose Us Section) */}
+                    <Grid item xs={12} md={6}>
+                        <Box
+                            elevation={3}
+                            sx={{
+                                padding: 3,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'flex-start',
+                                // alignItems: 'center',
+                                height: '100%',
+                            }}
+                        >
+                            <Typography align={isArabic ? 'right' : 'left'} variant="h4" fontWeight="bold" color="primary.main" mb={2}>
+                                {content.whyChooseUs}
                             </Typography>
-                            <Divider sx={{ mb: 2, width: '50%', mx: 'auto', borderColor: 'primary.light' }} />
+                            <Divider sx={{ mb: 2, width: '50%', mx: 0, borderColor: 'primary.light' }} />
                             <List>
-                                {Object.keys(clinicInfo?.openHours).map((day, index) => (
-                                    <ListItem
+                                {content.chooseUsDetails.map((item, index) => (
+                                    <motion.div
                                         key={index}
-                                        sx={{
-                                            alignItems: 'center',
-                                            width: '100%',
-                                            '&:hover': {
-                                                backgroundColor: 'action.hover',
-                                                borderRadius: 1,
-                                            },
-                                        }}
+                                        initial={{ opacity: 0, x: 50 }}
+                                        whileInView={{ opacity: 1, x: 0 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ duration: 0.5, delay: index * 0.2 }}
                                     >
-                                        <ListItemIcon sx={{ minWidth: 40, color: 'primary.main' }}>
-                                            <AccessTime />
-                                        </ListItemIcon>
-                                        <ListItemText
-                                            primary={
-                                                <Box display="flex" alignItems="center" gap={2}>
-                                                    <Typography variant="h6" fontWeight="bold" color="text.primary">
-                                                        {t(`days.${day}`)} :
+                                        <ListItem
+                                            key={index}
+                                            sx={{
+                                                alignItems: 'center',
+                                                borderBottom: '1px solid',
+                                                '&:hover': {
+                                                    backgroundColor: 'action.hover',
+                                                    borderRadius: 1,
+                                                },
+                                                mb: 2,
+                                            }}
+                                        >
+                                            <ListItemIcon sx={{ minWidth: 50, color: 'primary.main' }}>
+                                                {[<LooksOne />, <LooksTwo />, <Looks3 />, <Looks4 />][index]}
+                                            </ListItemIcon>
+                                            <ListItemText
+                                                primary={
+                                                    <Typography align={isArabic ? 'right' : 'left'} variant="h6" fontWeight="bold" color="text.primary">
+                                                        {item.title}
                                                     </Typography>
-                                                    {clinicInfo?.openHours[day]?.isClosed ? (
-                                                        <Typography color="text.secondary">
-                                                            {t('days.closed')}
-                                                        </Typography>
-                                                    ) : (
-                                                        <Typography color="text.primary">
-                                                            {t('days.from')} {clinicInfo?.openHours[day]?.from.replace()} - {t('days.to')} {clinicInfo?.openHours[day]?.to}
-                                                        </Typography>
-                                                    )}
-                                                </Box>
-                                            }
-                                        />
-                                    </ListItem>
+                                                }
+                                                secondary={
+                                                    <Typography align={isArabic ? 'right' : 'left'} variant="body2" color="text.secondary">
+                                                        {item.description}
+                                                    </Typography>
+                                                }
+                                                primaryTypographyProps={{ variant: 'h6', fontWeight: 'bold', color: 'text.primary' }}
+                                                secondaryTypographyProps={{ variant: 'body2', color: 'text.secondary' }}
+                                            />
+                                        </ListItem>
+                                    </motion.div>
                                 ))}
                             </List>
-                        </CardContent>
-                    </Card>
+                            <Button
+                                variant="text"
+                                color="primary"
+                                text="primary"
+                                sx={{ mt: 2, px: 4, py: 1, alignSelf: 'start' }}
+                            >
+                                {isArabic ? 'اقرأ المزيد' : 'Read More'}
+                            </Button>
+                        </Box>
+                    </Grid>
+
+                    {/* Right Column (Open Hours Section) */}
+                    <Grid item xs={12} md={6}
+                        sx={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            px: { xs: 0, md: 2 },
+                        }}
+                    >
+                        <Card
+                            elevation={3}
+                            sx={{
+                                borderRadius: 2,
+                                boxShadow: 4,
+                                backgroundColor: isDark ? "#333" : "#E3F2FD",
+                                py: 3,
+                                px: { xs: 0, md: 2 },
+                                display: 'flex',
+                                flexDirection: 'column',
+                                // alignItems: 'center',
+                                height: '100%',
+                            }}
+                        >
+                            <CardContent>
+                                <Typography align="center" variant="h4" fontWeight="bold" color="primary.main" mb={2}>
+                                    {t('appointmentSection.openHours.title')}
+                                </Typography>
+                                <Divider sx={{ mb: 2, width: '50%', mx: 'auto', borderColor: 'primary.light' }} />
+                                <List>
+                                    {Object.keys(clinicInfo?.openHours).map((day, index) => (
+                                        <ListItem
+                                            key={index}
+                                            sx={{
+                                                alignItems: 'center',
+                                                width: '100%',
+                                                '&:hover': {
+                                                    backgroundColor: 'action.hover',
+                                                    borderRadius: 1,
+                                                },
+                                            }}
+                                        >
+                                            <ListItemIcon sx={{ minWidth: 40, color: 'primary.main' }}>
+                                                <AccessTime />
+                                            </ListItemIcon>
+                                            <ListItemText
+                                                primary={
+                                                    <Box display="flex" alignItems="center" gap={2}>
+                                                        <Typography
+                                                            variant="h6"
+                                                            color="text.primary"
+                                                            sx={{
+                                                                textTransform: 'capitalize',
+                                                                textAlign: isArabic ? 'right' : 'left',
+                                                                fontWeight: 'bold',
+                                                                fontSize: { xs: '1rem', sm: '1.2rem' },
+                                                            }}
+                                                        >
+                                                            {t(`days.${day}`)} :
+                                                        </Typography>
+                                                        {clinicInfo?.openHours[day]?.isClosed ? (
+                                                            <Typography
+                                                                color="text.secondary"
+                                                                fontWeight="bold"
+                                                                sx={{ fontSize: { xs: '1rem', sm: '1.2rem' } }}
+                                                            >
+                                                                {t('days.closed')}
+                                                            </Typography>
+                                                        ) : (
+                                                            <Typography
+                                                                color="text.primary"
+                                                                textDecoration="underline"
+                                                                sx={{ fontSize: { xs: '1rem', sm: '1.2rem' } }}
+                                                            >
+                                                                {t('days.from')}
+                                                                {clinicInfo?.openHours[day]?.from.toLowerCase().replace(/am|pm/g, (match) => t(`days.${match}`))} - {t('days.to')} {clinicInfo?.openHours[day]?.to.toLowerCase().replace(/am|pm/g, (match) => t(`days.${match}`))}
+                                                            </Typography>
+                                                        )}
+                                                    </Box>
+                                                }
+                                            />
+                                        </ListItem>
+                                    ))}
+                                </List>
+                            </CardContent>
+                        </Card>
+                    </Grid>
                 </Grid>
-            </Grid>
-        </Container>
+            </Container>
+        </Box>
     );
 };
 

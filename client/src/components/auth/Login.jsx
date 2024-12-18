@@ -27,7 +27,6 @@ const Login = () => {
     const [formData, setFormData] = useState({ identifier: "", password: "" });
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
-    const [rememberMe, setRememberMe] = useState(false);
     const showSnackbar = useSnackbar();
     const navigate = useNavigate();
     document.title = "HSC | Login";
@@ -39,7 +38,7 @@ const Login = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            const user = await login(formData, rememberMe);
+            const user = await login(formData);
             if (!user) {
                 showSnackbar(isArabic? "اسم المستخدم او كلمة المرور غير صحيحة" : "Invalid username or password", "error");
                 return;
@@ -155,21 +154,6 @@ const Login = () => {
                     }}
                     sx={{ mb: 2 }}
                 />
-
-                <FormControlLabel
-                    control={
-                        <Checkbox
-                            checked={rememberMe}
-                            onChange={(e) => setRememberMe(e.target.checked)}
-                            sx={{ color: isDarkMode ? "#90caf9" : "#007bb5" }}
-                        />
-                    }
-                    label={t("auth.rememberMe")}
-                    sx={{ color: isDarkMode ? "#90caf9" : "#007bb5", display: 'flex' }}
-                />
-
-
-
                 <Button
                     type="submit"
                     variant="contained"

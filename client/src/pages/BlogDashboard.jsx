@@ -33,6 +33,7 @@ import {
     LightMode,
     DarkMode,
     ExitToApp,
+    AccountCircle,
 } from '@mui/icons-material';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -131,7 +132,6 @@ const BlogDashboard = () => {
         { text: 'Create Blog', icon: <PostAdd />, path: '/blog-dashboard/add-blog' },
         { text: 'Comments', icon: <Comment />, path: '/blog-dashboard/comments' },
         { text: 'Notifications', icon: <Notifications />, path: '/blog-dashboard/notifications' },
-        { text: 'Settings', icon: <Settings />, path: '/blog-dashboard/settings' },
         { text: 'Exit', icon: <ExitToApp />, path: '/' },
     ];
 
@@ -191,9 +191,9 @@ const BlogDashboard = () => {
                             <Avatar alt={user?.name?.split(' ')[0]} src={user?.avatarUrl} />
                         </IconButton>
                         <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={() => setAnchorEl(null)}>
-                            <MenuItem onClick={() => navigate('/blog-dashboard/settings')}>
-                                <ListItemIcon><Settings fontSize="small" /></ListItemIcon>
-                                <ListItemText primary="Settings" />
+                            <MenuItem onClick={() => navigate('/profile')}>
+                                <ListItemIcon><AccountCircle /></ListItemIcon>
+                                <ListItemText primary="Profile" />
                             </MenuItem>
                             <MenuItem onClick={toggleMode}>
                                 <ListItemIcon>{mode === 'light' ? <DarkMode fontSize="small" /> : <LightMode fontSize="small" />}</ListItemIcon>

@@ -15,21 +15,29 @@ const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // Load user data from local storage
     useEffect(() => {
-        const storedUser = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user'));
-        if (storedUser) {
-            setUser(storedUser);
+        const token = localStorage.getItem('token');
+        if (token) {
+            const user = JSON.parse(localStorage.getItem('user'));
+            setUser(user);
+            setLoading(false);
         }
-        setLoading(false);
     }, []);
+
+    useEffect(() => {
+        if (user) {
+            localStorage.setItem('user', JSON.stringify(user));
+        } else {
+            localStorage.removeItem('user');
+        }
+    }, [user]);
 
 
     // Register function
     const register = async (userData) => {
         try {
             const data = await registerUser(userData);
-            console.log('Registered user:', data);
+            // console.log('Registered user:', data);
             setUser(data);
             return data;
         } catch (err) {
@@ -39,9 +47,9 @@ const AuthProvider = ({ children }) => {
     };
 
     // Login function
-    const login = async (userData, rememberMe) => {
+    const login = async (userData) => {
         try {
-            const data = await loginUser(userData, rememberMe);
+            const data = await loginUser(userData);
             console.log('Logged in user:', data);
             setUser(data.user);
             return data.user;
@@ -97,21 +105,6 @@ const AuthProvider = ({ children }) => {
             }, 5000);
         }
     }, [error]);
-
-    useEffect(() => {
-        const storageUser = JSON.parse(localStorage.getItem('user'));
-        const sessionUser = JSON.parse(sessionStorage.getItem('user'));
-        if (user && storageUser) {
-            localStorage.setItem('user', JSON.stringify(user));
-        } else if (user && sessionUser) {
-            sessionStorage.setItem('user', JSON.stringify(user));
-        } else {
-            localStorage.removeItem('user');
-            sessionStorage.removeItem('user');
-            localStorage.removeItem('token');
-            sessionStorage.removeItem('token');
-        }
-    }, [user]);
 
     const value = { user, loading, error, register, login, logout, fetchUserProfile, changeUserPassword, EditUserProfile };
 
