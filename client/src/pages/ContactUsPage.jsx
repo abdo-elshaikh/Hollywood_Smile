@@ -84,19 +84,19 @@ const ContactUsPage = () => {
                         {/* Contact Details */}
                         <Grid item xs={12} md={4}>
                             <Paper sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-                                <Avatar sx={{ bgcolor: 'primary.main', width: 56, height: 56, mb: 2 }}>
+                                <Avatar sx={{ bgcolor: 'primary.main', width: 60, height: 60, mb: 2, p: 2, fontSize: 32, boxShadow: 4 }}>
                                     <LocationOn />
                                 </Avatar>
                                 <Typography variant="h6">{t('contactUs.addressTitle')}</Typography>
                                 <Typography variant="body1" align="center">
-                                    {isArabic ? clinicInfo.address.ar : clinicInfo.address.en}, {clinicInfo.zip}
+                                    {isArabic ? clinicInfo.address.ar : clinicInfo.address.en},
                                 </Typography>
-                                <Divider sx={{ my: 2 }} />
+                                <Divider sx={{ my: 2, width: '100%' }} />
                                 <Typography variant="h6">{t('contactUs.phoneTitle')}</Typography>
                                 <Typography variant="body1" align="center">
                                     {clinicInfo.phone}
                                 </Typography>
-                                <Divider sx={{ my: 2 }} />
+                                <Divider sx={{ my: 2, width: '100%' }} />
                                 <Typography variant="h6">{t('contactUs.emailTitle')}</Typography>
                                 <Typography variant="body1" align="center">
                                     {clinicInfo.email}
@@ -168,10 +168,13 @@ const ContactUsPage = () => {
 
                     {/* Testimonial Section */}
                     <Box sx={{ mt: 8 }}>
-                        <Typography variant="h5" align="center" gutterBottom>{t('contactUs.testimonialsTitle')}</Typography>
+                        <Typography variant="h3" align="center" mb={2} gutterBottom>{t('contactUs.testimonialsTitle')}</Typography>
+                        <Typography variant="body1" align="center" mb={4} color="textSecondary">
+                            {isArabic ? 'قراءة ماذا يقول عملاؤنا عنا' : 'Read what our patients have to say about us.'}
+                        </Typography>
 
                         <Grid container spacing={3}>
-                            {testimonials.map((testimonial, index) => (
+                            {testimonials.slice(0, 6).map((testimonial, index) => (
                                 <Grid item xs={12} md={4} key={index}>
                                     <Paper sx={{ p: 3, display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%' }}>
                                         <Avatar sx={{ bgcolor: 'secondary.main', width: 56, height: 56, mb: 2 }}>
@@ -197,6 +200,9 @@ const ContactUsPage = () => {
                     {/* Google Map Section (Optional) */}
                     <Box sx={{ mt: 6 }}>
                         <Typography variant="h5" align="center" sx={{ mb: 2 }} gutterBottom>{t('contactUs.mapTitle')}</Typography>
+                        <Typography variant="body1" align="center" color="textSecondary" sx={{ mb: 4 }}>
+                            {isArabic ? 'العثور على العيادة على الخريطة' : 'Find the clinic on the map'}
+                        </Typography>
                         <Box sx={{ position: 'relative', height: 400 }}>
                             <iframe
                                 title="Google Map"

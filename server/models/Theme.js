@@ -12,6 +12,7 @@ const themeSchema = new mongoose.Schema({
     shadow: { type: String, default: '#E3F2FD' },
     subtitle: { type: String, default: '#575C66' },
     default: { type: String, default: '#f5f5f5' },
+    paper: { type: String, default: '#FFFFFF' },
   },
 }, { timestamps: true });
 

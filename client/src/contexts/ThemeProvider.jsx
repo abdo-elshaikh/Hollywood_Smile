@@ -17,6 +17,7 @@ const defaultLightColors = {
   shadow: "#E3F2FD",
   subtitle: "#575C66",
   default: "#f5f5f5",
+  paper: "#FFFFFF",
 };
 
 const defaultDarkColors = {
@@ -29,6 +30,7 @@ const defaultDarkColors = {
   shadow: "#2F89FC",
   subtitle: "#E3F2FD",
   default: "#222831",
+  paper: "#333940",
 };
 
 // Theme context
@@ -105,7 +107,7 @@ export const CustomThemeProvider = ({ children }) => {
             text: { primary: colors.text },
             title: { main: colors.title },
             subtitle: { main: colors.subtitle },
-            background: { default: colors.background },
+            background: { default: colors.background, paper: colors.paper },
           },
           typography: {
             h1: { color: colors.title },

@@ -466,19 +466,20 @@ const MenuItems = ({ items }) => {
                         onClick={() => onClick(item.href)}
                         underline="none"
                         sx={{
-                            fontSize: 22, // Adjusted for a more balanced look
-                            fontWeight: 'bold', // Refined font weight
-                            color: 'text.primary', // Ensuring the color is appropriate for text
+                            fontSize: 18,
+                            fontWeight: 'bold',
+                            color: 'text.primary',
                             position: 'relative',
                             cursor: 'pointer',
-                            textTransform: 'uppercase', // Adding uppercase for a sleek design
-                            fontFamily: 'sans-serif ', // Using a sans-serif font for a modern look               
+                            textTransform: 'uppercase',
+                            fontFamily: 'sans-serif ',
+                            cursor: 'pointer',
                             '&:after': {
                                 content: '""',
                                 position: 'absolute',
                                 width: '100%',
                                 transform: 'scaleX(0)',
-                                height: '7px', // Reduced height for a subtle effect
+                                height: '5px', 
                                 bottom: -4,
                                 left: 0,
                                 zIndex: -1,
@@ -488,11 +489,15 @@ const MenuItems = ({ items }) => {
                             },
                             '&:focus': {
                                 outline: 'none',
-                                borderBottom: '2px solid secondary.main', // Adding focus outline for accessibility
+                                borderBottom: '2px solid secondary.main',
                             },
                             '&:hover:after': {
                                 transform: 'scaleX(1)',
                                 transformOrigin: 'bottom left',
+                            },
+                            '&:hover': {
+                                color: 'text.secondary',
+
                             },
                         }}
                     >

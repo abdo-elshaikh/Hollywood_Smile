@@ -37,6 +37,7 @@ const CustomizationPanel = () => {
     const [borderColor, setBorderColor] = useState(colors.border);
     const [shadowColor, setShadowColor] = useState(colors.shadow);
     const [subtitleColor, setSubtitleColor] = useState(colors.subtitle);
+    const [backgroundPaperColor, setBackgroundPaperColor] = useState(colors.paper);
 
     // Sync local states with the current theme context colors
     useEffect(() => {
@@ -48,6 +49,7 @@ const CustomizationPanel = () => {
         setBorderColor(colors.border);
         setShadowColor(colors.shadow);
         setSubtitleColor(colors.subtitle);
+        setBackgroundPaperColor(colors.paper);
     }, [colors, mode]);
 
     // Handle changes for color pickers
@@ -67,6 +69,8 @@ const CustomizationPanel = () => {
                 border: borderColor,
                 shadow: shadowColor,
                 subtitle: subtitleColor,
+                default: backgroundPaperColor,
+                paper: backgroundPaperColor,
             });
             showSnackbar("Theme colors applied successfully", "success");
         } catch (error) {
@@ -90,6 +94,7 @@ const CustomizationPanel = () => {
         { label: "Border Color", value: borderColor, setter: setBorderColor },
         { label: "Shadow Color", value: shadowColor, setter: setShadowColor },
         { label: "Subtitle Color", value: subtitleColor, setter: setSubtitleColor },
+        { label: "Background Paper Color", value: backgroundPaperColor, setter: setBackgroundPaperColor },
     ];
 
     return (
@@ -168,9 +173,11 @@ const CustomizationPanel = () => {
                             border: `2px solid ${borderColor}`,
                             backgroundColor: backgroundColor,
                             color: textColor,
+                            borderRadius: "12px",
+                            height: "100%",
                         }}
                     >
-                        <Typography variant="h6" gutterBottom sx={{ color: titleColor, textAlign: "center" }}>
+                        <Typography variant="h6" gutterBottom sx={{ color: primaryColor, textAlign: "center" }}>
                             Live Theme Preview
                         </Typography>
                         <Divider sx={{ mb: 3 }} />
@@ -182,6 +189,11 @@ const CustomizationPanel = () => {
                             <Typography variant="subtitle1" sx={{ color: subtitleColor }} gutterBottom>
                                 This section dynamically reflects your customizations in real-time.
                             </Typography>
+                            <Typography variant="body1" sx={{ color: textColor }} gutterBottom>
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla facilisi. Integer
+                                malesuada, nisl nec interdum aliquet, turpis orci ullamcorper nunc, id
+                                sollicitudin sapien nunc vel metus.
+                            </Typography>
 
                             <Divider sx={{ mt: 2, mb: 3, color: borderColor }} />
 
@@ -191,6 +203,17 @@ const CustomizationPanel = () => {
                             <Button variant="contained" sx={{ mt: 3, ml: 2, backgroundColor: secondaryColor, color: "white" }}>
                                 Secondary Button
                             </Button>
+                        </Box>
+                        <Box
+                            sx={{
+                                textAlign: "center",
+                                backgroundColor: backgroundPaperColor,
+                                py: 3, border: `1px solid ${borderColor}`
+                            }}
+                        >
+                            <Typography variant="h5" sx={{ color: secondaryColor }} gutterBottom>
+                                Enjoy the Customization!
+                            </Typography>
                         </Box>
                     </Card>
                 </Grid>

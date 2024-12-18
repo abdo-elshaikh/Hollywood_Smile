@@ -227,11 +227,13 @@ const HeroSection = () => {
                     size="large"
                     fullWidth
                     sx={{
-                      animation: `${isArabic ? slideLeft : slideRight} 1.5s ease-in-out`,
+                      animation: `${isArabic ? slideLeft : slideRight} 1.5s ease`,
                       borderRadius: 0,
                       fontWeight: "bold",
                       "&:hover": {
-                        animation: `${buttonHover} 0.3s`,
+                        transform: 'translateY(-2px)',
+                        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+                        transition: "all 0.3s ease-in-out",
                       },
                     }}
                     onClick={() => navigate("/booking")}
@@ -248,7 +250,9 @@ const HeroSection = () => {
                       borderRadius: 0,
                       fontWeight: "bold",
                       "&:hover": {
-                        animation: `${buttonHover} 0.3s ease-in-out forwards`,
+                        transform: 'translateY(-2px)',
+                        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+                        transition: "all 0.3s ease-in-out",
                       },
                     }}
                     onClick={() => navigate("/contact-us")}

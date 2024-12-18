@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import {
     Box, Typography, Card, CardContent, CircularProgress, TextField, Button,
-    Stepper, Step, StepLabel, Grid, Container, CardActions, Chip, StepConnector, Divider,
-    List, ListItem, ListItemText, ListItemIcon, Avatar, Dialog, DialogTitle, DialogContent, DialogActions
+    Grid, Container, CardActions, Chip, Divider,
+    List, ListItem, ListItemText, ListItemIcon,
+    Avatar, Dialog, DialogTitle, DialogContent, DialogActions
 } from '@mui/material';
 import { Restore, Cancel, Pending, Loop, ThumbUpAlt, Done, DoneAll, WatchLater } from '@mui/icons-material';
 import bookingService from '../services/bookingService';
@@ -28,7 +29,7 @@ const ClientBookings = () => {
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
     const [updatingStatus, setUpdatingStatus] = useState(false);
-    const [openDialog, setOpenDialog] = useState(false);
+    const [selectedBooking, setSelectedBooking] = useState(null);
 
     const steps = {
         'Pending': { label: t('detect.pending'), icon: <WatchLater /> },
@@ -38,23 +39,28 @@ const ClientBookings = () => {
         'Cancelled': { label: t('detect.cancelled'), icon: <Cancel /> }
     }
 
-    const handleOpenDialog = () => setOpenDialog(true);
-    const handleCloseDialog = () => setOpenDialog(false);
+    const handleOpenDialog = (booking) => {
+        setSelectedBooking(booking);
+    };
+
+    const handleCloseDialog = () => {
+        setSelectedBooking(null);
+    };
 
     const bookStatusColor = (status) => {
         switch (status) {
             case "In Progress":
-                return "secondary";
+                return "#FFA500";
             case "Cancelled":
-                return "error";
+                return "#DC3545";
             case "Pending":
-                return "warning";
+                return "#007BFF";
             case "Confirmed":
-                return "info";
+                return "#28A745";
             case "Completed":
-                return "success";
+                return "#198754";
             default:
-                return "default";
+                return "#6C757D";
         }
     };
 
@@ -74,18 +80,21 @@ const ClientBookings = () => {
         }
     };
 
-    const handleStatusChange = async (bookingId) => {
-        setUpdatingStatus(true);
-        try {
-            const data = await bookingService.updateBooking(bookingId, { status: 'Cancelled' });
-            if (data.success) {
-                showSnackbar(t('detect.bookingCancelled'), 'info');
-                fetchBookings();
+    const handleStatusChange = async () => {
+        if (selectedBooking) {
+            setUpdatingStatus(true);
+            try {
+                const data = await bookingService.updateBooking(selectedBooking._id, { status: 'Cancelled' });
+                if (data.success) {
+                    showSnackbar(t('detect.bookingCancelled'), 'info');
+                    fetchBookings();
+                    handleCloseDialog();
+                }
+            } catch (error) {
+                showSnackbar(t('error.statusChange'), 'error');
+            } finally {
+                setUpdatingStatus(false);
             }
-        } catch (error) {
-            showSnackbar(t('error.statusChange'), 'error');
-        } finally {
-            setUpdatingStatus(false);
         }
     };
 
@@ -96,21 +105,27 @@ const ClientBookings = () => {
     const handleSearch = (e) => {
         const searchValue = e.target.value.toLowerCase();
         setSearch(searchValue);
-        setFilteredBookings(
-            bookings.filter(booking =>
-                booking.service.title[i18n.language].toLowerCase().includes(searchValue) ||
-                booking.date.toLowerCase().includes(searchValue)
-            )
-        );
+
+        // If search is empty, show all bookings
+        if (!searchValue) {
+            setFilteredBookings(bookings);
+        } else {
+            setFilteredBookings(
+                bookings.filter(booking =>
+                    booking.service.title[i18n.language].toLowerCase().includes(searchValue) ||
+                    booking.date.toLowerCase().includes(searchValue)
+                )
+            );
+        }
     };
 
     return (
         <Box>
             <HeaderSection />
-            <Box section
+            <Box
                 sx={{
                     position: 'relative',
-                    height: '85vh',
+                    height: '70vh',
                     backgroundColor: 'rgba(0, 0, 0, 0.1)',
                     color: 'white',
                     display: 'flex',
@@ -119,29 +134,41 @@ const ClientBookings = () => {
                     alignItems: 'center'
                 }}
             >
-                <Typography variant="h3">{t('detect.title')}</Typography>
-                <Typography variant="h5">{t('detect.description')}</Typography>
-                <Box
-                    component="video"
+                <video
                     src={headerVideo}
                     autoPlay
                     loop
                     muted
-                    playsInline
+                    style={{
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        zIndex: -1
+                    }}
+                />
+                <Box
                     sx={{
                         position: 'absolute',
                         top: 0,
                         left: 0,
                         width: '100%',
                         height: '100%',
-                        objectFit: 'cover',
-                        zIndex: -1,
-                        filter: 'brightness(50%)'
+                        zIndex: 1,
+                        textAlign: 'center',
+                        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                        p: 5
                     }}
                 />
             </Box>
-            <Box component={Container} maxWidth='lg' sx={{ position: 'relative', py: 5, overflow: 'auto' }}>
-                <Typography variant="h4" sx={{ fontWeight: 'bold' }}>{t('detect.clientInfo')}</Typography>
+            <Box sx={{ backgroundColor: 'rgba(0, 0, 0, 0.4)', py: 5, backdropFilter: 'blur(20px)', px: 6 }}>
+                <Typography variant="h3">{t('detect.title')}</Typography>
+                <Typography variant="h5">{t('detect.description')}</Typography>
+            </Box>
+            <Box component={Container} maxWidth='lg' sx={{ position: 'relative', py: 5, overflow: 'auto', backdropFilter: 'blur(10px)' }}>
+                <Typography variant="h4" sx={{ fontWeight: 'bold', color: 'primary.main', textShadow: '1px 1px 4px rgba(0, 0, 0, 0.2)' }}>{t('detect.clientInfo')}</Typography>
                 <Divider sx={{ my: 2 }} />
                 <List>
                     <ListItem>
@@ -150,18 +177,18 @@ const ClientBookings = () => {
                         </ListItemIcon>
                         <ListItemText
                             primary={
-                                <Typography variant="h6">
+                                <Typography variant="h6" color='#222'>
                                     {t('detect.name')} :
-                                    <Typography variant="body1" component="span" sx={{ fontWeight: 'normal' }}> {user?.name}</Typography>
+                                    <Typography variant="body1" component="span" sx={{ fontWeight: 'normal', color: '#222' }}> {user?.name}</Typography>
                                 </Typography>
                             }
                             secondary={
-                                <Typography variant="h6">
+                                <Typography variant="h6" color='#222'>
                                     {t('detect.email')} :
-                                    <Typography variant="body1" component="span" sx={{ fontWeight: 'normal' }}> {user?.email}</Typography>
+                                    <Typography variant="body1" component="span" sx={{ fontWeight: 'normal', color: '#222' }}> {user?.email}</Typography>
                                 </Typography>
                             }
-                            sx={{ ml: 2, textAlign: isArabic ? 'right' : 'left' }}
+                            sx={{ ml: 2, textAlign: isArabic ? 'right' : 'left', color: '#222' }}
                         />
                     </ListItem>
                 </List>
@@ -190,9 +217,10 @@ const ClientBookings = () => {
                         size="small"
                         variant="outlined"
                         type="date"
-                        label={t('detect.date')}
+                        value={search}
                         onChange={handleSearch}
                     />
+
                     <Button
                         variant="text"
                         color="primary"
@@ -203,7 +231,7 @@ const ClientBookings = () => {
                     </Button>
                 </Box>
 
-                <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 3 }}>{t('detect.bookings')}</Typography>
+                <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 3, color: 'primary.main', textShadow: '1px 1px 4px rgba(0, 0, 0, 0.2)' }}>{t('detect.bookings')}</Typography>
 
                 {loading ? (
                     <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh' }}>
@@ -212,13 +240,16 @@ const ClientBookings = () => {
                 ) : (
                     <Grid container spacing={2}>
                         {filteredBookings.length > 0 ? (
-                            filteredBookings.map((booking, index) => (
+                            filteredBookings.map((booking) => (
                                 <Grid item xs={12} key={booking._id}>
-                                    <Card elevation={4} sx={{ mb: 2, position: 'relative' }}>
+                                    <Card elevation={5} sx={{ mb: 2, position: 'relative', bgcolor: 'background.paper' }}>
                                         <Chip
-                                            label={t('detect.bookingNo') + ' : ' + (booking.code)}
-                                            color="primary"
+                                            label={t('detect.bookingNo') + ' : ' + booking.code}
                                             sx={{
+                                                backgroundColor: 'background.default',
+                                                color: 'white',
+                                                boxShadow: '0 0 5px 0',
+                                                fontWeight: 'bold',
                                                 position: 'absolute',
                                                 top: 0,
                                                 right: 0,
@@ -226,9 +257,12 @@ const ClientBookings = () => {
                                             }}
                                         />
                                         <Chip
-                                            label={`${t('detect.bookingStatus')} : ${`${t('detect.' + booking.status.toLowerCase())}`}`}
-                                            color={bookStatusColor(booking.status)}
+                                            label={`${t('detect.bookingStatus')} : ${t('detect.' + booking.status.toLowerCase())}`}
                                             sx={{
+                                                backgroundColor: bookStatusColor(booking.status),
+                                                color: 'white',
+                                                boxShadow: '0 0 5px 0',
+                                                fontWeight: 'bold',
                                                 position: 'absolute',
                                                 top: 0,
                                                 left: 0,
@@ -236,95 +270,108 @@ const ClientBookings = () => {
                                             }}
                                         />
                                         <CardContent>
-
-                                            <Stepper
-                                                activeStep={steps[booking.status].label}
-                                                alternativeLabel
-                                                connector={false}
-                                                id="stepper"
-                                                sx={{
-                                                    backgroundColor: 'background.default',
-                                                    py: 3,
-                                                    borderRadius: 2,
-                                                    mb: 2,
-                                                    mt: 4,
-                                                }}
-
-                                            >
-                                                {Object.keys(steps).map((status) => (
-                                                    <Step key={status}>
-                                                        <StepLabel
-                                                            icon={steps[status].icon}
-                                                            sx={{
-                                                                '& .MuiStepLabel-label': {
-                                                                    fontSize: '1.2rem',
-                                                                    fontWeight: 'bold',
-                                                                    color: booking.status === status ? '#7ED4AD' : 'inherit'
-                                                                },
-                                                                '& .MuiStepLabel-iconContainer': {
-                                                                    border: '2px solid',
-                                                                    borderRadius: '50%',
-                                                                    padding: 1,
-                                                                    borderColor: bookStatusColor(status),
-                                                                    backgroundColor: booking.status === status ? '#7ED4AD' : 'transparent',
-                                                                    opacity: booking.status === status ? 1 : 0.7
-                                                                }
-                                                            }}
-                                                        >
-                                                            <Typography variant="h6" fontWeight='bold' >{steps[status].label}</Typography>
-                                                        </StepLabel>
-                                                    </Step>
-                                                ))}
-                                            </Stepper>
                                             <Box
                                                 sx={{
                                                     display: 'flex',
+                                                    width: '100%',
+                                                    flexDirection: { xs: 'column', md: 'row' },
                                                     alignItems: 'center',
-                                                    mb: 2,
-                                                    gap: 2
-                                                }}
-                                            >
-                                                <Typography >{t('detect.service')} : {booking.service.title[i18n.language]}</Typography>
-                                                <br />
-                                                <Typography >{t('detect.date')} : {new Date(booking.date).toLocaleDateString()}</Typography>
-                                                <br />
-                                                <Typography >{t('detect.time')} : {booking.time}</Typography>
+                                                    mb: 1,
+                                                    mt: 6
+                                                }}>
+                                                {Object.keys(steps).map((key, index) => (
+                                                    <Box key={index}
+                                                        sx={{
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: { xs: 'flex-start', md: 'center' },
+                                                            width: '100%',
+                                                            flexDirection: { xs: 'row', md: 'column' },
+                                                            bgcolor: booking.status === key ? 'rgba(0, 0, 0, 0.1)' : 'transparent',
+                                                            boxShadow: booking.status === key ? '0 0 3px 0' : 'none',
+                                                            borderRadius: 2,
+                                                            gap: 2,
+                                                            p: 1,
+                                                        }}
+                                                    >
+                                                        <Avatar
+                                                            sx={{
+                                                                backgroundColor: bookStatusColor(key), color: 'white',
+                                                                width: 50, height: 50,
+                                                                boxShadow: 2,
+                                                                border: (key === booking.status) ? '3px solid' : 'none',
+                                                                bordercolor: (key === booking.status) ? 'primary.main' : 'transparent'
+                                                            }}
+                                                        >
+                                                            {steps[key].icon}
+                                                        </Avatar>
+                                                        <Typography variant="body1" fontWeight="bold" >{steps[key].label}</Typography>
+                                                    </Box>
+                                                ))}
+                                            </Box>
+                                            <Divider variant="fullWidth" sx={{ mb: 2 }} />
+                                            <Box sx={{
+                                                display: 'flex',
+                                                alignItems: 'flex-start',
+                                                flexDirection: 'column',
+                                                mb: 2,
+                                                gap: 1
+                                            }}>
+                                                <Typography>{t('detect.service')} : {booking.service.title[i18n.language]}</Typography>
+                                                <Typography>{t('detect.date')} : {new Date(booking.date).toLocaleDateString()}</Typography>
+                                                <Typography>{t('detect.time')} : {booking.time}</Typography>
                                             </Box>
                                         </CardContent>
-                                        <CardActions>
-                                            <Button
-                                                variant="outlined"
-                                                color="error"
-                                                onClick={handleOpenDialog}
-                                                disabled={booking.status === 'Cancelled' || updatingStatus}
-                                                startIcon={<Cancel sx={{ mr: 2, ml: 2 }} />}
-                                            >
-                                                {booking.status === 'Cancelled' ? t('detect.bookingCancelled') : updatingStatus ? <CircularProgress size={20} color="inherit" /> : t('detect.cancelBooking')}
-                                            </Button>
+                                        <CardActions sx={{ justifyContent: 'center' }}>
+                                            {booking.status === 'Pending' && (
+                                                <Button
+                                                    variant="outlined"
+                                                    color="error"
+                                                    startIcon={<Cancel />}
+                                                    disabled={booking.status !== 'Pending'}
+                                                    onClick={() => handleOpenDialog(booking)}
+                                                >
+                                                    {t('detect.cancelBooking')}
+                                                </Button>
+                                            )}
                                         </CardActions>
                                     </Card>
-                                    <Dialog open={openDialog} onClose={handleCloseDialog}>
-                                        <DialogTitle>{t('detect.cancelBooking')}</DialogTitle>
-                                        <DialogContent>{t('detect.cancelBookingMsg')}</DialogContent>
-                                        <DialogActions>
-                                            <Button onClick={handleCloseDialog} color="primary">{t('detect.no')}</Button>
-                                            <Button onClick={() => handleStatusChange(booking._id)} color="error">{t('detect.yes')}</Button>
-                                        </DialogActions>
-                                    </Dialog>
                                 </Grid>
                             ))
                         ) : (
-                            <Grid item xs={12}>
-                                <Typography align="center" variant="body1">{t('detect.noBookings')}</Typography>
-                            </Grid>
+                            <Typography variant="h6" color="textSecondary">{t('detect.noBookings')}</Typography>
                         )}
                     </Grid>
                 )}
-            </Box>
 
-            <ServicesSection />
-            <OffersSection />
-            <MapLocationSection />
+                <Dialog open={!!selectedBooking} onClose={handleCloseDialog}>
+                    <DialogTitle>{isArabic ? 'إلغاء الحجز' : 'Cancel Booking'}</DialogTitle>
+                    <DialogContent>
+                        {selectedBooking && (
+                            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                                <Typography>
+                                    {isArabic ? 'كود الحجز' : 'Booking Code'} : {selectedBooking.code}
+                                </Typography>
+                                <Typography>{t('detect.service')} : {selectedBooking.service.title[i18n.language]}</Typography>
+                            </Box>
+                        )}
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleCloseDialog}>{isArabic ? 'إلغاء' : 'Cancel'}</Button>
+                        <Button
+                            onClick={handleStatusChange}
+                            color="error"
+                            disabled={updatingStatus}
+                        >
+                            {isArabic ? 'إلغاء الحجز' : 'Cancel Booking'}
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            </Box>
+            <Box sx={{ backgroundColor: 'background.default' }}>
+                <OffersSection />
+                <MapLocationSection />
+            </Box>
             <Footer />
             <ScrollToTopButton />
         </Box>

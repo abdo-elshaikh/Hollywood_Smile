@@ -45,19 +45,19 @@ const DoctorsPage = () => {
             minHeight: '100vh',
         }}>
             <HeaderSection />
-            <Box sx={{ py: 5, height: '90vh' }} />
+            <Box sx={{height: '85vh' }} />
             <Box
                 sx={{
-                    py: 5,
+                    
                     backdropFilter: 'blur(5px)',
                     backgroundColor: isDark ? 'rgba(0, 0, 0, 0.3)' : 'rgba(255, 255, 255, 0.3)',
                 }}
             >
                 <Container sx={{ py: 5, mt: 5, }}>
-                    <Typography variant="h4" align="center" sx={{ fontWeight: 'bold', color: 'text.primary', mb: 5 }}>
+                    <Typography variant="h2" align="center" sx={{ fontWeight: 'bold', color: 'text.primary', mb: 5 }}>
                         {t('doctorsPage.title')}
                     </Typography>
-                    <Typography variant="body1" align="center" sx={{ color: 'text.secondary', mb: 5 }}>
+                    <Typography variant="h6" align="center" sx={{ color: 'text.secondary', mb: 5 }}>
                         {t('doctorsPage.subtitle')}
                     </Typography>
                     {doctors.length === 0 ? (

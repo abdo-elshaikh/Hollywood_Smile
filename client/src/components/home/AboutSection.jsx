@@ -101,7 +101,7 @@ const AboutSection = () => {
                                             }}
                                         >
                                             <ListItemIcon sx={{ minWidth: 50, color: 'primary.main' }}>
-                                                {[<LooksOne />, <LooksTwo />, <Looks3 />, <Looks4 />][index]}
+                                                {[<LooksOne fontSize="large" />, <LooksTwo fontSize="large" />, <Looks3 fontSize="large" />, <Looks4 fontSize="large" />][index]}
                                             </ListItemIcon>
                                             <ListItemText
                                                 primary={
@@ -205,8 +205,7 @@ const AboutSection = () => {
                                                                 textDecoration="underline"
                                                                 sx={{ fontSize: { xs: '1rem', sm: '1.2rem' } }}
                                                             >
-                                                                {t('days.from')}
-                                                                {clinicInfo?.openHours[day]?.from.toLowerCase().replace(/am|pm/g, (match) => t(`days.${match}`))} - {t('days.to')} {clinicInfo?.openHours[day]?.to.toLowerCase().replace(/am|pm/g, (match) => t(`days.${match}`))}
+                                                                {t('days.from')} {clinicInfo?.openHours[day]?.from.toLowerCase().replace(/am|pm/g, (match) => t(`days.${match}`))} - {t('days.to')} {clinicInfo?.openHours[day]?.to.toLowerCase().replace(/am|pm/g, (match) => t(`days.${match}`))}
                                                             </Typography>
                                                         )}
                                                     </Box>

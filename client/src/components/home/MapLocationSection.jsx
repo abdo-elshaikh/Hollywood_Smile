@@ -26,7 +26,7 @@ const MapLocationSection = () => {
     return (
         <Box
             component="section"
-            sx={{ my: 4 }}
+            sx={{ py: 4 }}
         >
             {/* Header Section with Video Background */}
             <Box
@@ -177,7 +177,7 @@ const MapLocationSection = () => {
                         <CardMedia
                             component="iframe"
                             src={clinicInfo?.mapLink}
-                            height="450"
+                            height="500"
                             sx={{
                                 width: '100%',
                                 borderRadius: 2,
