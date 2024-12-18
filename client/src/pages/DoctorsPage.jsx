@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Typography, Grid, Box, Button, Rating, Card, CardContent, CardMedia } from '@mui/material';
+import { Container, Typography, Grid, Box, Button, Rating, Card, CardContent, CardMedia, Divider } from '@mui/material';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -58,7 +58,7 @@ const DoctorsPage = () => {
                         {t('doctorsPage.title')}
                     </Typography>
                     <Typography variant="body1" align="center" sx={{ color: 'text.secondary', mb: 5 }}>
-                        {t('doctorsPage.description')}
+                        {t('doctorsPage.subtitle')}
                     </Typography>
                     {doctors.length === 0 ? (
                         <Typography variant="h6" align="center" sx={{ mt: 5 }}>
@@ -88,6 +88,8 @@ const DoctorsPage = () => {
 const DoctorCard = ({ doctor, index, isArabic, navigate, t }) => {
     const fallbackImage = 'https://via.placeholder.com/180';
     const doctorRating = (doctor.rating?.reduce((acc, item) => acc + item.stars, 0) / doctor.rating?.length) || 0;
+    const { mode } = useCustomTheme();
+    const isDark = mode === 'dark';
 
     return (
         <motion.div
@@ -95,76 +97,173 @@ const DoctorCard = ({ doctor, index, isArabic, navigate, t }) => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: index * 0.2 }}
         >
-            <Card
+            <Box
                 sx={{
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
-                    boxShadow: 5,
+                    justifyContent: 'space-between',
+                    width: '100%',
                     height: '100%',
-                    borderRadius: 4,
-                    p: 3,
-                    textAlign: 'center',
-                    transition: 'transform 0.3s ease-in-out',
+                    padding: 2,
+                    borderRadius: 2,
+                    background: isDark ? '#333' : 'linear-gradient(135deg, #f7f9fc, #e8f0ff)',
+                    boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
+                    transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
                     '&:hover': {
-                        transform: 'translateY(-10px)',
-                        boxShadow: 8,
+                        transform: 'scale(1.05)',
+                        boxShadow: '0px 6px 15px rgba(0, 0, 0, 0.15)',
                     },
                 }}
             >
-                <CardMedia
-                    component="img"
-                    image={doctor.imageUrl || fallbackImage}
-                    alt={isArabic ? doctor.name.ar : doctor.name.en}
+                {/* Doctor Image */}
+                <Box
                     sx={{
-                        height: 180,
-                        width: 180,
-                        borderRadius: '50%',
-                        objectFit: 'cover',
+                        width: '100%',
+                        height: 300,
+                        borderRadius: 2,
+                        overflow: 'hidden',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
                         mb: 2,
-                        border: '4px solid',
-                        borderColor: 'primary.main',
                     }}
-                />
-                <CardContent
+                >
+                    <CardMedia
+                        component="img"
+                        image={doctor.imageUrl || fallbackImage}
+                        alt={isArabic ? doctor.name.ar : doctor.name.en}
+                        sx={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover',
+                            objectPosition: 'center',
+                            transform: 'scale(1)',
+                            transition: 'transform 0.3s ease',
+                            '&:hover': {
+                                transform: 'scale(1.1)',
+                                transition: 'transform 0.3s ease',
+                            },
+                        }}
+                    />
+                </Box>
+
+                {/* Doctor Info */}
+                <Box
                     sx={{
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
-                        flexGrow: 1,
+                        textAlign: 'center',
                     }}
                 >
-                    <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'text.primary', mb: 1 }}>
+                    <Typography
+                        variant="h6"
+                        sx={{
+                            fontWeight: 'bold',
+                            color: 'text.primary',
+                            mb: 1,
+                            textTransform: 'capitalize',
+                        }}
+                    >
                         {isArabic ? doctor.name.ar : doctor.name.en}
                     </Typography>
-                    <Rating name="read-only" value={doctorRating} readOnly size="large" sx={{ mb: 1 }} />
-                    <Typography variant="subtitle1" sx={{ color: 'text.secondary', fontStyle: 'italic', mb: 2 }}>
+
+                    <Typography
+                        variant="subtitle1"
+                        sx={{
+                            color: 'text.secondary',
+                            fontStyle: 'italic',
+                            mb: 2,
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 1,
+                        }}
+                    >
                         {isArabic ? doctor.position.ar : doctor.position.en}
                     </Typography>
-                    <Typography variant="body2" sx={{ color: 'text.secondary', mb: 2 }}>
+                    <Typography
+                        variant="body2"
+                        sx={{
+                            color: 'text.secondary',
+                            mb: 2,
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 1,
+                        }}
+                    >
                         {isArabic ? doctor.description.ar : doctor.description.en}
                     </Typography>
+                </Box>
+
+                {/* Doctor Rating */}
+                <Box
+                    sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 1,
+                        mb: 2,
+                    }}
+                >
+                    <Rating
+                        name="doctor-rating"
+                        value={doctorRating}
+                        precision={0.5}
+                        readOnly
+                        sx={{ color: 'secondary.main' }}
+                    />
+                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                        {doctorRating.toFixed(1)} ({doctor.rating?.length || 0})
+                    </Typography>
+                </Box>
+
+                <Divider sx={{ width: '100%', mb: 2, color: 'secodary.main' }} />
+
+                {/* Buttons */}
+                <Box
+                    sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 2,
+                        mt: 2,
+                    }}
+                >
                     <Button
                         onClick={() => navigate(`/doctors/${doctor._id}`)}
                         variant="contained"
                         color="primary"
-                        sx={{ mt: 1 }}
+                        sx={{
+                            px: 3,
+                            py: 1,
+                            fontSize: '0.9rem',
+                            fontWeight: 'bold',
+                            textTransform: 'uppercase',
+                        }}
                     >
                         {t('doctorsPage.learnMore')}
                     </Button>
                     <Button
                         onClick={() => navigate(`/rate-doctor/${doctor._id}`)}
                         variant="outlined"
-                        color="primary"
-                        sx={{ mt: 1 }}
+                        color="secondary"
+                        sx={{
+                            px: 3,
+                            py: 1,
+                            fontSize: '0.9rem',
+                            fontWeight: 'bold',
+                            textTransform: 'uppercase',
+                        }}
                     >
                         {isArabic ? 'تقييم' : 'Rate'} {isArabic ? 'الدكتور' : 'Doctor'}
                     </Button>
-                </CardContent>
-            </Card>
+                </Box>
+            </Box>
         </motion.div>
     );
 };
+
 
 
 export default DoctorsPage;

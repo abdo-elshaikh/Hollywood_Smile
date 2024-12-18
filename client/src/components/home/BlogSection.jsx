@@ -68,9 +68,19 @@ const BlogSection = () => {
           >
             {t("BlogSection.title")}
           </Typography>
-          <Typography variant="body1" sx={{ color: "text.secondary" }}>
+          <Typography variant="body1" sx={{ color: "text.secondary", mb: 2  }}>
             {t("BlogSection.description")}
           </Typography>
+          <Box
+            sx={{
+              textAlign: 'center',
+              mb: 2,
+              width: 100,
+              borderBottom: '4px solid',
+              borderColor: 'primary.main',
+              margin: '0 auto',
+            }}
+          />
         </Box>
 
         {/* Blog Grid */}

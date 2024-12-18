@@ -68,8 +68,10 @@ const ServicesPage = () => {
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                     backgroundRepeat: 'no-repeat',
+                    overflow: 'hidden',
                 }}
             >
+                {/* Overlay */}
                 <Box
                     sx={{
                         position: 'absolute',
@@ -77,10 +79,45 @@ const ServicesPage = () => {
                         left: 0,
                         right: 0,
                         bottom: 0,
-                        background: 'linear-gradient(135deg, rgba(58,141,255,0.3), rgba(134,185,255,0.1))',
-                        zIndex: 2,
+                        background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.3))',
+                        zIndex: 1,
                     }}
                 />
+                {/* Animated Shapes */}
+                <Box
+                    sx={{
+                        position: 'absolute',
+                        top: '-20%',
+                        left: '-10%',
+                        width: '400px',
+                        height: '400px',
+                        background: 'rgba(58, 141, 255, 0.5)',
+                        borderRadius: '50%',
+                        filter: 'blur(100px)',
+                        zIndex: 0,
+                        animation: 'float 6s ease-in-out infinite',
+                    }}
+                />
+                <Box
+                    sx={{
+                        position: 'absolute',
+                        bottom: '-20%',
+                        right: '-15%',
+                        width: '300px',
+                        height: '300px',
+                        background: 'rgba(134, 185, 255, 0.4)',
+                        borderRadius: '50%',
+                        filter: 'blur(80px)',
+                        zIndex: 0,
+                        animation: 'float 8s ease-in-out infinite reverse',
+                        '@keyframes float': {
+                            '0%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                            '100%': { transform: 'translateY(0)' },
+                        },
+                    }}
+                />
+                {/* Content */}
                 <Container
                     sx={{
                         position: 'relative',
@@ -91,13 +128,25 @@ const ServicesPage = () => {
                     <Typography
                         variant="h3"
                         component="h1"
-                        sx={{ fontWeight: 'bold', mb: 2, fontSize: { xs: '2rem', md: '3.5rem' } }}
+                        sx={{
+                            fontWeight: 'bold',
+                            mb: 2,
+                            fontSize: { xs: '2rem', md: '3.5rem' },
+                            textShadow: '0px 4px 10px rgba(0, 0, 0, 0.7)',
+                        }}
                     >
                         {t('servicesPage.title')}
                     </Typography>
                     <Typography
                         variant="h6"
-                        sx={{ maxWidth: '600px', mx: 'auto', mb: 4, fontSize: { xs: '1rem', md: '1.2rem' } }}
+                        sx={{
+                            maxWidth: '600px',
+                            mx: 'auto',
+                            mb: 4,
+                            fontSize: { xs: '1rem', md: '1.2rem' },
+                            color: 'rgba(255, 255, 255, 0.8)',
+                            textShadow: '0px 2px 5px rgba(0, 0, 0, 0.6)',
+                        }}
                     >
                         {t('servicesPage.subtitle')}
                     </Typography>
@@ -110,6 +159,12 @@ const ServicesPage = () => {
                             fontSize: '1rem',
                             borderRadius: '50px',
                             textTransform: 'none',
+                            boxShadow: '0px 6px 15px rgba(0, 0, 0, 0.3)',
+                            transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                            '&:hover': {
+                                transform: 'translateY(-5px)',
+                                boxShadow: '0px 10px 20px rgba(0, 0, 0, 0.5)',
+                            },
                         }}
                         onClick={() => navigate('/booking')}
                     >
@@ -117,6 +172,7 @@ const ServicesPage = () => {
                     </Button>
                 </Container>
             </Box>
+
 
             {/* Services Section */}
             <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -129,43 +185,67 @@ const ServicesPage = () => {
                                 whileInView="visible"
                                 viewport={{ once: true }}
                             >
-                                <Card
+                                <Box
                                     sx={{
-                                        boxShadow: 4,
-                                        borderRadius: 3,
-                                        transition: 'transform 0.3s ease-in-out',
-                                        '&:hover': { transform: 'translateY(-10px)' },
+                                        boxShadow: 3,
+                                        borderRadius: 4,
+                                        overflow: 'hidden',
+                                        transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
+                                        '&:hover': {
+                                            transform: 'translateY(-10px)',
+                                            boxShadow: 6,
+                                        },
                                     }}
                                 >
-                                    <CardMedia
+                                    {/* Image Section */}
+                                    <Box
                                         component="img"
-                                        height="300"
-                                        image={service.imageUrl}
+                                        src={service.imageUrl}
                                         alt={service.name}
-                                        sx={{ borderTopLeftRadius: 12, borderTopRightRadius: 12 }}
+                                        sx={{
+                                            width: '100%',
+                                            height: 300,
+                                            objectFit: 'cover',
+                                        }}
                                     />
-                                    <CardContent>
-                                        <Typography variant="h5" component="div" sx={{ fontWeight: 'medium', mb: 1 }}>
+                                    {/* Content Section */}
+                                    <Box sx={{ p: 3, backgroundColor: 'background.paper' }}>
+                                        <Typography
+                                            variant="h5"
+                                            sx={{ fontWeight: 'bold', mb: 1, color: 'primary.main' }}
+                                        >
                                             {isArabic ? service.title.ar : service.title.en}
                                         </Typography>
-                                        <Typography variant="body2" color="text.secondary">
+                                        <Typography
+                                            variant="body2"
+                                            color="text.secondary"
+                                            sx={{ mb: 2, lineHeight: 1.6 }}
+                                        >
                                             {isArabic ? service.description.ar : service.description.en}
                                         </Typography>
-                                    </CardContent>
-                                    <CardActions sx={{ justifyContent: 'center' }}>
-                                        <Button variant="text" color="primary">
+                                        <Button
+                                            variant="contained"
+                                            color="secondary"
+                                            onClick={() => navigate(`/services/${service.id}`)}
+                                            sx={{
+                                                textTransform: 'none',
+                                                borderRadius: 2,
+                                                boxShadow: 2,
+                                                px: 3,
+                                            }}
+                                        >
                                             {t('servicesPage.learnMore')}
                                         </Button>
-                                    </CardActions>
-                                </Card>
+                                    </Box>
+                                </Box>
                             </motion.div>
                         </Grid>
                     ))}
                 </Grid>
 
+                {/* Divider and Additional Information Section */}
                 <Divider sx={{ my: 6 }} />
 
-                {/* Additional Information Section */}
                 <Box sx={{ textAlign: 'center', mb: 6 }}>
                     <motion.div
                         variants={cardVariant}
@@ -173,19 +253,48 @@ const ServicesPage = () => {
                         whileInView="visible"
                         viewport={{ once: true }}
                     >
-                        <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: 'bold' }}>
+                        <Typography
+                            variant="h3"
+                            component="h1"
+                            gutterBottom
+                            sx={{
+                                fontWeight: 'bold',
+                                color: 'primary.main',
+                            }}
+                        >
                             {t('servicesPage.services')}
                         </Typography>
-                        <Typography variant="body1" sx={{ maxWidth: '700px', mx: 'auto', mb: 4 }}>
+                        <Typography
+                            variant="body1"
+                            sx={{
+                                maxWidth: '700px',
+                                mx: 'auto',
+                                mb: 4,
+                                color: 'text.secondary',
+                                lineHeight: 1.8,
+                            }}
+                        >
                             {t('servicesPage.additionalText')}
                         </Typography>
-                        <Button onClick={() => navigate('/booking')} variant="contained" color="secondary" width="400px">
+                        <Button
+                            onClick={() => navigate('/booking')}
+                            variant="contained"
+                            color="secondary"
+                            sx={{
+                                textTransform: 'none',
+                                px: 5,
+                                py: 1.5,
+                                borderRadius: 3,
+                            }}
+                        >
                             {t('servicesPage.button')}
                         </Button>
                     </motion.div>
                 </Box>
                 <Divider sx={{ mt: 2 }} />
             </Container>
+
+
             {/* Testimonials and Map Section */}
             <TestimonySection />
             <MapLocationSection />

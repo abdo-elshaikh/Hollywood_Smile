@@ -69,10 +69,20 @@ const BeforeAfterGallery = () => {
         variant="subtitle1"
         align="center"
         color="textSecondary"
-        sx={{ mb: 6, maxWidth: 800, mx: 'auto' }}
+        sx={{ mb: 2, maxWidth: 800, mx: 'auto' }}
       >
         {t('BeforeAfterGallery.description')}
       </Typography>
+      <Box
+        sx={{
+          textAlign: 'center',
+          mb: 6,
+          width: 100,
+          borderBottom: '4px solid',
+          borderColor: 'primary.main',
+          margin: '0 auto',
+        }}
+      />
 
       {/* Loading Indicator */}
       {isLoading ? (
@@ -80,7 +90,7 @@ const BeforeAfterGallery = () => {
           <CircularProgress size={50} />
         </Box>
       ) : (
-        <Grid container spacing={4} sx={{ justifyContent: 'center' }}>
+        <Grid container spacing={4} sx={{ justifyContent: 'center', mt: 4 }}>
           {data.slice(0, visibleCount).map((patient, index) => (
             <Grid
               item

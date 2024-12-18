@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
     Box,
     Container,
@@ -51,6 +51,8 @@ const AchievementsSection = () => {
     const isArabic = i18n.language === "ar";
     const achievements = clinicInfo?.achievements;
 
+    const [countVisible, setCountVisible] = useState(false);
+
     return (
         <Box
             sx={{
@@ -93,10 +95,22 @@ const AchievementsSection = () => {
                     {achievements?.map((achievement, index) => (
                         <Grid item xs={12} sm={6} md={3} key={index}>
                             <motion.div
-                                initial={{ opacity: 0, y: 30 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                whileHover={{ y: -10 }}
-                                transition={{ duration: index * 0.7, delay: 0.2, type: "spring" }}
+                                variants={{
+                                    hidden: {
+                                        opacity: 0,
+                                        y: 20,
+                                        transition: { duration: 0.5 },
+                                    },
+                                    visible: {
+                                        opacity: 1,
+                                        y: 0,
+                                    },
+                                }}
+                                initial="hidden"
+                                whileInView="visible"
+                                onViewportLeave={() => setCountVisible(false)}
+                                onViewportEnter={() => setCountVisible(true)}
+                                transition={{ duration: 0.5 }}
                             >
                                 <Card
                                     sx={{
@@ -127,7 +141,8 @@ const AchievementsSection = () => {
 
                                     <CardContent>
                                         <Typography
-                                            variant="h1"
+                                            variant="h2"
+                                            align="center"
                                             sx={{
                                                 fontWeight: "bold",
                                                 color: theme.palette.secondary.main,
@@ -135,9 +150,11 @@ const AchievementsSection = () => {
                                             }}
                                         >
                                             <CountUp
-                                                start={0}
+                                                start={countVisible ? 0 : null}
                                                 end={achievement.number}
-                                                duration={10}
+                                                duration={6}
+                                                separator=","
+                                                delay={0.5}
                                             />
                                         </Typography>
                                         <Typography

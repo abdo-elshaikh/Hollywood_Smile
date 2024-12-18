@@ -3,7 +3,7 @@ import { Box, Container, Typography, Grid, Paper, List, ListItem, ListItemText, 
 import { motion } from 'framer-motion';
 import { useCustomTheme } from '../../contexts/ThemeProvider';
 import { useTranslation } from 'react-i18next';
-import { CheckCircle } from '@mui/icons-material';
+import { BorderBottom, CheckCircle } from '@mui/icons-material';
 import { fetchServices } from "../../services/servicesService";
 import backgroundImage from '../../assets/images/m_mabrouk.jpg';
 
@@ -11,6 +11,7 @@ import backgroundImage from '../../assets/images/m_mabrouk.jpg';
 
 const ServicesSection = () => {
     const { mode: themeMode } = useCustomTheme();
+    const isDark = themeMode === 'dark';
     const { t, i18n } = useTranslation();
     const [services, setServices] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -45,61 +46,141 @@ const ServicesSection = () => {
     }
 
     return (
-        <Box sx={{ bgcolor: 'background.default', py: 10 }}>
+        <Box sx={{ py: 10 }}>
             <Container>
                 <motion.div
                     initial={{ opacity: 0, y: 50 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.5, delay: 0.2 }}
+
                 >
-                    <Typography variant="h4" sx={{ mb: 2, fontWeight: 600, textAlign: 'center', color: 'primary.main' }}>
+
+
+                    <Typography
+                        variant="h4"
+                        sx={{
+                            mb: 3,
+                            fontWeight: 700,
+                            textAlign: 'center',
+                            color: 'primary.main',
+                            fontFamily: 'Roboto, sans-serif',
+                            letterSpacing: '0.5px',
+                        }}
+                    >
                         {t('servicesSection.title')}
                     </Typography>
-                    <Typography sx={{ mb: 5, maxWidth: 600, mx: 'auto', color: themeMode === 'dark' ? '#ccc' : '#555', textAlign: 'center' }}>
+                    <Typography
+                        sx={{
+                            mb: 2,
+                            maxWidth: { xs: '100%', sm: 600 },
+                            mx: 'auto',
+                            color: isDark ? '#ddd' : '#555',
+                            textAlign: 'center',
+                            fontSize: { xs: '1rem', md: '1.1rem' },
+                            lineHeight: 1.6,
+                            fontFamily: 'Roboto, sans-serif',
+                        }}
+                    >
                         {t('servicesSection.description')}
                     </Typography>
+
+                    <Box
+                        sx={{
+                            textAlign: 'center',
+                            mb: 5,
+                            width: 100,
+                            borderBottom: '4px solid',
+                            borderColor: 'primary.main',
+                            margin: '0 auto',
+                        }}
+                    />
                 </motion.div>
 
-                <Grid container spacing={4} justifyContent="center">
+                <Grid container spacing={4} mt={6} justifyContent="center">
                     {services?.slice(0, 8).map((service, index) => (
-                        <Grid item xs={12} sm={6} md={3} key={service._id}>
+                        <Grid item xs={12} sm={6} md={4} lg={3} key={service._id}>
                             <motion.div
                                 initial={{ opacity: 0, y: 20 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
-                                transition={{ duration: 0.5, delay: index * 0.3 }}
+                                transition={{ duration: 0.5, delay: index * 0.2 }}
                             >
                                 <Paper
-                                    elevation={3}
+                                    elevation={6}
                                     sx={{
-                                        p: 2,
+                                        p: 3,
                                         textAlign: 'center',
-                                        borderRadius: 1,
-                                        transition: 'transform 0.3s',
-                                        minHeight: 300,
-                                        bgcolor: themeMode === 'dark' ? '#2A2A2A' : '#fff',
-                                        '&:hover': { transform: 'translateY(-8px)', boxShadow: 6 },
+                                        borderRadius: 14,
+                                        transition: 'transform 0.3s, box-shadow 0.3s',
+                                        minHeight: 350,
+                                        bgcolor: isDark ? '#2C2C2C' : '#F9F9F9',
+                                        '&:hover': {
+                                            transform: 'translateY(-12px)',
+                                            boxShadow: `0 15px 25px ${isDark ? 'rgba(0,0,0,0.7)' : 'rgba(0,0,0,0.15)'}`,
+                                        },
                                     }}
                                 >
                                     <Box
                                         sx={{
-                                            width: 100,
-                                            height: 100,
-                                            mx: 'auto',
-                                            mb: 2,
+                                            width: 120,
+                                            height: 120,
                                             borderRadius: '50%',
-                                            background: 'linear-gradient(135deg, #2F8DF7, #2CB9BF, #2CB9BF, #2F8DF7)',
+                                            overflow: 'hidden',
+                                            margin: '0 auto',
+                                            position: 'relative',
+                                            zIndex: 1,
+                                            mb: 3,
+                                            padding: 2,
+                                            background: isDark ?
+                                                'linear-gradient(145deg, #F95454, #FFD45B)' :
+                                                'linear-gradient(145deg, #4A90E2, #50C9C3)',
+                                            boxShadow: '0 8px 15px rgba(0, 0, 0, 0.1)',
+                                            '&:hover': {
+                                                transform: 'scale(1.02)',
+                                                transition: 'transform 0.3s',
+                                            },
                                         }}
                                     >
-                                        <img src={service.icon} alt={service.title.en} style={{ width: '100%', height: '100%' }} />
+                                        <img
+                                            src={service.icon}
+                                            alt={service.title.en}
+                                            style={{
+                                                width: '100%',
+                                                height: '100%',
+                                                objectFit: 'contain',
+                                            }}
+                                        />
                                     </Box>
-                                    <Divider sx={{ mb: 2 }} />
-                                    <Typography variant="h4" sx={{ fontWeight: 600, fontSize: '1.2rem', mb: 1, fontFamily: 'Poppins' }}>
+                                    <Divider sx={{ mb: 3 }} />
+                                    <Typography
+                                        variant="h6"
+                                        sx={{
+                                            fontWeight: 700,
+                                            fontSize: '1.2rem',
+                                            mb: 1,
+                                            color: 'text.primary',
+                                            fontFamily: 'Poppins, sans-serif',
+                                            textTransform: 'capitalize',
+                                        }}
+                                    >
                                         {isArabic ? service.title.ar : service.title.en}
                                     </Typography>
-                                    <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#ccc' : '#555', mt: 1, fontWeight: 400 }}>
-                                        {isArabic ? service.description.ar : service.description.en}
+                                    <Typography
+                                        variant="body2"
+                                        sx={{
+                                            color: isDark ? '#ccc' : '#666',
+                                            mt: 1,
+                                            fontWeight: 400,
+                                            lineHeight: 1.6,
+                                            fontFamily: 'Roboto, sans-serif',
+                                            fontSize: '0.95rem',
+                                        }}
+                                    >
+                                        {isArabic
+                                            ? service.description.ar.slice(0, 80)
+                                            : service.description.en.slice(0, 80)}
+                                        ...
                                     </Typography>
                                 </Paper>
                             </motion.div>
@@ -107,6 +188,8 @@ const ServicesSection = () => {
                     ))}
                 </Grid>
             </Container>
+
+
 
             {/* About Section */}
             <Box

@@ -126,9 +126,7 @@ const PricingSection = () => {
                             spaceBetween={15}
                             slidesPerView={1}
                             autoplay={{
-                                delay: 5000,
-                                disableOnInteraction: false,
-                                pauseOnMouseEnter: false,
+                                delay: 4000,
                             }}
                             loop={true}
                             breakpoints={{

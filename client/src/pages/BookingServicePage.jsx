@@ -8,15 +8,12 @@ import HeaderSection from '../components/home/HeaderSection';
 import ScrollToTopButton from '../components/common/ScrollToTopButton';
 import Footer from '../components/home/Footer';
 import axiosInstance from '../services/axiosInstance';
-import onlineBookingVideo from '../assets/videos/childern_smile.mp4';
-import onlineBokkingSmall from '../assets/videos/Little_Girl.mp4';
 
 const BookingServicePage = () => {
     const { t, i18n } = useTranslation();
     const { mode } = useCustomTheme();
     const [services, setServices] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [background, setBackground] = useState(onlineBookingVideo);
 
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -40,16 +37,17 @@ const BookingServicePage = () => {
         fetchServices();
     }, []);
 
-    useEffect(() => {
-        setBackground(isMobile ? onlineBokkingSmall : onlineBookingVideo);
-    }, [isMobile]);
-
     const selectService = (id) => {
         navigate(`/booking/${id}`);
     };
 
     return (
-        <>
+        <Box
+            sx={{
+                backgroundColor: isDark ? 'dark.main' : 'background.default',
+                color: isDark ? 'white' : 'dark.main',
+            }}
+        >
             <HeaderSection />
             <Box
                 component={motion.div}
@@ -57,14 +55,25 @@ const BookingServicePage = () => {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.6 }}
                 sx={{
-                    backgroundColor: isDark ? 'dark.main' : 'light.main',
                     color: isDark ? 'white' : 'dark.main',
                     minHeight: '100vh',
-                    py: 10,
+                    py: 15,
                     position: 'relative',
                     zIndex: 1,
                 }}
             >
+                <Box
+                    sx={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        zIndex: -1,
+                        background: isDark ? 'background.default' : 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+                        opacity: 0.6,
+                    }}
+                />
                 <Container maxWidth="lg">
                     <Box
                         sx={{
@@ -158,26 +167,9 @@ const BookingServicePage = () => {
                     )}
                 </Container>
             </Box>
-            <video
-                autoPlay
-                loop
-                muted
-                playsInline
-                style={{
-                    position: 'fixed',
-                    top: 0,
-                    left: 0,
-                    minWidth: '100%',
-                    minHeight: '100%',
-                    zIndex: -1,
-                    objectFit: 'cover',
-                }}
-            >
-                <source src={background} type="video/mp4" />
-            </video>
             <ScrollToTopButton />
             <Footer />
-        </>
+        </Box>
     );
 };
 

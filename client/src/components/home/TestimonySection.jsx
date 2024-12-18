@@ -48,9 +48,19 @@ const TestimonySection = () => {
         <Typography variant="h3" sx={{ fontWeight: "bold", color: "primary.main", mb: 3 }}>
           {t("testimonials.title")}
         </Typography>
-        <Typography variant="subtitle1" sx={{ color: "text.secondary" }}>
+        <Typography variant="subtitle1" sx={{ color: "text.secondary", mb: 2 }}>
           {t("testimonials.description")}
         </Typography>
+        <Box
+          sx={{
+            textAlign: 'center',
+            mb: 2,
+            width: 100,
+            borderBottom: '4px solid',
+            borderColor: 'primary.main',
+            margin: '0 auto',
+          }}
+        />
       </Box>
 
       <Grid container spacing={0}>
