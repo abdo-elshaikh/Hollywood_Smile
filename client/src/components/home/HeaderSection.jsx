@@ -473,7 +473,6 @@ const MenuItems = ({ items }) => {
                             cursor: 'pointer',
                             textTransform: 'uppercase',
                             fontFamily: 'sans-serif ',
-                            cursor: 'pointer',
                             '&:after': {
                                 content: '""',
                                 position: 'absolute',
