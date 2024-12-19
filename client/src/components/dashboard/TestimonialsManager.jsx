@@ -7,7 +7,6 @@ import {
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import axiosInstance from '../../services/axiosInstance';
-import { uploadImage } from '../../services/uploadImage';
 import TestimonialForm from '../common/TestimonialForm';
 
 const TestimonialsManager = () => {

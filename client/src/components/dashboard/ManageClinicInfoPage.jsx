@@ -22,7 +22,7 @@ import {
 import ClearIcon from "@mui/icons-material/Clear";
 import { useClinicContext } from "../../contexts/ClinicContext";
 import { useSnackbar } from "../../contexts/SnackbarProvider";
-import { uploadImage } from "../../services/uploadImage";
+import { uploadFile } from "../../services/supabaseService";
 import { motion } from "framer-motion";
 import dayjs from 'dayjs';
 import {
@@ -154,7 +154,7 @@ const ManageClinicPage = () => {
     const handleUploadImage = async (file, mode) => {
         setIsUploading(true);
         try {
-            const data = await uploadImage(file, "images/clinic", "uploads");
+            const data = await uploadFile(file, "images/clinic", `logo-${mode}`);
             setFormData((prevData) => ({
                 ...prevData,
                 logo: {

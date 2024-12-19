@@ -25,7 +25,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useSnackbar } from '../../contexts/SnackbarProvider';
 import CustomPagination from "../common/CustomPagination";
-import { uploadImage } from "../../services/uploadImage";
+import { uploadFile } from "../../services/supabaseService";
 import { fetchServices } from "../../services/servicesService";
 
 const ManageOffers = () => {
@@ -89,10 +89,14 @@ const ManageOffers = () => {
     };
 
     const handleUploadImage = async (file) => {
+        if (newOffer.title.en === "") {
+            showSnackbar("Please enter title in both languages", "error");
+            return;
+        }
         setLoadingImage(true);
         try {
             const directoryPath = 'images/offers';
-            const data = await uploadImage(file, directoryPath);
+            const data = await uploadFile(file, directoryPath, newOffer.title.en);
             if (data.fullUrl) {
                 setNewOffer({ ...newOffer, imageUrl: data.fullUrl });
                 showSnackbar("Image uploaded successfully", "success");
