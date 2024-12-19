@@ -64,19 +64,21 @@ const TestimonySection = () => {
       </Box>
 
       <Grid container spacing={0}>
-
         <Swiper
           modules={[Autoplay, Navigation, Pagination]}
-          autoplay={{ delay: 5000, disableOnInteraction: false }}
-          pagination={{ clickable: true }}
-          spaceBetween={10}
+          spaceBetween={30}
           slidesPerView={2}
           breakpoints={{
-            0: { slidesPerView: 1 },
-            960: { slidesPerView: 2 },
+            0: {
+              slidesPerView: 1,
+            },
+            768: {
+              slidesPerView: 2,
+            },
           }}
-          loop
-          dir={isArabic ? "rtl" : "ltr"}
+          loop={true}
+          autoplay={{ delay: 5000 }}
+          pagination={{ clickable: true }}
         >
           {cardData.map((item, index) => (
             <motion.div
@@ -118,7 +120,7 @@ const TestimonyCard = ({ name, position, quote, imgUrl, rating, t, isArabic }) =
         p: 4,
         mb: 8,
         mx: 2,
-        minHeight: 250,
+        minHeight: 200,
         textAlign: isArabic ? "right" : "left",
         display: "flex",
         flexDirection: "column",

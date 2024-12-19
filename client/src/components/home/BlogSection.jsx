@@ -37,9 +37,7 @@ const BlogSection = () => {
   const fetchBlogs = async () => {
     try {
       const res = await axiosInstance.get("/blogs");
-      console.log("Fetched blogs:", res.data);
       const mostVisitedBlogs = res.data.sort((a, b) => b.views - a.views).slice(0, 6);
-      console.log("Most visited blogs:", mostVisitedBlogs);
       setBlogs(mostVisitedBlogs);
     } catch (error) {
       console.error("Error fetching blogs:", error);

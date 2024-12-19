@@ -103,8 +103,7 @@ const NotificationSection = () => {
             color='primary.main'
             fontWeight="bold"
             mb={2}
-            textShadow={4}
-
+            sx={{ textTransform: 'uppercase', letterSpacing: 2 }}
           >
             {t('appointmentSection.emergency.title')}
           </Typography>

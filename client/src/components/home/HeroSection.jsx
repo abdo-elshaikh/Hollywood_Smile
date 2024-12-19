@@ -132,7 +132,10 @@ const HeroSection = () => {
         modules={[Navigation, Pagination, Autoplay]}
         pagination={{ clickable: true }}
         autoplay={{ delay: 5000 }}
-        loop
+        slidesPerView={1}
+        slidesPerGroup={1}
+        slideToClickedSlide={true}
+        loop={true}
         style={{
           height: "100%",
           width: "100%",

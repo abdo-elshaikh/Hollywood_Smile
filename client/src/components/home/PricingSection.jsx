@@ -125,6 +125,8 @@ const PricingSection = () => {
                             modules={[Autoplay, Pagination]}
                             spaceBetween={15}
                             slidesPerView={1}
+                            slidesPerGroup={1}
+                            slideToClickedSlide={true}
                             autoplay={{
                                 delay: 4000,
                             }}
