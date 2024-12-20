@@ -104,8 +104,8 @@ const HeaderSection = () => {
     };
 
     return (
-        <>
-            <TopbarSection />
+        <Box>
+            <TopbarSection clinicinfo={clinicInfo} />
             <AppBar
                 position="fixed"
                 elevation={3}
@@ -204,7 +204,7 @@ const HeaderSection = () => {
                                 {/* Menu Items */}
                                 {items.map((item, index) => (
                                     <ListItem
-                                        button
+                                        button='true'
                                         key={index}
                                         onClick={() => { navigate(item.href); closeMobileMenu(); }}
                                         sx={{
@@ -235,7 +235,7 @@ const HeaderSection = () => {
 
                                 {/* Conditional Admin, Support, and Blog Items */}
                                 {user?.role === 'admin' && (
-                                    <ListItem button onClick={() => navigate('/dashboard')}>
+                                    <ListItem button='true' onClick={() => navigate('/dashboard')}>
                                         <ListItemIcon>
                                             <SettingsApplications />
                                         </ListItemIcon>
@@ -250,7 +250,7 @@ const HeaderSection = () => {
                                 )}
 
                                 {user?.role === 'support' && (
-                                    <ListItem button onClick={() => navigate('/support-dashboard')}>
+                                    <ListItem button='true' onClick={() => navigate('/support-dashboard')}>
                                         <ListItemIcon>
                                             <SettingsApplications />
                                         </ListItemIcon>
@@ -265,7 +265,7 @@ const HeaderSection = () => {
                                 )}
 
                                 {(user?.role === 'author' || user?.role === 'editor') && (
-                                    <ListItem button onClick={() => navigate('/blog-dashboard')}>
+                                    <ListItem button='true' onClick={() => navigate('/blog-dashboard')}>
                                         <ListItemIcon>
                                             <DriveFileMove />
                                         </ListItemIcon>
@@ -281,7 +281,7 @@ const HeaderSection = () => {
 
                                 {/* Profile and Settings */}
                                 {user && (
-                                    <ListItem button onClick={() => navigate('/profile')}>
+                                    <ListItem button='true' onClick={() => navigate('/profile')}>
                                         <ListItemIcon>
                                             <AccountCircle />
                                         </ListItemIcon>
@@ -296,7 +296,7 @@ const HeaderSection = () => {
                                 )}
 
                                 {/* Language and Theme Settings */}
-                                <ListItem button onClick={handleLanguageChange}>
+                                <ListItem button='true' onClick={handleLanguageChange}>
                                     <ListItemIcon>
                                         <Language />
                                     </ListItemIcon>
@@ -309,7 +309,7 @@ const HeaderSection = () => {
                                     />
                                 </ListItem>
 
-                                <ListItem button onClick={handleThemeToggle}>
+                                <ListItem button='true' onClick={handleThemeToggle}>
                                     <ListItemIcon>
                                         {isDark ? <LightModeOutlined /> : <DarkModeOutlined />}
                                     </ListItemIcon>
@@ -324,7 +324,7 @@ const HeaderSection = () => {
                                 </ListItem>
 
                                 {/* Login/Logout Button */}
-                                <ListItem button onClick={user ? handleLogout : handleLogin}>
+                                <ListItem button='true' onClick={user ? handleLogout : handleLogin}>
                                     <ListItemIcon>
                                         {user ? <Logout /> : <Login />}
                                     </ListItemIcon>
@@ -435,7 +435,7 @@ const HeaderSection = () => {
 
                 </Toolbar>
             </AppBar>
-        </>
+        </Box>
     );
 };
 
@@ -459,7 +459,6 @@ const MenuItems = ({ items }) => {
             {items.map((item, index) => (
                 <motion.div
                     key={index}
-                    // whileHover={{ scale: 1.05 }} // Slightly larger hover effect
                     transition={{ type: 'spring', stiffness: 250, damping: 15 }}
                 >
                     <Link
@@ -478,7 +477,7 @@ const MenuItems = ({ items }) => {
                                 position: 'absolute',
                                 width: '100%',
                                 transform: 'scaleX(0)',
-                                height: '5px', 
+                                height: '5px',
                                 bottom: -4,
                                 left: 0,
                                 zIndex: -1,

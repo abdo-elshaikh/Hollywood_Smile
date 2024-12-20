@@ -5,10 +5,8 @@ import { CustomThemeProvider } from './contexts/ThemeProvider';
 import { ClinicProvider } from './contexts/ClinicContext';
 import SnackbarProvider from './contexts/SnackbarProvider';
 import AuthProvider from './contexts/AuthContext';
-import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/react"
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
+// import { Analytics } from "@vercel/analytics/react";
+// import { SpeedInsights } from "@vercel/speed-insights/react"
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
@@ -26,8 +24,6 @@ root.render(
       <CustomThemeProvider>
         <ClinicProvider>
           <SnackbarProvider>
-            <Analytics />
-            <SpeedInsights />
             <App />
           </SnackbarProvider>
         </ClinicProvider>

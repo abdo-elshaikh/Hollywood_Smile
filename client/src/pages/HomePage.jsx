@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React from 'react';
 import NotificationSection from '../components/home/NotificationSection';
 import TopbarSection from '../components/home/TopbarSection';
 import HeaderSection from '../components/home/HeaderSection';
@@ -25,36 +25,28 @@ import ClientTestimonial from '../components/home/ClientTestimonial';
 import DetectBookingSection from '../components/home/DetectBookingSection';
 import Footer from '../components/home/Footer';
 import ScrollToTopButton from '../components/common/ScrollToTopButton';
-// import GoogleTranslate from '../components/common/GoogleTranslate';
-// import Chat from '../components/common/Chat';
-// import SendSMS from '../components/SendSMS';
-// import SendEmail from '../components/SendEmail';
 import { Box } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 const HomePage = () => {
   const { i18n } = useTranslation();
+  const isRtl = i18n.dir() === 'rtl';
 
   return (
     <Box
       sx={{
-        direction: i18n.dir(),
-        textAlign: i18n.dir() === 'rtl' ? 'right' : 'left',
+        direction: isRtl ? 'rtl' : 'ltr',
       }}
     >
-      {/* <TopbarSection /> */}
       <HeaderSection />
       <HeroSection />
       <NotificationSection />
       <AboutSection />
-      {/* <AppointmentSection /> */}
       <DetectBookingSection />
       <ServicesSection />
-      {/* <MeetOurDentists /> */}
       <TeamSection />
       <NewsletterSection />
       <PricingSection />
-      {/* <OffersSection /> */}
       <AchievementsSection />
       <TestimonySection />
       <GallerySection />
@@ -62,7 +54,6 @@ const HomePage = () => {
       <BlogSection />
       <ContactSection />
       <BeforeAfterGallery />
-      {/* <SmileLoveCare /> */}
       <MapLocationSection />
       <Footer />
       <ScrollToTopButton />

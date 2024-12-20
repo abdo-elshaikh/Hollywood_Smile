@@ -1,9 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
 import { Box, Typography, Avatar, Container, Rating, Grid } from "@mui/material";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
@@ -41,6 +38,7 @@ const TestimonySection = () => {
     }));
   }, [testimonials, isArabic]);
 
+
   return (
     <Container maxWidth="lg" sx={{ py: 10 }}>
       {/* Section Header */}
@@ -68,12 +66,15 @@ const TestimonySection = () => {
           modules={[Autoplay, Navigation, Pagination]}
           spaceBetween={30}
           slidesPerView={2}
+          slidesPerGroup={2}
           breakpoints={{
             0: {
               slidesPerView: 1,
+              slidesPerGroup: 1,
             },
             768: {
               slidesPerView: 2,
+              slidesPerGroup: 2,
             },
           }}
           loop={true}

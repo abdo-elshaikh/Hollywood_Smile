@@ -21,7 +21,6 @@ import { Add, Edit, Delete } from '@mui/icons-material';
 import { fetchServices, createService, updateService, deleteService } from '../../services/servicesService';
 import { uploadFile, replaceFile, deleteFile } from '../../services/supabaseService';
 import { useSnackbar } from '../../contexts/SnackbarProvider';
-import { formatDate } from 'date-fns';
 
 
 const ManageServicesPage = () => {

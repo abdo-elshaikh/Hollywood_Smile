@@ -1,10 +1,11 @@
 import axios from 'axios';
 
+// Get the base URL from environment variables
 const baseUrl = import.meta.env.VITE_API_URL;
-// Create an axios instance with default configurations
+
+// Create an Axios instance with default configurations
 const axiosInstance = axios.create({
     baseURL: baseUrl,
-    timeout: 30000,
     headers: {
         'Content-Type': 'application/json',
     },
@@ -21,6 +22,7 @@ axiosInstance.interceptors.request.use(
     },
     (error) => {
         // Handle request errors
+        console.error('Request error:', error);
         return Promise.reject(error);
     }
 );
@@ -28,11 +30,24 @@ axiosInstance.interceptors.request.use(
 // Add a response interceptor to handle responses or errors globally
 axiosInstance.interceptors.response.use(
     (response) => {
+        // Process and return successful responses
         return response;
     },
     (error) => {
-        if (error.response && error.response.status === 401) {
-            console.error('Unauthorized access, please login again.');
+        if (error.response) {
+            const { status } = error.response;
+            if (status === 401) {
+                console.error('Unauthorized access, redirecting to login.');
+                localStorage.removeItem('token');
+                window.location.href = '/auth/login';
+            } else if (status === 429) {
+                console.error('Too many requests, please try again later.');
+            } else {
+                console.error(`Error ${status}:`, error.response.data.message || error.message);
+            }
+        } else {
+            // Handle network errors or other unexpected issues
+            console.error('Network error:', error.message);
         }
         return Promise.reject(error);
     }

@@ -9,16 +9,19 @@ const ScrollToTopButton = () => {
 
     useEffect(() => {
         const handleScroll = () => {
-            setShow(window.scrollY > 300); // Show the button when scrolled 300px down
+            setShow(window.scrollY > 300); // Show button when scrolling 300px or more
         };
+
         window.addEventListener('scroll', handleScroll);
+
+        // Cleanup the event listener when component is unmounted
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
     const handleClick = () => {
         window.scrollTo({
             top: 0,
-            behavior: 'smooth',
+            behavior: 'smooth', // Smooth scrolling to top
         });
     };
 
@@ -34,49 +37,53 @@ const ScrollToTopButton = () => {
                 zIndex: 1000,
             }}
         >
-            <Button
-                onClick={handleClick}
-                variant="contained"
-                sx={{
-                    padding: '12px 25px',
-                    backgroundColor: 'rgba(0, 0, 0, 0.4)',
-                    color: '#fff',
-                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
-                    borderRadius: '12px 0 0 12px',
-                    fontWeight: 'bold',
-                    textTransform: 'none',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    '&:hover': {
-                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                    },
-                }}
-            >
-                <motion.div
-                    animate={{
-                        y: [0, -5, 0], // Subtle bouncing
-                        scale: [1, 1.1, 1], // Pulsing effect
-                    }}
-                    transition={{
-                        duration: 1.5,
-                        repeat: Infinity,
-                        repeatType: 'reverse', // Smooth repeat
-                    }}
-                    style={{
+            {/* Tooltip added to show a message on hover */}
+            <Tooltip title="Scroll to Top" arrow>
+                <Button
+                    onClick={handleClick}
+                    variant="contained"
+                    sx={{
+                        padding: '12px 25px',
+                        backgroundColor: 'rgba(0, 0, 0, 0.4)',
+                        color: '#fff',
+                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+                        borderRadius: '12px 0 0 12px',
+                        fontWeight: 'bold',
+                        textTransform: 'none',
                         display: 'flex',
                         alignItems: 'center',
-                        justifyContent: 'center',
+                        justifyContent: 'space-between',
+                        '&:hover': {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        },
                     }}
                 >
-                    <KeyboardArrowUpIcon
-                        sx={{
-                            fontSize: 20,
-                            transition: 'transform 0.2s ease-in-out',
+                    {/* Animated arrow icon */}
+                    <motion.div
+                        animate={{
+                            y: [0, -5, 0], // Subtle bouncing
+                            scale: [1, 1.1, 1], // Pulsing effect
                         }}
-                    />
-                </motion.div>
-            </Button>
+                        transition={{
+                            duration: 1.5,
+                            repeat: Infinity,
+                            repeatType: 'reverse', // Smooth repeat
+                        }}
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}
+                    >
+                        <KeyboardArrowUpIcon
+                            sx={{
+                                fontSize: 20,
+                                transition: 'transform 0.2s ease-in-out',
+                            }}
+                        />
+                    </motion.div>
+                </Button>
+            </Tooltip>
         </motion.div>
     );
 };

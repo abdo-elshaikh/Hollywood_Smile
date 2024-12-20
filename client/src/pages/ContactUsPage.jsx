@@ -211,7 +211,7 @@ const ContactUsPage = () => {
                                 height="100%"
                                 style={{ border: 0 }}
                                 allowFullScreen=""
-                                loading="lazy"
+                                // loading="lazy"
                             ></iframe>
                         </Box>
                     </Box>

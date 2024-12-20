@@ -82,7 +82,7 @@ const ScrollToTop = () => {
 
   // Scroll to the top when the location changes
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo(0, 0);
   }, [location]);
 
   return null;
@@ -99,7 +99,10 @@ const App = () => {
   return (
     <Router>
       <ScrollToTop />
-      <Box component="main" sx={{ overflowX: 'hidden' }}>
+      <Box
+        component="main"
+        sx={{ overflowX: 'hidden' }}
+      >
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/dashboard/*" element={

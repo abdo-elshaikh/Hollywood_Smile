@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
     Box,
     Typography,
@@ -32,14 +32,6 @@ const PricingSection = () => {
     const { mode } = useCustomTheme();
     const darkMode = mode === "dark";
 
-    const pricingPlans = offers.map((offer) => ({
-        title: EN ? offer.title.en : offer.title.ar,
-        price: offer.discount,
-        image: offer.imageUrl,
-        features: [EN ? offer.description.en : offer.description.ar],
-        serviceId: offer.service._id,
-    }));
-
     const fetchOffers = async () => {
         try {
             const response = await axiosInstance.get("/offers");
@@ -54,6 +46,16 @@ const PricingSection = () => {
     useEffect(() => {
         fetchOffers();
     }, []);
+
+    const pricingPlans = useMemo(() => {
+        return offers.map((offer) => ({
+            serviceId: offer.service?._id || offer.service,
+            title: EN ? offer.title.en : offer.title.ar,
+            price: offer.discount,
+            image: offer.imageUrl,
+            description: EN ? offer.description.en : offer.description.ar,
+        }));
+    }, [offers, EN]);
 
     return (
         <Box py={5} px={{ xs: 2, md: 8 }}>
@@ -132,7 +134,7 @@ const PricingSection = () => {
                             }}
                             loop={true}
                             breakpoints={{
-                                768: { slidesPerView: 2 },
+                                768: { slidesPerView: 2, slidePerGroup: 2 },
                             }}
                         >
                             {pricingPlans.map((plan, index) => (
@@ -189,20 +191,9 @@ const PricingSection = () => {
                                                     {plan.title}
                                                 </Typography>
                                                 <Divider sx={{ my: 2, mx: "auto", width: "50%" }} />
-                                                {plan.features.map((feature, idx) => (
-                                                    <motion.div
-                                                        key={idx}
-                                                        initial={{ opacity: 0 }}
-                                                        animate={{ opacity: 1 }}
-                                                        transition={{ delay: 0.3, duration: 0.5 }}
-                                                    >
-                                                        <Box display="flex" justifyContent="center" sx={{ mb: 1 }}>
-                                                            <Typography variant="body1" sx={{ ml: 1 }}>
-                                                                {feature}
-                                                            </Typography>
-                                                        </Box>
-                                                    </motion.div>
-                                                ))}
+                                                <Typography variant="h6" color="text.secondary" sx={{ mb: 3 }}>
+                                                    {plan.description}
+                                                </Typography>
                                                 <Button
                                                     variant="contained"
                                                     color="primary"

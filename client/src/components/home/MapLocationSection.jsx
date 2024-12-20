@@ -173,22 +173,29 @@ const MapLocationSection = () => {
 
 
                     {/* Embedded Map */}
-                    <Grid item xs={12}>
-                        <CardMedia
-                            component="iframe"
-                            src={clinicInfo?.mapLink}
-                            height="500"
+                    <Grid item xs={12} textAlign="center">
+                        <Paper
+                            elevation={4}
                             sx={{
-                                width: '100%',
-                                borderRadius: 2,
-                                boxShadow: 3,
-                                border: '2px solid',
-                                borderColor: 'primary.main',
+                                borderRadius: 0,
+                                overflow: 'hidden',
+                                position: 'relative',
+                                boxShadow: '0 0 20px rgba(0, 0, 0, 0.3)',
+                                border: '1px solid rgba(0, 0, 0, 0.1)',
                             }}
-                            allowFullScreen
-                            loading="lazy"
-                            referrerPolicy="no-referrer-when-downgrade"
-                        />
+                        >
+                            <iframe
+                                style={{
+                                    width: '100%',
+                                    height: 500,
+                                    border: 0,
+                                }}
+                                loading="lazy"
+                                allowFullScreen
+                                src={clinicInfo.mapLink}
+                                title="Google Map"
+                            />
+                        </Paper>
                     </Grid>
                 </Grid>
             </Container>

@@ -7,19 +7,17 @@ import PhoneIcon from "@mui/icons-material/Phone";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import { useCustomTheme } from '../../contexts/ThemeProvider';
 import { useTranslation } from 'react-i18next';
-import { useClinicContext } from '../../contexts/ClinicContext';
 
-const TopbarSection = () => {
+const TopbarSection = ({ clinicinfo }) => {
     const { mode } = useCustomTheme();
     const isDark = mode === 'dark';
     const { t, i18n } = useTranslation();
     const isArabic = i18n.language === 'ar';
-    const { clinicInfo } = useClinicContext();
 
     return (
         <Box
             sx={{
-                display: { xs: "none", lg: "block" },
+                display: { xs: "none", md: 'block' },
                 backgroundColor: 'background.default',
                 boxShadow: 1,
                 borderBottom: isDark ? '1px solid #333' : '1px solid #ddd',
@@ -32,7 +30,7 @@ const TopbarSection = () => {
 
             >
                 {/* Left Section */}
-                <Grid item xs={12} md={7}>
+                <Grid item xs={12} md={6}>
                     <motion.div
                         initial={{ opacity: 0, x: -50 }}
                         animate={{ opacity: 1, x: 0 }}
@@ -48,7 +46,7 @@ const TopbarSection = () => {
                 </Grid>
 
                 {/* Right Section */}
-                <Grid item xs={12} md={5} sx={{ position: "relative", height: 60, overflow: 'hidden' }}>
+                <Grid item xs={12} md={6} sx={{ position: "relative", height: 60, overflow: 'hidden' }}>
                     <Box
                         sx={{
                             position: 'absolute',
@@ -109,8 +107,8 @@ const TopbarSection = () => {
                                 <Box display="flex" alignItems="center">
                                     <PhoneIcon color="primary" sx={{ mx: 1, fontSize: 20 }} />
                                     <Typography variant="body2" color="textSecondary" sx={{ fontWeight: 'bold' }}>
-                                        <Link to={`tel:${clinicInfo.phone}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                                            {clinicInfo.phone}
+                                        <Link to={`tel:${clinicinfo?.phone}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                                            {clinicinfo?.phone}
                                         </Link>
                                     </Typography>
                                 </Box>
@@ -120,8 +118,8 @@ const TopbarSection = () => {
                                 <Box display="flex" alignItems="center">
                                     <EmailIcon color="primary" sx={{ mx: 1, fontSize: 20 }} />
                                     <Typography variant="body2" color="textSecondary" sx={{ fontWeight: 'bold' }}>
-                                        <Link to={`mailto:${clinicInfo.email}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                                            {clinicInfo.email}
+                                        <Link to={`mailto:${clinicinfo.email}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                                            {clinicinfo.email}
                                         </Link>
                                     </Typography>
                                 </Box>
