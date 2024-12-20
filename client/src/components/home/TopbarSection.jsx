@@ -41,7 +41,7 @@ const TopbarSection = () => {
                         <Box display="flex" alignItems="center" justifyContent="flex-start">
                             <AccessTimeIcon color="primary" sx={{ mx: 2, fontSize: 25 }} />
                             <Typography variant="body2" color="textSecondary" sx={{ fontWeight: 'bold' }}>
-                                {isArabic ? 'من السبت إلى الخميس من 9 صباحًا حتى 9 مساءً' : 'Saturday - Thursday 9:00 AM - 9:00 PM'}
+                                {isArabic ? 'من السبت إلى الخميس من 9 صباحًا حتى 9 مساءً | الجمعه من 3 مساءً' : 'Saturday - Thursday 9:00 AM - 9:00 PM | Friday 3:00 PM'}
                             </Typography>
                         </Box>
                     </motion.div>

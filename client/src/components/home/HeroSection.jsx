@@ -130,20 +130,15 @@ const HeroSection = () => {
     >
       <Swiper
         modules={[Navigation, Pagination, Autoplay]}
-        pagination={{ clickable: true }}
-        autoplay={{ delay: 5000 }}
+        spaceBetween={0}
         slidesPerView={1}
-        slidesPerGroup={1}
-        slideToClickedSlide={true}
-        loop={true}
-        style={{
-          height: "100%",
-          width: "100%",
-        }}
+        pagination={{ clickable: true }}
+        autoplay={{ delay: 5000, disableOnInteraction: false }}
+        loop
+        style={{ width: "100%", height: "100%" }}
       >
         {carouselItems.map((item) => (
           <SwiperSlide key={item.id}>
-            {/* Background image */}
             <Box
               sx={{
                 width: "100%",
@@ -151,7 +146,6 @@ const HeroSection = () => {
                 position: "relative",
               }}
             >
-              {/* Background image */}
               <Box
                 sx={{
                   position: "absolute",
