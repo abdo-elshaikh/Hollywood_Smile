@@ -38,11 +38,19 @@ dotenv.config();
 // Connect to MongoDB
 connectDB();
 
+const allowedOrigins = process.env.CORS_ORIGIN.split(',');
 // Middleware
 app.use(cors({
-    origin: process.env.CORS_ORIGIN || '*',
+    origin: (origin, callback) => {
+        if (allowedOrigins.includes(origin) || !origin) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true,
 }));
+
 app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(Express.urlencoded({ extended: true }));
