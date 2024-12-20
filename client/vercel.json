@@ -7,11 +7,5 @@
             "source": "/(.*)",
             "destination": "/index.html"
         }
-    ],
-    "env": {
-        "VITE_API_URL": "https://hollywoodsmile.vercel.app",
-        "VITE_SUPABASE_VIEW_URL": "https://asdrdbcewdfjwpauoyyk.supabase.co/storage/v1/object/public",
-        "VITE_SUPABASE_URL": "https://asdrdbcewdfjwpauoyyk.supabase.co",
-        "VITE_SUPABASE_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFzZHJkYmNld2RmandwYXVveXlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzIzNjM1NjksImV4cCI6MjA0NzkzOTU2OX0.hte17WOUjSiI_So1H5pMVmw9NgtajmHfRg3ZibCpr0k"
-    }
+    ]
 }

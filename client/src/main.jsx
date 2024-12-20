@@ -5,8 +5,8 @@ import { CustomThemeProvider } from './contexts/ThemeProvider';
 import { ClinicProvider } from './contexts/ClinicContext';
 import SnackbarProvider from './contexts/SnackbarProvider';
 import AuthProvider from './contexts/AuthContext';
-// import { Analytics } from "@vercel/analytics/react";
-// import { SpeedInsights } from "@vercel/speed-insights/react"
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/react"
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';

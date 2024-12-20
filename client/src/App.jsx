@@ -1,37 +1,38 @@
-// src/App.jsx
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, Suspense } from 'react';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useClinicContext } from './contexts/ClinicContext';
+
+const HomePage = React.lazy(() => import('./pages/HomePage'));
+const AuthPage = React.lazy(() => import('./pages/AuthPage'));
+const AboutUsPage = React.lazy(() => import('./pages/AboutUsPage'));
+const DashboardPage = React.lazy(() => import('./pages/DashboardPage'));
+const SupportDashboard = React.lazy(() => import('./pages/SupportDashboard'));
+const BlogDashboard = React.lazy(() => import('./pages/BlogDashboard'));
+const BlogPage = React.lazy(() => import('./pages/BlogPage'));
+const BlogPostPage = React.lazy(() => import('./pages/BlogPostPage'));
+const BookingPage = React.lazy(() => import('./pages/BookingPage'));
+const BookingServicePage = React.lazy(() => import('./pages/BookingServicePage'));
+const FaqPage = React.lazy(() => import('./pages/FaqPage'));
+const ContactUsPage = React.lazy(() => import('./pages/ContactUsPage'));
+const DoctorsPage = React.lazy(() => import('./pages/DoctorsPage'));
+const GalleryPage = React.lazy(() => import('./pages/GalleryPage'));
+const ImageDetailsPage = React.lazy(() => import('./pages/ImageDetailsPage'));
+const ServicesPage = React.lazy(() => import('./pages/ServicesPage'));
+const ViewProfile = React.lazy(() => import('./pages/ViewProfile'));
+const ProfilePage = React.lazy(() => import('./pages/ProfilePage'));
+const ClientBookings = React.lazy(() => import('./pages/ClientBookings'));
+const Error404Page = React.lazy(() => import('./pages/404Page'));
+const NotFoundPage = React.lazy(() => import('./pages/NotFoundPage'));
+const Error403Page = React.lazy(() => import('./pages/403Page'));
+const Error500Page = React.lazy(() => import('./pages/500Page'));
+const LoadingSpinner = React.lazy(() => import('./components/common/LoadingSpinner'));
+const ErrorBoundary = React.lazy(() => import('./components/common/ErrorBoundary'));
+const RateDoctorPage = React.lazy(() => import('./pages/RateDoctorPage'));
+
 import PrivateRoute from './components/PrivateRoute';
-import AuthPage from './pages/AuthPage';
-import HomePage from './pages/HomePage';
-import AboutUsPage from './pages/AboutUsPage';
-import DashboardPage from './pages/DashboardPage';
-import SupportDashboard from './pages/SupportDashboard';
-import BlogDashboard from './pages/BlogDashboard';
-import BlogPage from './pages/BlogPage';
-import BlogPostPage from './pages/BlogPostPage';
-import BookingPage from './pages/BookingPage';
-import BookingServicePage from './pages/BookingServicePage';
-import FaqPage from './pages/FaqPage';
-import ContactUsPage from './pages/ContactUsPage';
-import DoctorsPage from './pages/DoctorsPage';
-import GalleryPage from './pages/GalleryPage';
-import ImageDetailsPage from './pages/ImageDetailsPage';
-import ServicesPage from './pages/ServicesPage';
-import ViewProfile from './pages/ViewProfile';
-import ProfilePage from './pages/ProfilePage';
-import ClientBookings from './pages/ClientBookings';
-import Error404Page from './pages/404Page';
-import NotFoundPage from './pages/NotFoundPage';
-import Error403Page from './pages/403Page';
-import Error500Page from './pages/500Page';
-import LoadingSpinner from './components/common/LoadingSpinner';
-import ErrorBoundary from './components/common/ErrorBoundary';
-import RateDoctorPage from './pages/RateDoctorPage';
-import './i18n';
 import { Box } from '@mui/material';
+import './i18n';
 
 const ScrollToTop = () => {
   const location = useLocation();
@@ -98,48 +99,50 @@ const App = () => {
 
   return (
     <Router>
-      <ScrollToTop />
-      <Box
-        component="main"
-        sx={{ overflowX: 'hidden' }}
-      >
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/dashboard/*" element={
-            <PrivateRoute element={<DashboardPage />} requiredRoles={['admin']} />
-          } />
-          <Route path="/blog-dashboard/*" element={
-            <PrivateRoute element={<BlogDashboard />} requiredRoles={['admin', 'editor', 'author']} />
-          } />
-          <Route path="/support-dashboard" element={
-            <PrivateRoute element={<SupportDashboard />} requiredRoles={['admin', 'support']} />
-          } />
-          <Route path="/profile" element={
-            <PrivateRoute element={<ProfilePage />} requiredRoles={['visitor', 'admin', 'support', 'editor', 'author']} />
-          } />
-          <Route path="/detect-booking" element={
-            <PrivateRoute element={<ClientBookings />} requiredRoles={['visitor']} />
-          } />
-          <Route path="/about-us" element={<AboutUsPage />} />
-          <Route path="/auth/*" element={<AuthPage />} />
-          <Route path="/blog" element={<BlogPage />} />
-          <Route path="/blog/:id" element={<BlogPostPage />} />
-          <Route path="/booking" element={<BookingServicePage />} />
-          <Route path="/booking/:id" element={<BookingPage />} />
-          <Route path="/faq" element={<FaqPage />} />
-          <Route path="/contact-us" element={<ContactUsPage />} />
-          <Route path="/doctors" element={<DoctorsPage />} />
-          <Route path="/doctors/:id" element={<ViewProfile />} />
-          <Route path="/rate-doctor/:id" element={<RateDoctorPage />} />
-          <Route path="/gallery" element={<GalleryPage />} />
-          <Route path="/gallery/:id" element={<ImageDetailsPage />} />
-          <Route path="/services" element={<ServicesPage />} />
-          <Route path="/not-found" element={<NotFoundPage />} />
-          <Route path="/unauthorized" element={<Error403Page />} />
-          <Route path="/server-error" element={<Error500Page />} />
-          <Route path="*" element={<Error404Page />} />
-        </Routes>
-      </Box>
+      <ErrorBoundary>
+        <ScrollToTop />
+        <Box
+          component="main"
+          sx={{ overflowX: 'hidden' }}
+        >
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/dashboard/*" element={
+              <PrivateRoute element={<DashboardPage />} requiredRoles={['admin']} />
+            } />
+            <Route path="/blog-dashboard/*" element={
+              <PrivateRoute element={<BlogDashboard />} requiredRoles={['admin', 'editor', 'author']} />
+            } />
+            <Route path="/support-dashboard" element={
+              <PrivateRoute element={<SupportDashboard />} requiredRoles={['admin', 'support']} />
+            } />
+            <Route path="/profile" element={
+              <PrivateRoute element={<ProfilePage />} requiredRoles={['visitor', 'admin', 'support', 'editor', 'author']} />
+            } />
+            <Route path="/detect-booking" element={
+              <PrivateRoute element={<ClientBookings />} requiredRoles={['visitor']} />
+            } />
+            <Route path="/about-us" element={<AboutUsPage />} />
+            <Route path="/auth/*" element={<AuthPage />} />
+            <Route path="/blog" element={<BlogPage />} />
+            <Route path="/blog/:id" element={<BlogPostPage />} />
+            <Route path="/booking" element={<BookingServicePage />} />
+            <Route path="/booking/:id" element={<BookingPage />} />
+            <Route path="/faq" element={<FaqPage />} />
+            <Route path="/contact-us" element={<ContactUsPage />} />
+            <Route path="/doctors" element={<DoctorsPage />} />
+            <Route path="/doctors/:id" element={<ViewProfile />} />
+            <Route path="/rate-doctor/:id" element={<RateDoctorPage />} />
+            <Route path="/gallery" element={<GalleryPage />} />
+            <Route path="/gallery/:id" element={<ImageDetailsPage />} />
+            <Route path="/services" element={<ServicesPage />} />
+            <Route path="/not-found" element={<NotFoundPage />} />
+            <Route path="/unauthorized" element={<Error403Page />} />
+            <Route path="/server-error" element={<Error500Page />} />
+            <Route path="*" element={<Error404Page />} />
+          </Routes>
+        </Box>
+      </ErrorBoundary>
     </Router>
   );
 };

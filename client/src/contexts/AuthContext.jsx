@@ -16,12 +16,11 @@ const AuthProvider = ({ children }) => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            const user = JSON.parse(localStorage.getItem('user'));
-            setUser(user);
-            setLoading(false);
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+            setUser(JSON.parse(storedUser));
         }
+        setLoading(false);
     }, []);
 
     useEffect(() => {
@@ -29,7 +28,6 @@ const AuthProvider = ({ children }) => {
             localStorage.setItem('user', JSON.stringify(user));
         }
     }, [user]);
-
 
     // Register function
     const register = async (userData) => {

@@ -6,9 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build --mode production",
-    "lint": "eslint src --ext js,jsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview",
-    "start": "vite preview --mode production"
+    "start": "vite preview --mode production",
+    "serve": "vite preview",
+    "lint": "eslint src --ext js,jsx --report-unused-disable-directives --max-warnings 0"
   },
   "dependencies": {
     "@emotion/react": "^11.13.5",
