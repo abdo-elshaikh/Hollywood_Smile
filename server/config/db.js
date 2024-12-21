@@ -8,8 +8,9 @@ const connectDB = async () => {
     console.log('Connecting to MongoDB...');
     try {
         await mongoose.connect(dbUri, {
-            serverSelectionTimeoutMS: 5000, // Timeout for connection
-            autoIndex: true, // Automatically create indexes
+            dbName,
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
         });
 
         console.log(`MongoDB connected to ${config.dbName}`);
