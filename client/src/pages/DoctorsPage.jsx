@@ -10,6 +10,7 @@ import TestimonySection from '../components/home/TestimonySection';
 import ScrollToTopButton from '../components/common/ScrollToTopButton';
 import MapLocationSection from '../components/home/MapLocationSection';
 import doctorService from '../services/doctorService';
+import InformationSection from '../components/common/InformationSection';
 import bgImage from '../assets/cover_page.jpg';
 
 
@@ -45,10 +46,10 @@ const DoctorsPage = () => {
             minHeight: '100vh',
         }}>
             <HeaderSection />
-            <Box sx={{height: '85vh' }} />
+            <Box sx={{ height: '85vh' }} />
             <Box
                 sx={{
-                    
+
                     backdropFilter: 'blur(5px)',
                     backgroundColor: isDark ? 'rgba(0, 0, 0, 0.3)' : 'rgba(255, 255, 255, 0.3)',
                 }}
@@ -76,6 +77,7 @@ const DoctorsPage = () => {
                 </Container>
             </Box>
             <Box sx={{ backgroundColor: isDark ? '#333' : '#fff' }} >
+                <InformationSection />
                 <TestimonySection />
                 <MapLocationSection />
             </Box>
