@@ -4,6 +4,7 @@ import { useCustomTheme } from '../../contexts/ThemeProvider';
 import axiosInstance from "../../services/axiosInstance";
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
+import { useClinicContext } from '../../contexts/ClinicContext';
 
 const NotificationSection = () => {
   const { mode } = useCustomTheme();
@@ -11,6 +12,7 @@ const NotificationSection = () => {
   const isDark = mode === 'dark';
   const isArabic = i18n.language === 'ar';
   const [notifications, setNotifications] = useState([]);
+  const { clinicInfo } = useClinicContext();
 
 
   useEffect(() => {
