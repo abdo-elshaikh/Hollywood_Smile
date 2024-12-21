@@ -107,7 +107,7 @@ const Footer = () => {
               {t('Footer.Contact.title')}
             </Typography>
             <Typography variant="body2" sx={{ mb: 1 }}>
-              📍 {isArabic ? clinicInfo?.address.ar : clinicInfo?.address.en}
+              📍 {isArabic ? clinicInfo?.address?.ar : clinicInfo?.address?.en}
             </Typography>
             <Typography variant="body2" sx={{ mb: 1 }}>
               📞 {`${clinicInfo.primaryContact} / ${clinicInfo.secondaryContact}`}

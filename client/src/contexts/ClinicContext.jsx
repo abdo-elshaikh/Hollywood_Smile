@@ -7,25 +7,26 @@ const ClinicContext = createContext();
 export const useClinicContext = () => useContext(ClinicContext);
 
 export const ClinicProvider = ({ children }) => {
-    const [clinicInfo, setClinicInfo] = useState({});
-
     const defaultClinicInfo = {
         name: { en: "Hollywood Smile Center", ar: "هوليوود سمايل سنتر" },
-        subtitle: { en: "Dr. Mohamed Mabrouk", ar: "د. محمد مبروك" },
+        subtitle: { en: "Dr/ Mohamed Mabrouk", ar: "د/ محمد مبروك" },
         description: {
             en: "My Clinic is a state-of-the-art dental facility located in the heart of the city.",
-            ar: "مركزي هو مركز طبي ممتاز في مدينة سمسطا."
+            ar: "عيادتي هي مرفق طبي حديث يقع في قلب المدينة."
         },
         logo: { light: "logo-light.png", dark: "logo-dark.png" },
-        address: { en: "Smosta - Mohamed Sliman Street Front of Co-operation Building", ar: "سمسطا - ش محمود سليمان امام بنزينة التعاون" },
+        address: {
+            en: "Smosta - Mohamed Sliman Street Front of Co-operation Building",
+            ar: "سمسطا - ش محمود سليمان امام بنزينة التعاون"
+        },
         zip: "Zip Code",
-        phone: "+1 (123) 456-7890",
+        phone: "+20 (123) 456-7890",
         email: "Email@placeholder.com",
         website: "https://placeholder.com",
         mapLink: "https://www.google.com/maps",
-        primaryContact: "+1 (123) 456-7890",
-        secondaryContact: "+1 (987) 654-3210",
-        emergencyContact: "+1 (555) 555-5555",
+        primaryContact: "+20 (123) 456-7890",
+        secondaryContact: "+20 (123) 456-7890",
+        emergencyContact: "+20 (123) 456-7890",
         openHours: {
             saturday: { from: "9:00 AM", to: "5:00 PM", isClosed: false },
             sunday: { from: "9:00 AM", to: "5:00 PM", isClosed: false },
@@ -74,58 +75,58 @@ export const ClinicProvider = ({ children }) => {
             },
         ],
         socialLinks: {
-            facebook: "",
-            twitter: "",
-            instagram: "",
-            linkedin: "",
-            youtube: "",
-            tiktok: "",
+            facebook: "https://www.facebook.com",
+            twitter: "https://www.twitter.com",
+            instagram: "https://www.instagram.com",
+            linkedin: "https://www.linkedin.com",
         },
         onlineTimes: [
-            {
-                day: "Friday",
-                from: "9:00 AM",
-                to: "5:00 PM",
-                isAvailable: false,
-            },
             {
                 day: "Saturday",
                 from: "9:00 AM",
                 to: "5:00 PM",
-                isAvailable: true,
             },
             {
                 day: "Sunday",
                 from: "9:00 AM",
                 to: "5:00 PM",
-                isAvailable: true,
+            },
+            {
+                day: "Monday",
+                from: "9:00 AM",
+                to: "5:00 PM",
+            },
+            {
+                day: "Tuesday",
+                from: "9:00 AM",
+                to: "5:00 PM",
+            },
+            {
+                day: "Wednesday",
+                from: "9:00 AM",
+                to: "5:00 PM",
+            },
+            {
+                day: "Thursday",
+                from: "9:00 AM",
+                to: "5:00 PM",
             },
         ]
     };
+    const [clinicInfo, setClinicInfo] = useState(defaultClinicInfo);
 
     useEffect(() => {
         axiosInstance.get('/clinics')
-            .then((response) => {
+            .then(response => {
                 setClinicInfo(response.data);
             })
-            .catch((error) => {
+            .catch(error => {
                 console.error('Error fetching clinic info:', error);
-                setClinicInfo(defaultClinicInfo);
             });
     }, []);
 
-    const updatedClinicInfo = async (newClinicInfo) => {
-        try {
-            const response = await axiosInstance.put('/clinics', newClinicInfo);
-            setClinicInfo(response.data);
-        } catch (error) {
-            console.error('Error updating clinic info:', error);
-        }
-    };
-
     const value = useMemo(() => ({
         clinicInfo,
-        updatedClinicInfo,
     }), [clinicInfo]);
 
     return (
