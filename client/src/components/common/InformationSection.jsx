@@ -46,7 +46,7 @@ const InformationSection = () => {
         return Object.keys(newErrors).length === 0;
     };
 
-    
+
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -113,25 +113,25 @@ const InformationSection = () => {
                         color: '#333',
                     }}
                 >
-                    <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 2 }}>
+                    <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 2, color: '#222' }}>
                         {isArabic ? 'معلومات التواصل' : 'Contact Information'}
                     </Typography>
-                    <Divider sx={{ mb: 2 }} />
-                    <Typography variant="body1"  sx={{ mb: 1 }}>
+                    <Divider sx={{ mb: 2, color: 'primary.main', width: '100%' }} />
+                    <Typography variant="body1" sx={{ mb: 1, color: '#333' }}>
                         {isArabic ? ' العنوان' : 'Address '}:{' '}
                         {isArabic ? clinicInfo?.address.ar : clinicInfo?.address.en}
                     </Typography>
-                    <Typography variant="body1"  sx={{ mb: 1 }}>
+                    <Typography variant="body1" sx={{ mb: 1, color: '#333' }}>
                         {isArabic ? ' رقم الهاتف' : 'Phone '}: {clinicInfo?.phone}
                     </Typography>
-                    <Typography variant="body1"  sx={{ mb: 1 }}>
+                    <Typography variant="body1" sx={{ mb: 1, color: '#333' }}>
                         {isArabic ? 'البريد الإلكتروني' : 'Email '}: {clinicInfo?.email}
                     </Typography>
-                    <Typography variant="body1" sx={{ mb: 1 }}>
+                    <Typography variant="body1" sx={{ mb: 1, color: '#333' }}>
                         {isArabic ? ' الموقع الالكتروني' : 'Website '}:{' '}
                         {clinicInfo?.website}
                     </Typography>
-                    <Divider sx={{ my: 2 }} />
+                    <Divider sx={{ my: 2, color: 'primary.main', width: '100%' }} />
                     <Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
                         {Object.keys(clinicInfo?.socialLinks || {}).map((social) => (
                             <Chip
@@ -200,7 +200,7 @@ const InformationSection = () => {
                                 sx={{ mb: 2 }}
                             />
                             <TextField
-                                label={isArabic ? 'البريد الإلكتروني (اختياري)' : 'Email address (optional)' }
+                                label={isArabic ? 'البريد الإلكتروني (اختياري)' : 'Email address (optional)'}
                                 variant="outlined"
                                 fullWidth
                                 value={formData.email}

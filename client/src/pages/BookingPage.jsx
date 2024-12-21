@@ -233,7 +233,7 @@ const BookingPage = () => {
                 transition={{ duration: 0.6 }}
                 sx={{
                     color: isDark ? 'white' : 'dark.main',
-                    minHeight: '400px',
+                    minHeight: 500,
                     py: 4,
                     position: 'relative',
                     overflow: 'hidden',
@@ -290,12 +290,16 @@ const BookingPage = () => {
                         left: 0,
                         width: '100%',
                         height: '50px',
-                        background: 'linear-gradient(0deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.5) 100%)',
+                        background: isDark ? 'linear-gradient(0deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.5) 100%)'
+                            : 'linear-gradient(0deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.5) 100%)',
                         zIndex: 0,
-
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        display: 'flex',
+                        backdropFilter: 'blur(8px)',
                     }}
                 >
-                    <Typography variant="body1" align="center" sx={{ color: 'white', mt: 2 }}>
+                    <Typography variant="h5" align="center" sx={{ color: 'primary.main' }}>
                         {isArabic ? 'الوقت الحالي' : 'Current Time'}: {currentDateTime.day} - {currentDateTime.date} - {currentDateTime.time}
                     </Typography>
                 </Box>
@@ -307,6 +311,10 @@ const BookingPage = () => {
                     p: 4,
                     backdropFilter: 'blur(8px)',
                     backgroundColor: isDark ? 'rgba(0, 0, 0, 0.5)' : 'rgba(255, 255, 255, 0.5)',
+                    borderRadius: 2,
+                    border: '1px solid',
+                    borderColor: isDark ? 'primary.main' : 'primary.light',
+                    boxShadow: 2,
                 }}>
                 {/* back button */}
                 <Button
@@ -334,6 +342,14 @@ const BookingPage = () => {
                                 maxDate={dayjs().add(1, 'week')}
                                 sx={{ mt: 2, width: '100%', height: '100%' }}
                                 disablePast
+                                style={{
+                                    width: '100%',
+                                    height: '100%',
+                                    border: '1px solid',
+                                    borderColor: 'divider',
+                                    borderRadius: 2,
+                                    backgroundColor: isDark ? 'rgba(0, 0, 0, 0.5)' : 'rgba(255, 255, 255, 0.5)',
+                                }}
                             />
                         </LocalizationProvider>
                     </Grid>
