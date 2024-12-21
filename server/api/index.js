@@ -36,23 +36,28 @@ const app = Express();
 dotenv.config();
 
 // Connect to MongoDB
-connectDB();
+connectDB().catch((err) => {
+    console.error('MongoDB connection failed:', err.message);
+    process.exit(1);
+});
 
-const allowedOrigins = process.env.CORS_ORIGIN.split(',');
+const allowedOrigins = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : [];
 console.log('Allowed Origins:', allowedOrigins);
+
 // Middleware
 app.use(cors({
-    origin: function (origin, callback) {
+    origin: (origin, callback) => {
         if (!origin) return callback(null, true);
         if (allowedOrigins.indexOf(origin) === -1) {
-            const msg = 'The CORS policy for this site does not ' +
-                'allow access from the specified Origin.';
+            const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
             return callback(new Error(msg), false);
         }
         return callback(null, true);
     },
     credentials: true,
 }));
+
+
 app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(Express.urlencoded({ extended: true }));
@@ -63,13 +68,6 @@ app.use(Express.static(path.join(__dirname, '../public')));
 // Serve uploads folder
 app.use('/uploads', Express.static(path.join(__dirname, '../uploads')));
 
-// Serve static files in production
-// if (process.env.NODE_ENV === 'production') {
-//     app.use(Express.static(path.join(__dirname, '../client/dist')));
-//     app.get('*', (req, res) => {
-//         res.sendFile(path.join(__dirname, '../client/dist/index.html'));
-//     });
-// }
 
 // Routes
 app.get('/', (req, res) => {
@@ -105,6 +103,4 @@ app.use('/sms', smsRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
-module.exports = (req, res) => {
-    app(req, res);
-};
+module.exports = app;
