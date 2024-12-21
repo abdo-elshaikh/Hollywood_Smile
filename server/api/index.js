@@ -39,11 +39,10 @@ dotenv.config();
 connectDB();
 
 const allowedOrigins = process.env.CORS_ORIGIN.split(',');
+console.log('Allowed Origins:', allowedOrigins);
 // Middleware
 app.use(cors({
     origin: function (origin, callback) {
-        // allow requests with no origin
-        // (like mobile apps or curl requests)
         if (!origin) return callback(null, true);
         if (allowedOrigins.indexOf(origin) === -1) {
             const msg = 'The CORS policy for this site does not ' +
@@ -53,8 +52,6 @@ app.use(cors({
         return callback(null, true);
     },
     credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 }));
 app.use(morgan('dev'));
 app.use(bodyParser.json());
