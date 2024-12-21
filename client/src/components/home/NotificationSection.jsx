@@ -1,18 +1,30 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Box, Typography, Divider, Button } from '@mui/material';
 import { useCustomTheme } from '../../contexts/ThemeProvider';
-import { useClinicContext } from '../../contexts/ClinicContext';
+import axiosInstance from "../../services/axiosInstance";
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 
 const NotificationSection = () => {
   const { mode } = useCustomTheme();
   const { t, i18n } = useTranslation();
-  const { clinicInfo, clinicOffers } = useClinicContext();
   const isDark = mode === 'dark';
   const isArabic = i18n.language === 'ar';
-  const notifications = clinicOffers?.filter((offer) => offer.showInNotifications) || [];
+  const [notifications, setNotifications] = useState([]);
 
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const response = await axiosInstance.get('/offers');
+        const avilableNotifications = response.data.filter(notification => notification.showInNotifications);
+        setNotifications(avilableNotifications);
+      } catch (error) {
+        console.error('Error fetching notifications:', error);
+      }
+    };
+    fetchNotifications();
+  }, []);
 
   // Memoize notifications to avoid unnecessary re-renders
   const renderedNotifications = useMemo(() => {
@@ -24,7 +36,7 @@ const NotificationSection = () => {
           display: 'flex',
           justifyContent: 'flex-start',
           alignItems: 'center',
-          px: 1,
+          px: 2,
           cursor: 'pointer',
           margin: isArabic ? '0 300px 0 0' : '0 0 0 300px',
         }}
@@ -41,8 +53,7 @@ const NotificationSection = () => {
 
 
   return (
-    <>
-
+    <Box>
       <Box
         sx={{
           width: '100%',
@@ -132,7 +143,7 @@ const NotificationSection = () => {
           </Button>
         </motion.div>
       </Box>
-    </>
+    </Box>
   );
 };
 
