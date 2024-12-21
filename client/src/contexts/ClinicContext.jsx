@@ -1,14 +1,15 @@
 // ClinicContext.js (Frontend)
 import React, { useState, createContext, useContext, useEffect, useMemo } from "react";
 import axiosInstance from '../services/axiosInstance';
-import { getOffers } from '../services/offersService';
 
 const ClinicContext = createContext();
 
 export const useClinicContext = () => useContext(ClinicContext);
 
 export const ClinicProvider = ({ children }) => {
-    const [clinicInfo, setClinicInfo] = useState({
+    const [clinicInfo, setClinicInfo] = useState({});
+
+    const defaultClinicInfo = {
         name: { en: "Hollywood Smile Center", ar: "هوليوود سمايل سنتر" },
         subtitle: { en: "Dr. Mohamed Mabrouk", ar: "د. محمد مبروك" },
         description: {
@@ -100,57 +101,32 @@ export const ClinicProvider = ({ children }) => {
                 isAvailable: true,
             },
         ]
-    });
-    const [clinicOffers, setClinicOffers] = useState([]);
+    };
 
     useEffect(() => {
-        fetchClinicInfo();
-        fetchClinicOffers();
+        axiosInstance.get('/clinics')
+            .then((response) => {
+                setClinicInfo(response.data);
+            })
+            .catch((error) => {
+                console.error('Error fetching clinic info:', error);
+                setClinicInfo(defaultClinicInfo);
+            });
     }, []);
 
-    // Fetch clinic information
-    const fetchClinicInfo = async () => {
+    const updatedClinicInfo = async (newClinicInfo) => {
         try {
-            const response = await axiosInstance.get("/clinics");
+            const response = await axiosInstance.put('/clinics', newClinicInfo);
             setClinicInfo(response.data);
         } catch (error) {
-            console.error("Error fetching clinic information:", error);
+            console.error('Error updating clinic info:', error);
         }
     };
 
-    // Fetch clinic offers
-    const fetchClinicOffers = async () => {
-        try {
-            const data = await getOffers();
-            setClinicOffers(data);
-        } catch (error) {
-            console.error(error);
-        }
-    };
-
-    // Update clinic information
-    const updateClinicInfo = async (newInfo) => {
-        try {
-            const response = await axiosInstance.put("/clinics", newInfo);
-            setClinicInfo(response.data.clinic);
-            return response.data;
-        } catch (error) {
-            console.error("Error updating clinic information:", error);
-            return error.response.data;
-        }
-    };
-
-    // Memoize the clinic info to avoid re-rendering on parent component re-renders
-    const memoizedClinicInfo = useMemo(() => clinicInfo, [clinicInfo]);
-
-    // Memoize the clinic offers to avoid re-rendering on parent component re-renders
-    const memoizedClinicOffers = useMemo(() => clinicOffers, [clinicOffers]);
-
-    const value = {
-        clinicInfo: memoizedClinicInfo,
-        updateClinicInfo,
-        clinicOffers: memoizedClinicOffers,
-    };
+    const value = useMemo(() => ({
+        clinicInfo,
+        updatedClinicInfo,
+    }), [clinicInfo]);
 
     return (
         <ClinicContext.Provider value={value}>
