@@ -40,11 +40,10 @@ connectDB();
 
 const allowedOrigins = process.env.CORS_ORIGIN.split(',');
 // Middleware
-app.use(cors({
-    origin: allowedOrigins || '*',
+app.options('*', cors({
+    origin: allowedOrigins,
     credentials: true,
 }));
-
 app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(Express.urlencoded({ extended: true }));
