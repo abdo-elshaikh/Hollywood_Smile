@@ -17,13 +17,15 @@ import {
     ListItemText,
     ListItemSecondaryAction,
     Checkbox,
-    Switch
+    Switch,
+    CircularProgress,
 } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
 import { useClinicContext } from "../../contexts/ClinicContext";
 import { useSnackbar } from "../../contexts/SnackbarProvider";
 import { uploadFile } from "../../services/supabaseService";
 import { motion } from "framer-motion";
+import axiosInstance from "../../services/axiosInstance";
 import dayjs from 'dayjs';
 import {
     Add as AddIcon,
@@ -50,13 +52,9 @@ const iconList = [
 ];
 const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
 const ManageClinicPage = () => {
-    const { clinicInfo, updateClinicInfo } = useClinicContext();
-    const [formData, setFormData] = useState({
-        ...clinicInfo,
-        openHours: clinicInfo.openHours || {},
-        achievements: clinicInfo.achievements || [],
-        socialLinks: clinicInfo.socialLinks || {},
-    });
+    const [clinicInfo, setClinicInfo] = useState({});
+    const { clinicInfo: clinic } = useClinicContext();
+    const [formData, setFormData] = useState(clinic);
     const [achievement, setAchievement] = useState({ label: { en: "", ar: "" }, description: { en: "", ar: "" }, number: "", icon: "" });
     const [openHours, setOpenHours] = useState({});
     const [onlineTimes, setOnlineTimes] = useState([]);
@@ -74,11 +72,39 @@ const ManageClinicPage = () => {
     const [isUploading, setIsUploading] = useState(false);
 
     useEffect(() => {
-        setFormData({ ...clinicInfo });
-        setOpenHours(clinicInfo.openHours || {});
-        setOnlineTimes(clinicInfo.onlineTimes || []);
-        setAchievement({ label: { en: "", ar: "" }, description: { en: "", ar: "" }, number: "", icon: "" });
-    }, [clinicInfo]);
+
+        fetchClinicInfo();
+    }, []);
+
+    const fetchClinicInfo = async () => {
+        try {
+            const response = await axiosInstance.get("/clinics");
+            const data = response.data;
+            console.log('Clinic Info:', data);
+            setClinicInfo(data);
+            setFormData({
+                ...data,
+                openHours: data.openHours || {},
+                achievements: data.achievements || [],
+                socialLinks: data.socialLinks || {},
+            });
+            setOnlineTimes(data.onlineTimes || []);
+            setSocialLinks(data.socialLinks || {});
+            setOpenHours(data.openHours || {});
+        } catch (error) {
+            console.error("Error fetching clinic info:", error);
+        }
+    };
+
+    const updateClinicInfo = async (data) => {
+        try {
+            const response = await axiosInstance.put("/clinics", data);
+            setClinicInfo(response.data);
+        } catch (error) {
+            console.error("Error updating clinic info:", error);
+        }
+    };
+
 
     const handleChange = (e, lang = '') => {
         const { name, value } = e.target;
@@ -140,12 +166,9 @@ const ManageClinicPage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const data = await updateClinicInfo(formData);
-            if (data.success) {
-                showSnackBar("Clinic info updated successfully", "success");
-            } else {
-                showSnackBar(data.message, "error");
-            }
+            await updateClinicInfo(formData);
+            showSnackBar("Clinic info updated successfully", "success");
+
         } catch (error) {
             showSnackBar(error.message, "error");
         }
@@ -222,14 +245,14 @@ const ManageClinicPage = () => {
     };
 
     const inputFields = [
-        { label: "Name", name: "name", value: formData.name.en, onChange: (e) => handleChange(e, "en") },
-        { label: "Name (Arabic)", name: "name", value: formData.name.ar, onChange: (e) => handleChange(e, "ar") },
-        { label: "Subtitle", name: "subtitle", value: formData.subtitle.en, onChange: (e) => handleChange(e, "en") },
-        { label: "Subtitle (Arabic)", name: "subtitle", value: formData.subtitle.ar, onChange: (e) => handleChange(e, "ar") },
-        { label: "Description", name: "description", value: formData.description.en, onChange: (e) => handleChange(e, "en") },
-        { label: "Description (Arabic)", name: "description", value: formData.description.ar, onChange: (e) => handleChange(e, "ar") },
-        { label: "Address", name: "address", value: formData.address.en, onChange: (e) => handleChange(e, "en") },
-        { label: "Address (Arabic)", name: "address", value: formData.address.ar, onChange: (e) => handleChange(e, "ar") },
+        { label: "Name", name: "name", value: formData.name?.en, onChange: (e) => handleChange(e, "en") },
+        { label: "Name (Arabic)", name: "name", value: formData.name?.ar, onChange: (e) => handleChange(e, "ar") },
+        { label: "Subtitle", name: "subtitle", value: formData.subtitle?.en, onChange: (e) => handleChange(e, "en") },
+        { label: "Subtitle (Arabic)", name: "subtitle", value: formData.subtitle?.ar, onChange: (e) => handleChange(e, "ar") },
+        { label: "Description", name: "description", value: formData.description?.en, onChange: (e) => handleChange(e, "en") },
+        { label: "Description (Arabic)", name: "description", value: formData.description?.ar, onChange: (e) => handleChange(e, "ar") },
+        { label: "Address", name: "address", value: formData.address?.en, onChange: (e) => handleChange(e, "en") },
+        { label: "Address (Arabic)", name: "address", value: formData.address?.ar, onChange: (e) => handleChange(e, "ar") },
         { label: "Phone", name: "phone", value: formData.phone, onChange: handleChange },
         { label: "Email", name: "email", value: formData.email, onChange: handleChange },
         { label: "Zip Code", name: "zip", value: formData.zip, onChange: handleChange },
@@ -289,20 +312,23 @@ const ManageClinicPage = () => {
                                             }}
                                         >
                                             <Typography variant="h6" sx={{ whiteSpace: 'nowrap' }}>Light Logo</Typography>
-                                            <Avatar
-                                                src={formData.logo.light}
-                                                alt="clinic logo light"
-                                                sx={{
-                                                    width: 100,
-                                                    height: 100,
-                                                    bgcolor: "#f5f5f5",
-                                                    border: '2px solid #333',
-                                                    cursor: "pointer",
-                                                    transition: 'transform 0.2s',
-                                                    "&:hover": { transform: 'scale(1.1)' },
-                                                }}
-                                                onClick={() => document.getElementById("upload-logo-light").click()}
-                                            />
+                                            {isUploading && <CircularProgress />}
+                                            {!isUploading && (
+                                                <Avatar
+                                                    src={formData.logo?.light}
+                                                    alt="clinic logo light"
+                                                    sx={{
+                                                        width: 100,
+                                                        height: 100,
+                                                        bgcolor: "#f5f5f5",
+                                                        border: '2px solid #333',
+                                                        cursor: "pointer",
+                                                        transition: 'transform 0.2s',
+                                                        "&:hover": { transform: 'scale(1.1)' },
+                                                    }}
+                                                    onClick={() => document.getElementById("upload-logo-light").click()}
+                                                />
+                                            )}
                                             <IconButton onClick={() => handleRemoveImage('light')}>
                                                 <DeleteIcon color="error" />
                                             </IconButton>
@@ -331,20 +357,22 @@ const ManageClinicPage = () => {
                                             }}
                                         >
                                             <Typography variant="h6" sx={{ whiteSpace: 'nowrap' }}>Dark Logo</Typography>
-                                            <Avatar
-                                                src={formData.logo.dark}
-                                                alt="clinic logo dark"
-                                                sx={{
-                                                    width: 100,
-                                                    height: 100,
-                                                    bgcolor: "#333",
-                                                    border: '2px solid #f5f5f5',
-                                                    cursor: "pointer",
-                                                    transition: 'transform 0.2s',
-                                                    "&:hover": { transform: 'scale(1.1)' },
-                                                }}
-                                                onClick={() => document.getElementById("upload-logo-dark").click()}
-                                            />
+                                            {isUploading && <CircularProgress />}
+                                            {!isUploading && (
+                                                <Avatar
+                                                    src={formData.logo?.dark}
+                                                    alt="clinic logo dark"
+                                                    sx={{
+                                                        width: 100,
+                                                        height: 100,
+                                                        bgcolor: "#333",
+                                                        border: '2px solid #f5f5f5',
+                                                        cursor: "pointer",
+                                                        transition: 'transform 0.2s',
+                                                        "&:hover": { transform: 'scale(1.1)' },
+                                                    }}
+                                                    onClick={() => document.getElementById("upload-logo-dark").click()}
+                                                />)}
                                             <IconButton onClick={() => handleRemoveImage('dark')}>
                                                 <DeleteIcon color="error" />
                                             </IconButton>

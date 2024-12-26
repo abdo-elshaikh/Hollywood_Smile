@@ -11,22 +11,22 @@ export const ClinicProvider = ({ children }) => {
         name: { en: "Hollywood Smile Center", ar: "هوليوود سمايل سنتر" },
         subtitle: { en: "Dr/ Mohamed Mabrouk", ar: "د/ محمد مبروك" },
         description: {
-            en: "My Clinic is a state-of-the-art dental facility located in the heart of the city.",
-            ar: "عيادتي هي مرفق طبي حديث يقع في قلب المدينة."
+            en: "Achieve the perfect, radiant smile with our exclusive Hollywood Smile service, designed to transform your smile and boost your confidence.",
+            ar: "احصل على ابتسامة مثالية ومشرقة من خلال خدمة مركز هوليوود سمايل الحصرية لدينا، والمصممة لتغيير ابتسامتك وتعزيز ثقتك بنفسك."
         },
         logo: { light: "logo-light.png", dark: "logo-dark.png" },
         address: {
             en: "Smosta - Mohamed Sliman Street Front of Co-operation Building",
             ar: "سمسطا - ش محمود سليمان امام بنزينة التعاون"
         },
-        zip: "Zip Code",
-        phone: "+20 (123) 456-7890",
-        email: "Email@placeholder.com",
-        website: "https://placeholder.com",
+        zip: "62616",
+        phone: "01153616424",
+        email: "hollywood_smile_center@hotmail.com",
+        website: "https://hs-center.com",
         mapLink: "https://www.google.com/maps",
-        primaryContact: "+20 (123) 456-7890",
-        secondaryContact: "+20 (123) 456-7890",
-        emergencyContact: "+20 (123) 456-7890",
+        primaryContact: "01274259868",
+        secondaryContact: "0822269248",
+        emergencyContact: "01202607971",
         openHours: {
             saturday: { from: "9:00 AM", to: "5:00 PM", isClosed: false },
             sunday: { from: "9:00 AM", to: "5:00 PM", isClosed: false },
@@ -125,8 +125,19 @@ export const ClinicProvider = ({ children }) => {
             });
     }, []);
 
+    const updateClinicInfo = async (newClinicInfo) => {
+        try {
+            const response = await axiosInstance.put('/clinics', newClinicInfo);
+            setClinicInfo(response.data);
+        } catch (error) {
+            console.error('Error updating clinic info:', error);
+        }
+    }
+
+
     const value = useMemo(() => ({
         clinicInfo,
+        updateClinicInfo,
     }), [clinicInfo]);
 
     return (

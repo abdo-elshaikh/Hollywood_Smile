@@ -1,38 +1,66 @@
-import React, { useEffect, useMemo, Suspense } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useClinicContext } from './contexts/ClinicContext';
 
-const HomePage = React.lazy(() => import('./pages/HomePage'));
-const AuthPage = React.lazy(() => import('./pages/AuthPage'));
-const AboutUsPage = React.lazy(() => import('./pages/AboutUsPage'));
-const DashboardPage = React.lazy(() => import('./pages/DashboardPage'));
-const SupportDashboard = React.lazy(() => import('./pages/SupportDashboard'));
-const BlogDashboard = React.lazy(() => import('./pages/BlogDashboard'));
-const BlogPage = React.lazy(() => import('./pages/BlogPage'));
-const BlogPostPage = React.lazy(() => import('./pages/BlogPostPage'));
-const BookingPage = React.lazy(() => import('./pages/BookingPage'));
-const BookingServicePage = React.lazy(() => import('./pages/BookingServicePage'));
-const FaqPage = React.lazy(() => import('./pages/FaqPage'));
-const ContactUsPage = React.lazy(() => import('./pages/ContactUsPage'));
-const DoctorsPage = React.lazy(() => import('./pages/DoctorsPage'));
-const GalleryPage = React.lazy(() => import('./pages/GalleryPage'));
-const ImageDetailsPage = React.lazy(() => import('./pages/ImageDetailsPage'));
-const ServicesPage = React.lazy(() => import('./pages/ServicesPage'));
-const ViewProfile = React.lazy(() => import('./pages/ViewProfile'));
-const ProfilePage = React.lazy(() => import('./pages/ProfilePage'));
-const ClientBookings = React.lazy(() => import('./pages/ClientBookings'));
-const Error404Page = React.lazy(() => import('./pages/404Page'));
-const NotFoundPage = React.lazy(() => import('./pages/NotFoundPage'));
-const Error403Page = React.lazy(() => import('./pages/403Page'));
-const Error500Page = React.lazy(() => import('./pages/500Page'));
-const LoadingSpinner = React.lazy(() => import('./components/common/LoadingSpinner'));
-const ErrorBoundary = React.lazy(() => import('./components/common/ErrorBoundary'));
-const RateDoctorPage = React.lazy(() => import('./pages/RateDoctorPage'));
+// const HomePage = React.lazy(() => import('./pages/HomePage'));
+// const AuthPage = React.lazy(() => import('./pages/AuthPage'));
+// const AboutUsPage = React.lazy(() => import('./pages/AboutUsPage'));
+// const DashboardPage = React.lazy(() => import('./pages/DashboardPage'));
+// const SupportDashboard = React.lazy(() => import('./pages/SupportDashboard'));
+// const BlogDashboard = React.lazy(() => import('./pages/BlogDashboard'));
+// const BlogPage = React.lazy(() => import('./pages/BlogPage'));
+// const BlogPostPage = React.lazy(() => import('./pages/BlogPostPage'));
+// const BookingPage = React.lazy(() => import('./pages/BookingPage'));
+// const BookingServicePage = React.lazy(() => import('./pages/BookingServicePage'));
+// const FaqPage = React.lazy(() => import('./pages/FaqPage'));
+// const ContactUsPage = React.lazy(() => import('./pages/ContactUsPage'));
+// const DoctorsPage = React.lazy(() => import('./pages/DoctorsPage'));
+// const GalleryPage = React.lazy(() => import('./pages/GalleryPage'));
+// const ImageDetailsPage = React.lazy(() => import('./pages/ImageDetailsPage'));
+// const ServicesPage = React.lazy(() => import('./pages/ServicesPage'));
+// const ViewProfile = React.lazy(() => import('./pages/ViewProfile'));
+// const ProfilePage = React.lazy(() => import('./pages/ProfilePage'));
+// const ClientBookings = React.lazy(() => import('./pages/ClientBookings'));
+// const Error404Page = React.lazy(() => import('./pages/404Page'));
+// const NotFoundPage = React.lazy(() => import('./pages/NotFoundPage'));
+// const Error403Page = React.lazy(() => import('./pages/403Page'));
+// const Error500Page = React.lazy(() => import('./pages/500Page'));
+// const LoadingSpinner = React.lazy(() => import('./components/common/LoadingSpinner'));
+// const ErrorBoundary = React.lazy(() => import('./components/common/ErrorBoundary'));
+// const RateDoctorPage = React.lazy(() => import('./pages/RateDoctorPage'));
 
+import HomePage from './pages/HomePage';
+import AuthPage from './pages/AuthPage';
+import AboutUsPage from './pages/AboutUsPage';
+import DashboardPage from './pages/DashboardPage';
+import SupportDashboard from './pages/SupportDashboard';
+import BlogDashboard from './pages/BlogDashboard';
+import BlogPage from './pages/BlogPage';
+import BlogPostPage from './pages/BlogPostPage';
+import BookingPage from './pages/BookingPage';
+import BookingServicePage from './pages/BookingServicePage';
+import FaqPage from './pages/FaqPage';
+import ContactUsPage from './pages/ContactUsPage';
+import DoctorsPage from './pages/DoctorsPage';
+import GalleryPage from './pages/GalleryPage';
+import ImageDetailsPage from './pages/ImageDetailsPage';
+import ServicesPage from './pages/ServicesPage';
+import ViewProfile from './pages/ViewProfile';
+import ProfilePage from './pages/ProfilePage';
+import ClientBookings from './pages/ClientBookings';
+import Error404Page from './pages/404Page';
+import NotFoundPage from './pages/NotFoundPage';
+import Error403Page from './pages/403Page';
+import Error500Page from './pages/500Page';
+import LoadingSpinner from './components/common/LoadingSpinner';
+import ErrorBoundary from './components/common/ErrorBoundary';
+import RateDoctorPage from './pages/RateDoctorPage';
 import PrivateRoute from './components/PrivateRoute';
+
 import { Box } from '@mui/material';
 import './i18n';
+
 
 const ScrollToTop = () => {
   const location = useLocation();
@@ -81,6 +109,7 @@ const ScrollToTop = () => {
     }
   }, [i18n.language, location, pagesTitles]);
 
+
   // Scroll to the top when the location changes
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -120,7 +149,7 @@ const App = () => {
               <PrivateRoute element={<ProfilePage />} requiredRoles={['visitor', 'admin', 'support', 'editor', 'author']} />
             } />
             <Route path="/detect-booking" element={
-              <PrivateRoute element={<ClientBookings />} requiredRoles={['visitor']} />
+              <PrivateRoute element={<ClientBookings />} requiredRoles={['visitor', 'admin', 'support', 'editor', 'author']} />
             } />
             <Route path="/about-us" element={<AboutUsPage />} />
             <Route path="/auth/*" element={<AuthPage />} />

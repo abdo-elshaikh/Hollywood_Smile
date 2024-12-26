@@ -7,6 +7,7 @@ import SnackbarProvider from './contexts/SnackbarProvider';
 import AuthProvider from './contexts/AuthContext';
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react"
+
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
@@ -20,6 +21,8 @@ import './styles/index.css';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
+    <SpeedInsights />
+    <Analytics />
     <AuthProvider>
       <CustomThemeProvider>
         <ClinicProvider>
@@ -31,4 +34,3 @@ root.render(
     </AuthProvider>
   </React.StrictMode>
 );
-
