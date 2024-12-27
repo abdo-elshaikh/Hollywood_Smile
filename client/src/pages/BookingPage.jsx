@@ -299,7 +299,15 @@ const BookingPage = () => {
                         backdropFilter: 'blur(8px)',
                     }}
                 >
-                    <Typography variant="h5" align="center" sx={{ color: 'primary.main' }}>
+                    <Typography 
+                    variant="h5" 
+                    align="center" 
+                    sx={{ 
+                        color: 'primary.main',
+                        fontWeight: 'bold',
+                        fontSize: { xs: '1rem', sm: '1.2rem', md: '1.5rem' },
+                    }}
+                    >
                         {isArabic ? 'الوقت الحالي' : 'Current Time'}: {currentDateTime.day} - {currentDateTime.date} - {currentDateTime.time}
                     </Typography>
                 </Box>

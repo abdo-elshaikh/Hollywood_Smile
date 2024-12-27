@@ -50,6 +50,18 @@ app.use(cors({
     credentials: true,
 }));
 
+if (process.env.NODE_ENV === 'production') {
+    app.set('trust proxy', 1);
+    app.use((req, res, next) => {
+        if (req.secure) {
+            next();
+        } else {
+            res.redirect(`https://${req.headers.host}${req.url}`);
+        }
+    });
+}
+
+
 app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(Express.urlencoded({ extended: true }));
