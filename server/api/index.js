@@ -3,8 +3,7 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
-const path = require('path');
-const connectDB = require('../config/db');
+
 // Import Routes
 const userRoutes = require('../routes/userRoutes');
 const fileRoutes = require('../routes/fileRoutes');
@@ -35,12 +34,7 @@ const app = Express();
 // Load environment variables
 dotenv.config();
 
-// Connect to MongoDB
-connectDB().catch((err) => {
-    console.error('MongoDB connection failed:', err.message);
-    process.exit(1);
-});
-
+// CORS
 const allowedOrigins = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : [];
 console.log('Allowed Origins:', allowedOrigins);
 
@@ -50,39 +44,23 @@ app.use(cors({
     credentials: true,
 }));
 
-if (process.env.NODE_ENV === 'production') {
-    app.set('trust proxy', 1);
-    app.use((req, res, next) => {
-        if (req.secure) {
-            next();
-        } else {
-            res.redirect(`https://${req.headers.host}${req.url}`);
-        }
-    });
-}
-
-
+// Body parser
 app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(Express.urlencoded({ extended: true }));
-
-// Serve static files
-app.use(Express.static(path.join(__dirname, '../public')));
-
-// Serve uploads folder
-app.use('/uploads', Express.static(path.join(__dirname, '../uploads')));
 
 
 // Routes
 app.get('/', (req, res) => {
     res.status(200).json(
         {
-            message: 'Welcome to the API',
+            message: 'Welcome to the Clinic Management System API',
+            author: 'MERN Team',
             version: '1.0.0',
+            github: 'https://github.com/ahmedaefattah/clinic-management-system',
         },
     );
 });
-
 app.use('/auth', authRoutes);
 app.use('/users', userRoutes);
 app.use('/files', fileRoutes);
