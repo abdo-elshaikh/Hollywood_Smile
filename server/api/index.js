@@ -49,18 +49,7 @@ app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(Express.urlencoded({ extended: true }));
 
-
 // Routes
-app.get('/', (req, res) => {
-    res.status(200).json(
-        {
-            message: 'Welcome to the Clinic Management System API',
-            author: 'MERN Team',
-            version: '1.0.0',
-            github: 'https://github.com/ahmedaefattah/clinic-management-system',
-        },
-    );
-});
 app.use('/auth', authRoutes);
 app.use('/users', userRoutes);
 app.use('/files', fileRoutes);

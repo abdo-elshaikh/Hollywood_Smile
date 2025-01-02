@@ -5,17 +5,15 @@ const seedAdmin = require('./seed');
 const connectDB = async () => {
     const dbUri = config.mongodbUri;
     const dbName = config.dbName;
+
     console.log('Connecting to MongoDB...');
     try {
-        await mongoose.connect(dbUri, {
-            dbName,
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-        });
+        // Connect to MongoDB
+        await mongoose.connect(dbUri, { dbName });
 
-        console.log(`MongoDB connected to ${config.dbName}`);
+        console.log(`MongoDB connected to ${dbName}`);
 
-        // Optionally seed the admin
+        // Seed the admin user if applicable
         try {
             await seedAdmin();
             console.log('Admin user seeded successfully');
@@ -24,18 +22,24 @@ const connectDB = async () => {
         }
     } catch (error) {
         console.error('MongoDB connection error:', error.message);
-        process.exit(1);
+        process.exit(1); // Exit with failure if the connection fails
     }
 
-    // Handle MongoDB disconnection and termination signals
+    // Handle MongoDB disconnection
     mongoose.connection.on('disconnected', () => {
         console.log('MongoDB disconnected');
     });
 
+    // Handle app termination signals
     process.on('SIGINT', async () => {
-        await mongoose.connection.close();
-        console.log('MongoDB connection closed due to app termination');
-        process.exit(0);
+        try {
+            await mongoose.connection.close();
+            console.log('MongoDB connection closed due to app termination');
+        } catch (error) {
+            console.error('Error closing MongoDB connection:', error.message);
+        } finally {
+            process.exit(0);
+        }
     });
 };
 

@@ -2,6 +2,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
 export default defineConfig({
+  base: "/",
   plugins: [react()],
   build: {
     chunkSizeWarningLimit: 1000,
@@ -14,15 +15,5 @@ export default defineConfig({
         }
       }
     }
-  },
-  server: {
-    proxy: {
-      '/': {
-        target: 'https://hollywoodsmile.vercel.app',
-        changeOrigin: true,
-        secure: false,
-        rewrite: (path) => path.replace(/^\/api/, '')
-      }
-    },
   }
 })
