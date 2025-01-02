@@ -34,22 +34,21 @@ const app = Express();
 // Load environment variables
 dotenv.config();
 
-// CORS
+// Configure CORS
 const allowedOrigins = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : [];
 console.log('Allowed Origins:', allowedOrigins);
 
-// Middleware
 app.use(cors({
-    origin: '*',
+    origin: allowedOrigins.length ? allowedOrigins : '*',
     credentials: true,
 }));
 
-// Body parser
+// Middleware
 app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(Express.urlencoded({ extended: true }));
 
-// Routes
+// Define Routes
 app.use('/auth', authRoutes);
 app.use('/users', userRoutes);
 app.use('/files', fileRoutes);
