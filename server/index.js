@@ -32,25 +32,7 @@ connectDB().catch((err) => {
 const routers = require('./api/index');
 app.use('/', routers);
 
-// Serve React build files
-if (process.env.NODE_ENV === 'production') {
-    app.use(express.static(path.join(__dirname, '../client/dist')));
-
-    // Serve index.html file
-    app.get('*', (req, res) => {
-        res.sendFile(path.join(__dirname, '../client/dist/index.html'));
-    });
-} else {
-    app.get('/', (req, res) => {
-        res.status(200).json({
-            message: 'Server is running in development mode',
-            app: 'Dentist App',
-            version: '1.0.0',
-            environment: process.env.NODE_ENV,
-        });
-    });
-}
-
+    
 // Error handling middleware
 app.use((err, req, res, next) => {
     console.error(err.stack);

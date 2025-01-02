@@ -48,6 +48,14 @@ app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(Express.urlencoded({ extended: true }));
 
+app.use('/', (req, res) => {
+    res.json({
+        message: 'Welcome to the API',
+        version: '1.0.0',
+        environment: process.env.NODE_ENV,
+    });
+});
+
 // Define Routes
 app.use('/auth', authRoutes);
 app.use('/users', userRoutes);
