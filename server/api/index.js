@@ -43,7 +43,7 @@ app.use(cors({
     origin: process.env.CORS_ORIGIN?.split(',') || 'http://localhost:5173',
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Access-Control-Allow-Origin'],
 }));
 
 
@@ -58,8 +58,8 @@ app.use(express.urlencoded({ extended: true }));
 
 // Rate Limiting Middleware
 const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100, // Limit each IP to 100 requests per windowMs
+    windowMs: 15 * 60 * 1000,
+    max: 100,
     message: {
         success: false,
         message: 'Too many requests, please try again later.',
@@ -68,13 +68,14 @@ const limiter = rateLimit({
 app.use(limiter);
 
 // Security Middleware
-app.use(helmet());
+app.use(helmet({
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false,
+}));
+
 
 // trust first proxy
 app.set('trust proxy', 1);
-
-// Enable Preflight Support
-app.options('*', cors());
 
 // Default Route
 app.get('/', (req, res) => {
@@ -107,6 +108,9 @@ app.use('/before-after', beforeAfterRoutes);
 app.use('/notifications', notificationRoutes);
 app.use('/theme', themeRoutes);
 app.use('/sms', smsRoutes);
+
+// CORS Configuration
+app.options('*', cors());
 
 // Error Handling Middleware
 app.use(error.notFound);
