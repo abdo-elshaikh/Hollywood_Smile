@@ -1,18 +1,27 @@
-// 404 Not Found error middleware
+// 404 Not Found Error Middleware
 const notFound = (req, res, next) => {
-  const error = new Error(`Not Found - ${req.originalUrl}`);
+  const error = new Error(`Route not found: ${req.originalUrl}`);
   res.status(404);
   next(error);
 };
 
-// General error handler
+// General Error Handler Middleware
 const errorHandler = (err, req, res, next) => {
   const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
-  res.status(statusCode);
-  res.json({
-    message: err.message,
-    stack: process.env.NODE_ENV === 'production' ? null : err.stack,
-  });
+
+  // Constructing a more detailed error response
+  const response = {
+    success: false,
+    status: statusCode,
+    message: err.message || 'Internal Server Error',
+  };
+
+  // Include stack trace in development mode for debugging
+  if (process.env.NODE_ENV !== 'production') {
+    response.stack = err.stack;
+  }
+
+  res.status(statusCode).json(response);
 };
 
 module.exports = { notFound, errorHandler };

@@ -1,11 +1,9 @@
-const Express = require('express');
+const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const morgan = require('morgan');
-// const bodyParser = require('body-parser');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
-
 
 // Import Routes
 const userRoutes = require('../routes/userRoutes');
@@ -31,47 +29,66 @@ const smsRoutes = require('../routes/smsRoutes');
 // Import Middlewares
 const { notFound, errorHandler } = require('../middlewares/errorMiddleware');
 
-// connect to the database
+// Database Connection
 const connectDB = require('../config/db');
 
-connectDB().catch(function (err) {
-    console.log('Error connecting to the database:', err);
-});
+connectDB()
+    .catch((err) => {
+        console.error('Database connection failed:', err.message);
+        process.exit(1);
+    });
 
-// Initialize the Express app
-const app = Express();
+// Initialize Express App
+const app = express();
 
-// Load environment variables
+// Load Environment Variables
 dotenv.config();
 
-// Configure CORS
-console.log('Allowed Origins:', process.env.CORS_ORIGIN);
+// CORS Configuration
+const allowedOrigins = process.env.CORS_ORIGIN
+    ? process.env.CORS_ORIGIN.split(',')
+    : ['http://localhost:4173', 'http://localhost:5173', 'https://hs-center.com'];
 
-// Configure CORS
-app.use(cors({
-    origin: process.env.CORS_ORIGIN?.split(',') || '*',
-    credentials: true,
-}));
+console.log('Allowed Origins:', allowedOrigins);
 
-// Middleware for logging
+app.use(
+    cors({
+        origin: (origin, callback) => {
+            if (!origin || allowedOrigins.includes(origin)) {
+                callback(null, true);
+            } else {
+                callback(new Error('Not allowed by CORS'));
+            }
+        },
+        credentials: true,
+    })
+);
+
+// Middleware for Logging
 app.use(morgan('dev'));
-// app.use(bodyParser.json());
-app.use(Express.json());
-app.use(Express.urlencoded({ extended: true }));
 
-// Rate limiting middleware
+// Middleware for Parsing JSON and URL Encoded Data
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Rate Limiting Middleware
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100, // 100 requests
+    max: 100, // Limit each IP to 100 requests per windowMs
+    message: {
+        success: false,
+        message: 'Too many requests, please try again later.',
+    },
 });
 app.use(limiter);
 
-// Security middleware
+// Security Middleware
 app.use(helmet());
 
-// Default route handler
-app.get('/', async (req, res) => {
-    res.json({
+// Default Route
+app.get('/', (req, res) => {
+    res.status(200).json({
+        success: true,
         message: 'Welcome to the API',
         version: '1.0.0',
         description: 'A RESTful API for a clinic management system',
@@ -99,8 +116,9 @@ app.use('/notifications', notificationRoutes);
 app.use('/theme', themeRoutes);
 app.use('/sms', smsRoutes);
 
-// Error Handling Middlewares
+// Error Handling Middleware
 app.use(notFound);
 app.use(errorHandler);
 
+// Export the App Module
 module.exports = app;
