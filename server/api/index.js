@@ -38,21 +38,23 @@ dotenv.config();
 const allowedOrigins = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : [];
 console.log('Allowed Origins:', allowedOrigins);
 
+// Configure CORS
 app.use(cors({
     origin: allowedOrigins.length ? allowedOrigins : '*',
     credentials: true,
 }));
 
-// Middleware
+// Middleware for logging
 app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(Express.urlencoded({ extended: true }));
 
-app.use('/', (req, res) => {
+// Default route handler
+app.get('/', (req, res) => {
     res.json({
         message: 'Welcome to the API',
         version: '1.0.0',
-        environment: process.env.NODE_ENV,
+        description: 'A RESTful API for a clinic management system',
     });
 });
 

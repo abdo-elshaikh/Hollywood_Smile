@@ -29,8 +29,23 @@ connectDB().catch((err) => {
 });
 
 // Import routes
-const routers = require('./api/index');
-app.use('/', routers);
+const routes = require('./api/index');
+app.use('/api', routes);
+
+// Default route handler
+app.get('/', (req, res) => {
+    res.json({
+        message: 'Welcome to the Hollywood Smile Services',
+    });
+});
+
+// Serve static assets in production
+if (process.env.NODE_ENV === 'production') {
+    app.use(express.static(path.join(__dirname, '../client/build')));
+    app.get('*', (req, res) => {
+        res.sendFile(path.join(__dirname, '../client/build/index.html'));
+    });
+}
 
     
 // Error handling middleware
