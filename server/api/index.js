@@ -2,7 +2,10 @@ const Express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const morgan = require('morgan');
-const bodyParser = require('body-parser');
+// const bodyParser = require('body-parser');
+const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
+
 
 // Import Routes
 const userRoutes = require('../routes/userRoutes');
@@ -28,6 +31,13 @@ const smsRoutes = require('../routes/smsRoutes');
 // Import Middlewares
 const { notFound, errorHandler } = require('../middlewares/errorMiddleware');
 
+// connect to the database
+const connectDB = require('../config/db');
+
+connectDB().catch(function (err) {
+    console.log('Error connecting to the database:', err);
+});
+
 // Initialize the Express app
 const app = Express();
 
@@ -35,22 +45,32 @@ const app = Express();
 dotenv.config();
 
 // Configure CORS
-const allowedOrigins = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : [];
-console.log('Allowed Origins:', allowedOrigins);
+console.log('Allowed Origins:', process.env.CORS_ORIGIN);
 
 // Configure CORS
 app.use(cors({
-    origin: allowedOrigins.length ? allowedOrigins : '*',
+    origin: process.env.CORS_ORIGIN?.split(',') || '*',
     credentials: true,
 }));
 
 // Middleware for logging
 app.use(morgan('dev'));
-app.use(bodyParser.json());
+// app.use(bodyParser.json());
+app.use(Express.json());
 app.use(Express.urlencoded({ extended: true }));
 
+// Rate limiting middleware
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // 100 requests
+});
+app.use(limiter);
+
+// Security middleware
+app.use(helmet());
+
 // Default route handler
-app.get('/', (req, res) => {
+app.get('/', async (req, res) => {
     res.json({
         message: 'Welcome to the API',
         version: '1.0.0',

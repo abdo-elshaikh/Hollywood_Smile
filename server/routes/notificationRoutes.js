@@ -1,19 +1,19 @@
 // routes/notificationRoutes.js
 const express = require('express');
 const router = express.Router();
-const notificationController = require('../controllers/notificationController');
+const { createNotification, getNotifications, markAsRead, deleteNotification } = require('../controllers/notificationController');
 const { protect, authorize } = require('../middlewares/authMiddleware');
 
 // Route to create a new notification
-router.post('/', notificationController.createNotification);
+router.post('/', createNotification);
 
 // Route to get all notifications
-router.get('/', protect, notificationController.getNotifications);
+router.get('/', protect, getNotifications);
 
 // Route to mark a notification as read
-router.put('/:id/mark-read', protect, notificationController.markAsRead);
+router.put('/:id/mark-read', protect, markAsRead);
 
 // Route to delete a notification
-router.delete('/:id', protect, notificationController.deleteNotification);
+router.delete('/:id', protect, deleteNotification);
 
 module.exports = router;
