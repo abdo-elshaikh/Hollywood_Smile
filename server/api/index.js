@@ -1,7 +1,7 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
-const morgan = require('morgan');
+// const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 
@@ -27,16 +27,10 @@ const themeRoutes = require('../routes/ThemeRoutes');
 const smsRoutes = require('../routes/smsRoutes');
 
 // Import Middlewares
-const { notFound, errorHandler } = require('../middlewares/errorMiddleware');
+const error = require('../middlewares/errorMiddleware');
 
 // Database Connection
 const connectDB = require('../config/db');
-
-connectDB()
-    .catch((err) => {
-        console.error('Database connection failed:', err.message);
-        process.exit(1);
-    });
 
 // Initialize Express App
 const app = express();
@@ -45,27 +39,15 @@ const app = express();
 dotenv.config();
 
 // CORS Configuration
-const allowedOrigins = process.env.CORS_ORIGIN
-    ? process.env.CORS_ORIGIN.split(',')
-    : ['http://localhost:4173', 'http://localhost:5173', 'https://hs-center.com'];
+app.use(cors({
+    origin: '*',
+    credentials: true,
+}));
 
-console.log('Allowed Origins:', allowedOrigins);
-
-app.use(
-    cors({
-        origin: (origin, callback) => {
-            if (!origin || allowedOrigins.includes(origin)) {
-                callback(null, true);
-            } else {
-                callback(new Error('Not allowed by CORS'));
-            }
-        },
-        credentials: true,
-    })
-);
-
-// Middleware for Logging
-app.use(morgan('dev'));
+connectDB().catch((err) => {
+    console.error('Database connection failed:', err.message);
+    process.exit(1);
+});
 
 // Middleware for Parsing JSON and URL Encoded Data
 app.use(express.json());
@@ -85,6 +67,9 @@ app.use(limiter);
 // Security Middleware
 app.use(helmet());
 
+// trust first proxy
+app.set('trust proxy', 1);
+
 // Default Route
 app.get('/', (req, res) => {
     res.status(200).json({
@@ -92,6 +77,7 @@ app.get('/', (req, res) => {
         message: 'Welcome to the API',
         version: '1.0.0',
         description: 'A RESTful API for a clinic management system',
+        environment: process.env.NODE_ENV,
     });
 });
 
@@ -117,8 +103,8 @@ app.use('/theme', themeRoutes);
 app.use('/sms', smsRoutes);
 
 // Error Handling Middleware
-app.use(notFound);
-app.use(errorHandler);
+app.use(error.notFound);
+app.use(error.errorHandler);
 
 // Export the App Module
 module.exports = app;
