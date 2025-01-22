@@ -41,7 +41,7 @@ dotenv.config();
 // CORS Configuration
 const allowedOrigins = process.env.CORS_ORIGINS?.split(',');
 app.use(cors({
-    origin: allowedOrigins || 'https://localhost:3000',
+    origin: allowedOrigins || '*',
     credentials: true,
 }));
 
