@@ -32,15 +32,18 @@ const BlogPostPage = () => {
 
     const { user } = useAuth();
     const [blog, setBlog] = useState(null);
+    const [latestBlogs, setLatestBlogs] = useState([]);
     const [likeCount, setLikeCount] = useState(0);
     const [isLiked, setIsLiked] = useState(false);
     const [disLikeCount, setDisLikeCount] = useState(0);
     const [isDisLiked, setIsDisLiked] = useState(false);
     const isArabic = i18n.language === 'ar';
 
+
     useEffect(() => {
         fetchBlogData();
         incrementBlogView();
+        fetechLatestBlogs();
     }, [id]);
 
     const fetchBlogData = async () => {
@@ -59,6 +62,16 @@ const BlogPostPage = () => {
             await blogService.addView(id);
         } catch (error) {
             console.error('Error incrementing blog view:', error);
+        }
+    };
+
+    const fetechLatestBlogs = async () => {
+        try {
+            const data = await blogService.getBlogs();
+            const latest = data.filter((item) => item.id !== id).slice(0, 5);
+            setLatestBlogs(latest);
+        } catch (error) {
+            console.error('Error fetching latest blogs:', error);
         }
     };
 
@@ -132,7 +145,7 @@ const BlogPostPage = () => {
                             fontFamily: 'Poppins, sans-serif',
                         }}
                     >
-                        {t('Blog')}
+                        {isArabic ? 'المدونات' : 'Blog Post'}
                     </Typography>
                     <Typography
                         variant="h6"
@@ -141,7 +154,7 @@ const BlogPostPage = () => {
                             fontFamily: 'Roboto, sans-serif',
                         }}
                     >
-                        {t('Useful and Exciting Articles')}
+                        {blog.title}
                     </Typography>
                 </Container>
             </Box>
@@ -255,6 +268,20 @@ const BlogPostPage = () => {
                             {t('Explore More')}
                         </Typography>
                         {/* More content can be added here */}
+                        <Box sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: 2,
+                        }}>
+                            {latestBlogs.map((index, item) => (
+                                <Box key={item.id} sx={{ cursor: 'pointer' }} onClick={() => navigate(`/blog/${item.id}`)}>
+                                    <Typography variant="subtitle1">{item.title}</Typography>
+                                    <Typography variant="subtitle2" color="text.secondary">
+                                        {new Date(item.date).toLocaleString()}
+                                    </Typography>
+                                </Box>
+                            ))}
+                        </Box>
                     </Paper>
                 </Grid>
             </Grid>

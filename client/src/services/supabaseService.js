@@ -68,7 +68,7 @@ const replaceFile = async (file, filePath, fileName, bucket = 'uploads') => {
 
     const fullUrl = `${import.meta.env.VITE_SUPABASE_VIEW_URL}/${data.fullPath}`;
     return { ...data, fullUrl };
-}
+};
 
 // Create a new bucket
 const createBucket = async (bucketName, allowedMimeTypes) => {
@@ -79,7 +79,7 @@ const createBucket = async (bucketName, allowedMimeTypes) => {
     }
 
     return data;
-}
+};
 
 // Delete a file
 const deleteFile = async (filePath, bucket = 'uploads') => {
@@ -90,7 +90,7 @@ const deleteFile = async (filePath, bucket = 'uploads') => {
     }
 
     return data;
-}
+};
 
 // Move a file to a different location
 const moveFile = async (sourcePath, destinationPath, bucket = 'uploads') => {
@@ -101,7 +101,7 @@ const moveFile = async (sourcePath, destinationPath, bucket = 'uploads') => {
     }
 
     return data;
-}
+};
 
 // Copy file
 const copyFile = async (sourcePath, destinationPath, bucket = 'uploads') => {
@@ -113,7 +113,7 @@ const copyFile = async (sourcePath, destinationPath, bucket = 'uploads') => {
 
     return data;
 
-}
+};
 
 // List all files in a bucket
 const listFiles = async (bucket = 'uploads', folder = '') => {
@@ -124,6 +124,16 @@ const listFiles = async (bucket = 'uploads', folder = '') => {
         return { error: error.message };
     }
     return data;
-}
+};
 
-export { supabase, uploadFile, createBucket, deleteFile, moveFile, copyFile, listFiles, replaceFile };
+// Export the functions
+export {
+    supabase,
+    uploadFile,
+    createBucket,
+    deleteFile,
+    moveFile,
+    copyFile,
+    listFiles,
+    replaceFile
+};

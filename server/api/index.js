@@ -39,13 +39,11 @@ const app = express();
 dotenv.config();
 
 // CORS Configuration
+const allowedOrigins = process.env.CORS_ORIGINS?.split(',');
 app.use(cors({
-    origin: process.env.CORS_ORIGIN?.split(',') || 'http://localhost:5173',
+    origin: allowedOrigins || 'https://localhost:3000',
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Access-Control-Allow-Origin'],
 }));
-
 
 connectDB().catch((err) => {
     console.error('Database connection failed:', err.message);
@@ -110,7 +108,7 @@ app.use('/theme', themeRoutes);
 app.use('/sms', smsRoutes);
 
 // CORS Configuration
-app.options('*', cors());
+// app.options('*', cors());
 
 // Error Handling Middleware
 app.use(error.notFound);

@@ -7,15 +7,15 @@ const {
   updateUserProfile,
   changePassword,
 } = require('../controllers/authController');
-const { protect, authorize} = require('../middlewares/authMiddleware');
+const { protect } = require('../middlewares/authMiddleware');
 
 // Public routes
-router.post('/register', registerUser); // POST /api/auth/register
-router.post('/login', loginUser); // POST /api/auth/login
+router.post('/register', registerUser);
+router.post('/login', loginUser);
 
 // Protected routes (Requires authentication)
-router.get('/profile', protect, getUserProfile); // GET /api/auth/profile
-router.put('/profile', protect, updateUserProfile); // PUT /api/auth/profile
-router.put('/profile/change-password', protect, changePassword); // PUT /api/auth/profile/password
+router.get('/profile', protect, getUserProfile);
+router.put('/profile', protect, updateUserProfile);
+router.put('/profile/change-password', protect, changePassword);
 
 module.exports = router;
