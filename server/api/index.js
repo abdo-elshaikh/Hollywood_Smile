@@ -63,6 +63,8 @@ const limiter = rateLimit({
         message: 'Too many requests, please try again later.',
     },
 });
+
+
 app.use(limiter);
 
 // Security Middleware
@@ -70,7 +72,6 @@ app.use(helmet({
     contentSecurityPolicy: false,
     crossOriginEmbedderPolicy: false,
 }));
-
 
 // trust first proxy
 app.set('trust proxy', 1);
