@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Typography, IconButton, Tooltip, Box, List, ListItem, ListItemText, CircularProgress, ListItemIcon, useMediaQuery, useTheme } from '@mui/material';
+import { Container, Typography, IconButton, Tooltip, Box, List, ListItem, ListItemText, CircularProgress, ListItemIcon, useMediaQuery, useTheme, Button } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import { Delete, Visibility } from '@mui/icons-material';
 import notificationService from '../../services/notificationService';
@@ -50,6 +50,18 @@ const ManageNotificationsPage = () => {
         }
     };
 
+    // clear all notifications
+    const handleClearNotifications = async () => {
+        try {
+            await notificationService.clearNotifications();
+            setNotifications([]);
+            showSnackbar('Notifications cleared successfully', 'success');
+        } catch (error) {
+            showSnackbar('Error clearing notifications', 'error');
+            console.error('Failed to clear notifications:', error);
+        }
+    };
+
     const columns = [
         { field: 'title', headerName: 'Title', flex: 1 },
         { field: 'message', headerName: 'Message', flex: 1 },
@@ -78,10 +90,15 @@ const ManageNotificationsPage = () => {
     ];
 
     return (
-        <Box >
-            <Typography variant="h4" gutterBottom>
-                Manage Notifications
-            </Typography>
+        <Box sx={{ flexGrow: 1, backgroundColor: 'background.default', padding: 4 }}>
+            <Container maxWidth="lg" sx={{ marginBottom: 4 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
+                    <Typography variant="h5">Manage Notifications</Typography>
+                    <Button variant="contained" color="error" onClick={handleClearNotifications}>
+                        <Delete /> Clear All
+                    </Button>
+                </Box>
+            </Container>
             <Box sx={{ height: 500, width: '100%', backgroundColor: 'background.default', overflow: 'auto' }}>
                 {notifications.length === 0 && (
                     <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>

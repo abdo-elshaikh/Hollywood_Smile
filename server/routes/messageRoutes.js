@@ -68,4 +68,14 @@ router.put('/:id/read', protect, async (req, res) => {
     }
 });
 
+// clear messages
+router.delete('/', protect, async (req, res) => {
+    try {
+        await Message.deleteMany();
+        res.status(200).json({ message: 'Messages cleared' });
+    } catch (err) {
+        res.status(500).json({ message: 'Error clearing messages' });
+    }
+});
+
 module.exports = router;

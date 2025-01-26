@@ -80,11 +80,7 @@ const NotificationPopupMenu = ({ source = 'admin-dashboard' }) => {
     const handleClearAll = async () => {
         setLoading(true);
         try {
-            await Promise.all(
-                notifications.map((notification) =>
-                    notificationService.markAsRead(notification._id)
-                )
-            );
+            await Promise.all(notifications.map((notification) => notificationService.markAsRead(notification._id)));
             await fetchNotifications();
         } catch (error) {
             console.error('Failed to clear notifications:', error);

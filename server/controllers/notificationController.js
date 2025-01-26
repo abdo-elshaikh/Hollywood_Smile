@@ -42,10 +42,21 @@ const deleteNotification = async (req, res) => {
     }
 };
 
+// clear notifications
+const clearNotifications = async (req, res) => {
+    try {
+        await Notification.deleteMany();
+        res.status(200).json({ success: true, message: 'Notifications cleared' });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Failed to clear notifications', error });
+    }
+};
+
 // Export the notification controller
 module.exports = {
     createNotification,
     markAsRead,
     deleteNotification,
     getNotifications,
+    clearNotifications
 };

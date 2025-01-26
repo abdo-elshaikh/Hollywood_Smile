@@ -55,6 +55,16 @@ const NotificationService = {
             throw error;
         }
     },
+    // Clear all notifications
+    clearNotifications: async () => {
+        try {
+            await axiosInstance.delete('/notifications');
+            return true;
+        } catch (error) {
+            console.error('Failed to clear notifications:', error);
+            throw error;
+        }
+    },
 };
 
 export default NotificationService;
