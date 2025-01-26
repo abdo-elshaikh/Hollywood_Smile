@@ -98,13 +98,20 @@ const ManageNotificationsPage = () => {
                         <Delete /> Clear All
                     </Button>
                 </Box>
+                <Box variant="div" sx={{ display: 'flex', justifyContent: 'space-evenly', alignItems: 'center', marginBottom: 2 }}>
+                    <Typography variant="body1">
+                        {notifications.length} Notifications
+                    </Typography>
+                    <Typography variant="body1">
+                        {notifications.filter((notification) => !notification.read).length} Unread
+                    </Typography>
+                    <Typography variant="body1">
+                        {notifications.filter((notification) => notification.read).length} Read
+                    </Typography>
+                </Box>
             </Container>
             <Box sx={{ height: 500, width: '100%', backgroundColor: 'background.default', overflow: 'auto' }}>
-                {notifications.length === 0 && (
-                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-                        <CircularProgress />
-                    </Box>
-                )}
+
                 {isMobile ? (
                     <List>
                         {notifications.map((notification) => (

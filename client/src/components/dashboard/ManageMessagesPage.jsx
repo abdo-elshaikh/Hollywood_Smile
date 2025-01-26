@@ -48,6 +48,17 @@ const ManageMessagesPage = ({ setCurrentPage }) => {
         }
     };
 
+    // clear all messages
+    const clearMessages = async () => {
+        try {
+            await axiosInstance.delete("/messages");
+            setMessages([]);
+            showSnackbar("Messages cleared successfully", "success");
+        } catch (error) {
+            showSnackbar("Error clearing messages", "error");
+        }
+    };
+
 
     useEffect(() => {
         fetchMessages();
@@ -104,10 +115,24 @@ const ManageMessagesPage = ({ setCurrentPage }) => {
     }))
 
     return (
-        <Box >
-            <Typography variant="h4" gutterBottom>
-                Manage Messages
-            </Typography>
+        <Box sx={{ flexGrow: 1, backgroundColor: "background.default", padding: 4 }}>
+            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 2 }}>
+                <Typography variant="h5">Manage Messages</Typography>
+                <Button variant="contained" color="error" onClick={clearMessages}>
+                    <Delete /> Clear All
+                </Button>
+            </Box>
+            <Box variant="div" sx={{ display: "flex", justifyContent: "space-evenly", alignItems: "center", marginBottom: 2 }}>
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                    {messages.length} messages
+                </Typography>
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                    {messages.filter((message) => !message.read).length} unread
+                </Typography>
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                    {messages.filter((message) => message.read).length} read
+                </Typography>
+            </Box>
             <Box mt={2} style={{
                 height: "calc(100vh - 160px)",
                 width: "100%", overflow: "auto",

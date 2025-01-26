@@ -196,7 +196,8 @@ const BookingPage = () => {
         try {
             const notificationData = {
                 title: 'New Appointment',
-                message: type === 'info' ? 'A new appointment has been created.' : 'An error occurred while creating an appointment.',
+                message: type === 'info' ?
+                    'You have a new appointment. Please check your appointments for more details.' : 'Failed to book an appointment. Please try again.',
                 type: type,
                 ref: 'booking',
                 refId: refId,
@@ -299,14 +300,14 @@ const BookingPage = () => {
                         backdropFilter: 'blur(8px)',
                     }}
                 >
-                    <Typography 
-                    variant="h5" 
-                    align="center" 
-                    sx={{ 
-                        color: 'primary.main',
-                        fontWeight: 'bold',
-                        fontSize: { xs: '1rem', sm: '1.2rem', md: '1.5rem' },
-                    }}
+                    <Typography
+                        variant="h5"
+                        align="center"
+                        sx={{
+                            color: 'primary.main',
+                            fontWeight: 'bold',
+                            fontSize: { xs: '1rem', sm: '1.2rem', md: '1.5rem' },
+                        }}
                     >
                         {isArabic ? 'الوقت الحالي' : 'Current Time'}: {currentDateTime.day} - {currentDateTime.date} - {currentDateTime.time}
                     </Typography>
