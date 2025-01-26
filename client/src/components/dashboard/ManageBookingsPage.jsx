@@ -479,7 +479,7 @@ const ManageBookingsPage = () => {
             handleChangeStatus(selectedBooking.id, selectedBooking?.status);
             handleCloseContextMenu();
           }}
-          disabled={selectedBooking?.status === "Completed"}
+          disabled={selectedBooking?.status === "Completed" || selectedBooking?.status === "Cancelled"}
         >
           <ListItemIcon>
             <Done />
@@ -519,7 +519,7 @@ const ManageBookingsPage = () => {
             setOpenDeleteDialog(true);
             handleCloseContextMenu();
           }}
-          disabled={selectedBooking?.status !== "Completed"}
+          disabled={selectedBooking?.status !== "Completed" || selectedBooking?.status !== "Cancelled"}
         >
           <ListItemIcon>
             <Delete />
