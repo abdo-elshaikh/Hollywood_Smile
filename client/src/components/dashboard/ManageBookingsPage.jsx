@@ -519,7 +519,7 @@ const ManageBookingsPage = () => {
             setOpenDeleteDialog(true);
             handleCloseContextMenu();
           }}
-          disabled={selectedBooking?.status !== "Completed" || selectedBooking?.status !== "Cancelled"}
+          disabled={selectedBooking?.status === "Completed" || selectedBooking?.status === "Cancelled"}
         >
           <ListItemIcon>
             <Delete />
@@ -530,8 +530,7 @@ const ManageBookingsPage = () => {
         <SendSMS
           phoneNumber={selectedBooking?.phone}
           smsContent={`
-            مرحبًا ${selectedBooking?.name} ، تم تأكيد حجزك. التاريخ: ${selectedBooking?.date.split("T")[0]}, الوقت: ${selectedBooking?.time}. يرجى ملاحظة رمز الحجز الخاص بك: ${selectedBooking?.code}. يرجى التأكد من الحضور في الوقت المحدد.
-            `}
+            مرحبًا ${selectedBooking?.name} ، تم تأكيد حجزك. بتاريخ: ${selectedBooking?.date.split("T")[0]}, الوقت: ${selectedBooking?.time}. يرجى التأكد من الحضور في الوقت المحدد.`}
           status={selectedBooking?.status}
         />
 
