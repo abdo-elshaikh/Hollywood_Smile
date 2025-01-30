@@ -139,7 +139,7 @@ const DoctorCard = ({ doctor, index, isArabic, navigate, t }) => {
                             width: '100%',
                             height: '100%',
                             objectFit: 'cover',
-                            objectPosition: 'center',
+                            objectPosition: 'top',
                             transform: 'scale(1)',
                             transition: 'transform 0.3s ease',
                             '&:hover': {

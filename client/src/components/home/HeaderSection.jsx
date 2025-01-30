@@ -123,9 +123,10 @@ const HeaderSection = () => {
                     {/* Desktop Menu */}
 
                     <Box
-                        onClick={() => navigate('/')}
-                        sx={{ display: 'flex', alignItems: 'center', gap: 2, cursor: 'pointer' }}
-                    >
+                        sx={{ display: 'flex', alignItems: 'center', gap: 2, cursor: 'pointer', textDecoration: 'none' }}
+                        component={Link}
+                        href="/" // Navigate to the home page
+                    >                      
                         <Avatar
                             src={isDark ? clinicInfo?.logo.dark : clinicInfo?.logo.light}
                             alt={clinicInfo?.name.en}

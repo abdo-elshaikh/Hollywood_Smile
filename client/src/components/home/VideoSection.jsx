@@ -14,7 +14,7 @@ const VideoSection = () => {
         <Box
             sx={{
                 position: "relative",
-                height: "90vh",  // Full screen height
+                height: "85vh",
                 minWidth: "0",
                 margin: "0 auto",
                 overflow: "hidden",
@@ -100,7 +100,7 @@ const VideoSection = () => {
                         variant="h2"
                         sx={{
                             fontWeight: "bold",
-                            mb: 4,
+                            mb: 2,
                             fontSize: { xs: '2.5rem', sm: '3rem', md: '4rem' },
                             color: "#fff",
                             textShadow: "3px 3px 12px rgba(0, 0, 0, 0.9)",
@@ -109,6 +109,20 @@ const VideoSection = () => {
                         {isArabic ? "أفضل مركز للعناية بالأسنان" : "Best Dental Care Center"}
                     </Typography>
 
+                    {/* Additional Info */}
+                    <Typography
+                        variant="h6"
+                        sx={{
+                            mb: 3,
+                            fontSize: "1.2rem",
+                            color: "#fff",
+                            textShadow: "2px 2px 8px rgba(0, 0, 0, 0.6)",
+                        }}
+                    >
+                        {isArabic
+                            ? "نحن نقدم أفضل الخدمات الطبية لعلاج الأسنان بأحدث التقنيات وأفضل الأطباء"
+                            : "We provide the best medical services for dental treatment with the latest technologies and the best doctors"}
+                    </Typography>
 
                     <Button
                         variant="contained"
@@ -130,22 +144,7 @@ const VideoSection = () => {
                     >
                         {isArabic ? "احجز موعدًا" : "Book Appointment"}
                     </Button>
-
-
-                    {/* Additional Info */}
-                    <Typography
-                        variant="h6"
-                        sx={{
-                            mt: 3,
-                            fontSize: "1.2rem",
-                            color: "#fff",
-                            textShadow: "2px 2px 8px rgba(0, 0, 0, 0.6)",
-                        }}
-                    >
-                        {isArabic
-                            ? "نحن نقدم أفضل الخدمات الطبية لعلاج الأسنان بأحدث التقنيات وأفضل الأطباء"
-                            : "We provide the best medical services for dental treatment with the latest technologies and the best doctors"}
-                    </Typography>
+                    
                 </motion.div>
             </Container>
         </Box>
