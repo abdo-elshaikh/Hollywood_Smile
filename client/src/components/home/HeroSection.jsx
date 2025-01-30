@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Box, Typography, Button, Container } from "@mui/material";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
@@ -6,52 +6,44 @@ import { useTranslation } from "react-i18next";
 import { useCustomTheme } from "../../contexts/ThemeProvider";
 import { useNavigate } from "react-router-dom";
 import { keyframes } from "@mui/system";
-import bgImage from '../../assets/header-logo.jpeg';
-
 
 // Keyframe animations
 const fadeIn = keyframes`
-  from { opacity: 0; scale: 0.8; }
-  to { opacity: 1; scale: 1; }
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
 `;
 
 const slideInDown = keyframes`
-  from { transform: translateY(-100%); opacity: 0; }
+  from { transform: translateY(-50px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 `;
 
 const slideInUp = keyframes`
-  from { transform: translateY(100%); opacity: 0; }
+  from { transform: translateY(50px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 `;
 
 const slideLeft = keyframes`
-  from { transform: translateX(100%); opacity: 0; }
+  from { transform: translateX(50px); opacity: 0; }
   to { transform: translateX(0); opacity: 1; }
 `;
 
 const slideRight = keyframes`
-  from { transform: translateX(-100%); opacity: 0; }
+  from { transform: translateX(-50px); opacity: 0; }
   to { transform: translateX(0); opacity: 1; }
 `;
 
 const zoomIn = keyframes`
-  from { transform: scale(0); opacity: 0; }
+  from { transform: scale(0.8); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
 `;
-
-const buttonHover = keyframes`
-  from { transform: scale(1); }
-  to {transform: scale(1.1)}
-  `;
 
 // Carousel images and text
 const baseUrl = import.meta.env.VITE_SUPABASE_VIEW_URL + '/uploads/slides';
 const carouselItems = [
   {
     id: 1,
-    image: `${baseUrl}/slide_4.jpg`,
-    // image: bgImage,
+    image: `${baseUrl}/slide_1.jpg`,
     title: {
       ar: "ابتسامة صحية",
       en: "Healthy Smile"
@@ -87,7 +79,7 @@ const carouselItems = [
   },
   {
     id: 4,
-    image: `${baseUrl}/slide_7.jpg`,
+    image: `${baseUrl}/slide_4.jpg`,
     title: {
       ar: "ابتسامة جديدة",
       en: "New Smile"
@@ -99,7 +91,7 @@ const carouselItems = [
   },
   {
     id: 5,
-    image: `${baseUrl}/slide_10.jpg`,
+    image: `${baseUrl}/slide_5.jpg`,
     title: {
       ar: "الراحة أولاً",
       en: "Comfort First"
@@ -111,7 +103,6 @@ const carouselItems = [
   }
 ];
 
-
 const HeroSection = () => {
   const { t, i18n } = useTranslation();
   const { mode } = useCustomTheme();
@@ -119,6 +110,7 @@ const HeroSection = () => {
   const isDark = mode === "dark";
   const isArabic = i18n.language === "ar";
 
+  
   return (
     <Box
       sx={{
@@ -136,6 +128,7 @@ const HeroSection = () => {
         autoplay={{ delay: 5000, disableOnInteraction: false }}
         loop
         style={{ width: "100%", height: "100%" }}
+
       >
         {carouselItems.map((item) => (
           <SwiperSlide key={item.id}>
@@ -146,6 +139,7 @@ const HeroSection = () => {
                 position: "relative",
               }}
             >
+              {/* Background Image */}
               <Box
                 sx={{
                   position: "absolute",
@@ -159,7 +153,7 @@ const HeroSection = () => {
                   zIndex: 0,
                 }}
               />
-              {/* Overlay */}
+              {/* Gradient Overlay */}
               <Box
                 sx={{
                   position: "absolute",
@@ -167,9 +161,9 @@ const HeroSection = () => {
                   left: 0,
                   width: "100%",
                   height: "100%",
-                  backgroundColor: isDark
-                    ? "rgba(0, 0, 0, 0.5)"
-                    : "rgba(255, 255, 255, 0.5)",
+                  background: isDark
+                    ? "linear-gradient(to bottom, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8))"
+                    : "linear-gradient(to bottom, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.7))",
                   zIndex: 1,
                 }}
               />
@@ -187,15 +181,15 @@ const HeroSection = () => {
                 }}
               >
                 <Typography
-                  variant="h3"
-                  color="primary.main"
+                  variant="h2"
                   sx={{
                     fontWeight: "bold",
-                    textShadow: isDark
-                      ? "2px 2px 4px rgba(0, 0, 0, 0.7)"
-                      : "2px 2px 4px rgba(255, 255, 255, 0.7)",
                     mb: 2,
+                    fontSize: { xs: '2rem', md: '3rem' },
                     animation: `${slideInDown} 1s ease-in-out forwards`,
+                    textShadow: isDark
+                      ? "2px 2px 8px rgba(0, 0, 0, 0.8)"
+                      : "2px 2px 8px rgba(255, 255, 255, 0.8)",
                   }}
                 >
                   {isArabic ? item.title.ar : item.title.en}
@@ -206,6 +200,9 @@ const HeroSection = () => {
                     mb: 4,
                     fontStyle: "italic",
                     animation: `${zoomIn} 1.5s ease-in-out forwards`,
+                    textShadow: isDark
+                      ? "1px 1px 4px rgba(0, 0, 0, 0.6)"
+                      : "1px 1px 4px rgba(255, 255, 255, 0.6)",
                   }}
                 >
                   {isArabic ? item.subtitle.ar : item.subtitle.en}
@@ -216,20 +213,22 @@ const HeroSection = () => {
                     justifyContent: "center",
                     alignItems: "center",
                     gap: 2,
+                    flexDirection: { xs: 'column', sm: 'row' },
                   }}
                 >
                   <Button
                     variant="contained"
                     color="primary"
                     size="large"
-                    fullWidth
                     sx={{
                       animation: `${isArabic ? slideLeft : slideRight} 1.5s ease`,
-                      borderRadius: 0,
+                      borderRadius: "25px",
                       fontWeight: "bold",
+                      px: 4,
+                      py: 1.5,
                       "&:hover": {
                         transform: 'translateY(-2px)',
-                        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+                        boxShadow: "0 6px 12px rgba(0, 0, 0, 0.3)",
                         transition: "all 0.3s ease-in-out",
                       },
                     }}
@@ -238,17 +237,19 @@ const HeroSection = () => {
                     {isArabic ? 'احجز الان' : 'Book Now'}
                   </Button>
                   <Button
-                    variant="contained"
+                    variant="outlined"
                     color="secondary"
                     size="large"
-                    fullWidth
                     sx={{
                       animation: `${isArabic ? slideRight : slideLeft} 1.5s ease-in-out`,
-                      borderRadius: 0,
+                      borderRadius: "25px",
                       fontWeight: "bold",
+                      px: 4,
+                      py: 1.5,
+                      borderWidth: "2px",
                       "&:hover": {
                         transform: 'translateY(-2px)',
-                        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+                        boxShadow: "0 6px 12px rgba(0, 0, 0, 0.3)",
                         transition: "all 0.3s ease-in-out",
                       },
                     }}

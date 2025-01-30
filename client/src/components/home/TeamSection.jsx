@@ -53,7 +53,7 @@ const TeamSection = () => {
         <Box py={5} px={{ xs: 2, md: 10 }} bgcolor="background.default">
             <Container maxWidth="xl" sx={{ position: "relative" }}>
                 <Grid container spacing={3}>
-                    <Grid item xs={12} md={4}>
+                    <Grid item xs={12} md={3}>
                         <motion.div
                             initial={{ opacity: 0, y: 60 }}
                             whileInView={{ opacity: 1, y: 0 }}
@@ -97,7 +97,7 @@ const TeamSection = () => {
                     </Grid>
 
                     {teamMembers.map((member, index) => (
-                        <Grid item xs={12} md={4} key={member.id}>
+                        <Grid item xs={12} md={3} key={member.id}>
                             <motion.div
                                 initial={{ opacity: 0, y: 60 }}
                                 whileInView={{ opacity: 1, y: 0 }}
@@ -116,20 +116,22 @@ const TeamSection = () => {
                                         '&:hover': { boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.4)' },
                                     }}
                                 >
-                                    <CardMedia
-                                        component="img"
-                                        image={member.image}
-                                        alt={member.name}
-                                        title={member.name}
-                                        onClick={() => navigate(`/doctors/${member.id}`)}
-                                        sx={{
-                                            height: "400px",
-                                            objectFit: "cover",
-                                            borderBottom: "1px solid #ddd",
-                                            cursor: "pointer",
-                                            aspectRatio: '16/9',
-                                        }}
-                                    />
+                                    <CardMedia>
+                                        <img
+                                            src={member.image}
+                                            alt={member.name}
+                                            onClick={() => navigate(`/doctors/${member.id}`)}
+                                            style={{
+                                                width: "100%",
+                                                height: "400px",
+                                                objectFit: "cover",
+                                                objectPosition: "top",
+                                                cursor: "pointer",
+                                                '&:hover': { boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.4)' },
+                                            }}
+                                        />
+                                    </CardMedia>
+
                                     <Box
                                         display="flex"
                                         justifyContent="center"
@@ -137,7 +139,7 @@ const TeamSection = () => {
                                         sx={{
                                             p: 1,
                                             position: "absolute",
-                                            top: '370px',
+                                            top: '375px',
                                             left: '50%',
                                             transform: 'translateX(-50%)',
                                         }}

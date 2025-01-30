@@ -92,7 +92,6 @@ const ManageBookingsPage = () => {
     setActiveTab(newValue);
   };
 
-
   const handleChangeStatus = async (id, currentStatus) => {
     const newStatus = currentStatus === "Cancelled" ? null : getNewStatus(currentStatus);
     if (!newStatus) {

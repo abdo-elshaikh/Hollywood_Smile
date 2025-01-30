@@ -53,6 +53,7 @@ const SendSMS = ({ smsContent, phoneNumber, status }) => {
                 sender: "HS Center",
                 recipient: `+2${messageData.phone}`,
                 content: messageData.message,
+                organisationPrefix: 'HS',
             };
             const response = await smsService.sendSms(data);
             if (response.status === 201) {

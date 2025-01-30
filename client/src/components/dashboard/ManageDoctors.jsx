@@ -125,13 +125,19 @@ const ManageDoctors = () => {
                 }
                 await doctorService.updateDoctor(doctorId, doctorData);
                 showSnackbar('Doctor updated successfully', 'success');
+                setOpen(false);
             } else {
-                doctorData.rating = Object.keys(ratingNames).map((key) => ({ name: key, stars: 0 }));
-                await doctorService.createDoctor(doctorData);
-                showSnackbar('Doctor created successfully', 'success');
+                doctorData.rating = Object.keys(ratingNames).map((key) => ({ name: key, stars: 1 }));
+                const data = await doctorService.createDoctor(doctorData);
+                console.log('Doctor created:', data);
+                if (data._id) {
+                    showSnackbar('Doctor created successfully', 'success');
+                    setOpen(false);
+                } else {
+                    showSnackbar(data.message, 'error');
+                }
             }
             fetchDoctors();
-            setOpen(false);
         } catch (error) {
             console.error(error);
             showSnackbar(error?.message || 'An unexpected error occurred', 'error');
@@ -399,7 +405,7 @@ const ManageDoctors = () => {
                                         sx={{ ml: 2, textTransform: 'none', fontSize: 14, width: 150 }}
                                         onClick={() => document.getElementById('image-upload').click()}
                                     >
-                                        Upload Image
+                                        {doctorData.imageUrl ? 'Replace Image' : 'Upload Image'}
                                     </Button>
                                     <input
                                         id='image-upload'

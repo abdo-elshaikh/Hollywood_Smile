@@ -27,6 +27,7 @@ import Footer from '../components/home/Footer';
 import ScrollToTopButton from '../components/common/ScrollToTopButton';
 import { Box } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import VideoSection from '../components/home/VideoSection';
 
 const HomePage = () => {
   const { i18n } = useTranslation();
@@ -39,7 +40,8 @@ const HomePage = () => {
       }}
     >
       <HeaderSection />
-      <HeroSection />
+      <VideoSection />
+      {/* <HeroSection /> */}
       <NotificationSection />
       <AboutSection />
       <DetectBookingSection />

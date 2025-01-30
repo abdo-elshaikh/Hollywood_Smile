@@ -68,6 +68,7 @@ const MeetOurDentists = () => {
               color: themeMode === "light" ? "text.secondary" : "#bbb",
               maxWidth: 600,
               mx: "auto",
+              // mb: 4,
             }}
           >
             {t("MeetOurDentists.descriptionText")}
@@ -104,7 +105,7 @@ const MeetOurDentists = () => {
                 <CardMedia
                   component="div"
                   sx={{
-                    height: 250,
+                    height: 300,
                     backgroundImage: `url(${member.imageUrl})`,
                     backgroundSize: "cover",
                     backgroundPosition: "center",

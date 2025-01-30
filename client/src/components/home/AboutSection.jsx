@@ -38,6 +38,7 @@ const AboutSection = () => {
                 { title: 'فريق طبي متخصص', description: 'نحن نعمل كفريق واحد متكامل لتقديم الرعاية الصحية الأمثل لمرضانا.' },
                 { title: 'تقنيات حديثة', description: 'نحن نستخدم أحدث التقنيات والأجهزة لتشخيص وعلاج مرضانا بشكل أفضل.' },
                 { title: 'خدمة مميزة', description: 'نحن نقدم خدمة مميزة لمرضانا من خلال فريق عمل متفاني ومتخصص.' },
+                
             ],
         }
         : {
@@ -121,14 +122,7 @@ const AboutSection = () => {
                                     </motion.div>
                                 ))}
                             </List>
-                            <Button
-                                variant="text"
-                                color="primary"
-                                text="primary"
-                                sx={{ mt: 2, px: 4, py: 1, alignSelf: 'start' }}
-                            >
-                                {isArabic ? 'اقرأ المزيد' : 'Read More'}
-                            </Button>
+                            
                         </Box>
                     </Grid>
 
