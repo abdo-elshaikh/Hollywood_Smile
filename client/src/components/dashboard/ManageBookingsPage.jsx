@@ -187,6 +187,23 @@ const ManageBookingsPage = () => {
   };
 
   const filteredBookings = activeTab === "All" ? bookings : bookings.filter((booking) => booking.status === activeTab);
+  
+  const filetrByDate = (firstDate, secondDate) => {
+    const date1 = new Date(firstDate);
+    const date2 = new Date(secondDate);
+
+    if (isNaN(date1) || isNaN(date2)) {
+      return filteredBookings;
+    }
+
+    const filtered = filteredBookings.filter((booking) => {
+      const bookingDate = new Date(booking.date);
+      return bookingDate >= date1 && bookingDate <= date2;
+    });
+
+    return filtered;
+  };
+
 
   const columns = [
     {
@@ -291,7 +308,7 @@ const ManageBookingsPage = () => {
 
   return (
     <Box >
-      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", mb: 2 }}>
+      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", mb: 2, gap: 2 }}>
         <Tabs
           value={activeTab}
           onChange={handleTabChange}
@@ -304,6 +321,30 @@ const ManageBookingsPage = () => {
             <Tab key={status} label={status} value={status} />
           ))}
         </Tabs>
+      </Box>
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 2, mb: 2 }}>
+        <TextField
+          id="date"
+          label="Filter by Date"
+          type="date"
+          variant="outlined"
+          InputLabelProps={{
+            shrink: true,
+          }}
+          onChange={(e) => {
+            const date = new Date(e.target.value);
+            const filtered = filetrByDate(date, new Date());
+            setBookings(filtered);
+          }}
+        />
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={fetchBookings}
+          startIcon={<Send />}
+        >
+          Refresh
+        </Button>
       </Box>
       <Paper sx={{ height: 'calc(100vh - 250px)', width: '100%', overflow: 'auto' }}>
         {!isMobile ?
@@ -518,7 +559,7 @@ const ManageBookingsPage = () => {
             setOpenDeleteDialog(true);
             handleCloseContextMenu();
           }}
-          disabled={selectedBooking?.status === "Completed" || selectedBooking?.status === "Cancelled"}
+          // disabled={selectedBooking?.status !== "Completed" || selectedBooking?.status !== "Cancelled"}
         >
           <ListItemIcon>
             <Delete />

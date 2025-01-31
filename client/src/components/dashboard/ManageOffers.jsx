@@ -96,7 +96,7 @@ const ManageOffers = () => {
         setLoadingImage(true);
         try {
             const directoryPath = 'images/offers';
-            const data = await uploadFile(file, directoryPath, newOffer.title.en);
+            const data = await uploadFile(file, directoryPath, newOffer.title.en.replace(/\s+/g, '-').toLowerCase());
             if (data.fullUrl) {
                 setNewOffer({ ...newOffer, imageUrl: data.fullUrl });
                 showSnackbar("Image uploaded successfully", "success");

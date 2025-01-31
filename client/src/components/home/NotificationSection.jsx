@@ -126,7 +126,6 @@ const NotificationSection = () => {
           </Typography>
           <Button
             variant="contained"
-            // startIcon={<Call sx={{ mx: 2 }} />}
             href={`tel:${clinicInfo?.phone}`}
             sx={{
               mt: 2,
@@ -141,7 +140,7 @@ const NotificationSection = () => {
               },
             }}
           >
-            <strong>{t('appointmentSection.emergency.call')}</strong> {clinicInfo?.phone}
+            <strong>{t('appointmentSection.emergency.call')}</strong>  {clinicInfo?.phone}
           </Button>
         </motion.div>
       </Box>
