@@ -191,6 +191,8 @@ const ServicesPage = () => {
                                         borderRadius: 4,
                                         overflow: 'hidden',
                                         transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
+                                        cursor: 'pointer',
+
                                         '&:hover': {
                                             transform: 'translateY(-10px)',
                                             boxShadow: 6,
@@ -223,19 +225,17 @@ const ServicesPage = () => {
                                         >
                                             {isArabic ? service.description.ar : service.description.en}
                                         </Typography>
-                                        <Button
-                                            variant="contained"
-                                            color="secondary"
-                                            onClick={() => navigate(`/services/${service.id}`)}
-                                            sx={{
-                                                textTransform: 'none',
-                                                borderRadius: 2,
-                                                boxShadow: 2,
-                                                px: 3,
-                                            }}
-                                        >
-                                            {t('servicesPage.learnMore')}
-                                        </Button>
+                                        <Divider />
+                                        <Box sx={{ mt: 2 }}>
+                                            <Typography
+                                                variant="subtitle1"
+                                                color="text.secondary"
+                                                align="center"
+                                                sx={{ fontWeight: 'bold', fontSize: '1.2rem' }}
+                                            >
+                                                {isArabic ? service.details.ar : service.details.en}
+                                            </Typography>
+                                        </Box>
                                     </Box>
                                 </Box>
                             </motion.div>

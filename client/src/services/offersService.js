@@ -11,7 +11,7 @@ export const getOffers = async () => {
 
 export const createOffer = async (offerData) => {
     try {
-        const response = await api.post('/offers', offerData);
+        const response = await axiosInstance.post('/offers', offerData);
         return response.data;
     } catch (error) {
         return error.response.data;

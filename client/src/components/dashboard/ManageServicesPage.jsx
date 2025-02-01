@@ -71,8 +71,32 @@ const ManageServicesPage = () => {
         }
     };
 
+    // chack valid faileds
+    const checkServiceValid = () => {
+        if (serviceData.title.en === '' || serviceData.title.ar === '') {
+            showSnackBar('Please enter title in both languages', 'error');
+            return false;
+        } else if (serviceData.description.en === '' || serviceData.description.ar === '') {
+            showSnackBar('Please enter description in both languages', 'error');
+            return false;
+        } else if (serviceData.price === '') {
+            showSnackBar('Please enter price', 'error');
+            return false;
+        } else if (serviceData.duration === '') {
+            showSnackBar('Please enter duration', 'error');
+            return false;
+        } else if (serviceData.imageUrl === '' || serviceData.icon === '') {
+            showSnackBar('Please upload an image or icon', 'error');
+            return false;
+        } else {
+            return true;
+        }
+    };
+
     // Handle form submission for creating/updating a service
     const handleSubmitService = async () => {
+        if (!checkServiceValid()) return;
+        
         setLoading(true);
         try {
             if (isEditable && selectedServiceId) {
@@ -102,14 +126,12 @@ const ManageServicesPage = () => {
     // Handle the delete action
     const handleDeleteService = async (id) => {
         setLoading(true);
-        deleteFile(serviceData.imageUrl.split('/uploads/')[1], 'uploads').then((data) => {
-            console.log('Image deleted successfully', data);
-        }).catch((err) => {
-            console.error('Failed to delete image', err);
-        });
 
         deleteService(id).then((data) => {
             console.log('Service deleted successfully', data);
+            deleteFile(data.imageUrl, 'uploads')
+                .then((data) => { console.log('Image deleted successfully', data) })
+                .catch((err) => { console.error('Failed to delete image', err) });
             showSnackBar('Service deleted successfully', 'success');
             fetchAllServices();
         }).catch((err) => {
@@ -149,7 +171,6 @@ const ManageServicesPage = () => {
             });
         }
     };
-
 
     // Toggle status
     const handleToggleStatus = async (id, status) => {

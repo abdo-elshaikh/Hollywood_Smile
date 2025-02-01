@@ -47,143 +47,143 @@ const ServicesSection = () => {
 
     return (
         <Box sx={{ py: 10 }}>
-          <Container sx={{ py: 10, textAlign: 'center' }}>
-            {/* Section Title */}
-            <motion.div
-                initial={{ opacity: 0, y: -30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6 }}
-            >
-                <Typography
-                    variant="h3"
-                    sx={{
-                        fontWeight: 800,
-                        color: 'primary.main',
-                        fontFamily: 'Poppins, sans-serif',
-                        letterSpacing: '1px',
-                    }}
+            <Container sx={{ py: 10, textAlign: 'center' }}>
+                {/* Section Title */}
+                <motion.div
+                    initial={{ opacity: 0, y: -30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6 }}
                 >
-                    {t('servicesSection.title')}
-                </Typography>
-                <Typography
-                    sx={{
-                        mt: 2,
-                        maxWidth: { xs: '100%', sm: 600 },
-                        mx: 'auto',
-                        color: isDark ? '#ddd' : '#555',
-                        fontSize: { xs: '1.1rem', md: '1.2rem' },
-                        lineHeight: 1.7,
-                        fontFamily: 'Roboto, sans-serif',
-                    }}
-                >
-                    {t('servicesSection.description')}
-                </Typography>
-                <Box
-                    sx={{
-                        mt: 3,
-                        width: 120,
-                        height: 5,
-                        backgroundColor: 'primary.main',
-                        mx: 'auto',
-                        borderRadius: 5,
-                    }}
-                />
-            </motion.div>
+                    <Typography
+                        variant="h3"
+                        sx={{
+                            fontWeight: 800,
+                            color: 'primary.main',
+                            fontFamily: 'Poppins, sans-serif',
+                            letterSpacing: '1px',
+                        }}
+                    >
+                        {t('servicesSection.title')}
+                    </Typography>
+                    <Typography
+                        sx={{
+                            mt: 2,
+                            maxWidth: { xs: '100%', sm: 600 },
+                            mx: 'auto',
+                            color: isDark ? '#ddd' : '#555',
+                            fontSize: { xs: '1.1rem', md: '1.2rem' },
+                            lineHeight: 1.7,
+                            fontFamily: 'Roboto, sans-serif',
+                        }}
+                    >
+                        {t('servicesSection.description')}
+                    </Typography>
+                    <Box
+                        sx={{
+                            mt: 3,
+                            width: 120,
+                            height: 5,
+                            backgroundColor: 'primary.main',
+                            mx: 'auto',
+                            borderRadius: 5,
+                        }}
+                    />
+                </motion.div>
 
-            {/* Services Grid */}
-            <Grid container spacing={4} justifyContent="center" sx={{ mt: 6 }}>
-                {services?.slice(0, 8).map((service, index) => (
-                    <Grid item xs={12} sm={6} md={4} lg={3} key={service._id}>
-                        <motion.div
-                            initial={{ opacity: 0, y: 30 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.5, delay: index * 0.15 }}
-                        >
-                            <Card
-                                sx={{
-                                    p: 3,
-                                    textAlign: 'center',
-                                    borderRadius: 4,
-                                    background: isDark
-                                        ? 'linear-gradient(135deg, #2a2a2a, #1b1b1b)'
-                                        : 'linear-gradient(135deg, #ffffff, #f7f7f7)',
-                                    boxShadow: isDark
-                                        ? '0 10px 30px rgba(255, 255, 255, 0.08)'
-                                        : '0 10px 30px rgba(0, 0, 0, 0.1)',
-                                    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-                                    '&:hover': {
-                                        transform: 'translateY(-10px)',
-                                        boxShadow: isDark
-                                            ? '0 15px 35px rgba(255, 255, 255, 0.1)'
-                                            : '0 15px 35px rgba(0, 0, 0, 0.15)',
-                                    },
-                                }}
+                {/* Services Grid */}
+                <Grid container spacing={4} justifyContent="center" sx={{ mt: 6 }}>
+                    {services?.slice(0, 8).map((service, index) => (
+                        <Grid item xs={12} sm={6} md={4} lg={3} key={service._id}>
+                            <motion.div
+                                initial={{ opacity: 0, y: 30 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.8, delay: index * 0.2 }}
                             >
-                                {/* Icon Section */}
-                                <Box
+                                <Card
                                     sx={{
-                                        width: 100,
-                                        height: 100,
-                                        borderRadius: '50%',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        mx: 'auto',
-                                        mb: 3,
+                                        p: 3,
+                                        textAlign: 'center',
+                                        borderRadius: 4,
                                         background: isDark
-                                            ? 'linear-gradient(145deg, #ff6b6b, #ffa502)'
-                                            : 'linear-gradient(145deg, #3b82f6, #34d399)',
-                                        boxShadow: '0 10px 20px rgba(0, 0, 0, 0.1)',
+                                            ? 'linear-gradient(135deg, #2a2a2a, #1b1b1b)'
+                                            : 'linear-gradient(135deg, #ffffff, #f7f7f7)',
+                                        boxShadow: isDark
+                                            ? '0 10px 30px rgba(255, 255, 255, 0.08)'
+                                            : '0 10px 30px rgba(0, 0, 0, 0.1)',
+                                        transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                                        '&:hover': {
+                                            transform: 'translateY(-10px)',
+                                            boxShadow: isDark
+                                                ? '0 15px 35px rgba(255, 255, 255, 0.1)'
+                                                : '0 15px 35px rgba(0, 0, 0, 0.15)',
+                                        },
                                     }}
                                 >
-                                    <img
-                                        src={service.icon}
-                                        alt={service.title.en}
-                                        style={{
-                                            width: '60%',
-                                            height: '60%',
-                                            objectFit: 'contain',
+                                    {/* Icon Section */}
+                                    <Box
+                                        sx={{
+                                            width: 100,
+                                            height: 100,
+                                            borderRadius: '50%',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            mx: 'auto',
+                                            mb: 3,
+                                            background: isDark
+                                                ? 'linear-gradient(145deg, #ff6b6b, #ffa502)'
+                                                : 'linear-gradient(145deg, #3b82f6, #34d399)',
+                                            boxShadow: '0 10px 20px rgba(0, 0, 0, 0.1)',
                                         }}
-                                    />
-                                </Box>
+                                    >
+                                        <img
+                                            src={service.icon}
+                                            alt={service.title.en}
+                                            style={{
+                                                width: '60%',
+                                                height: '60%',
+                                                objectFit: 'contain',
+                                            }}
+                                        />
+                                    </Box>
 
-                                {/* Content */}
-                                <CardContent>
-                                    <Typography
-                                        variant="h5"
-                                        sx={{
-                                            fontWeight: 700,
-                                            fontSize: '1.3rem',
-                                            color: 'text.primary',
-                                            fontFamily: 'Poppins, sans-serif',
-                                        }}
-                                    >
-                                        {isArabic ? service.title.ar : service.title.en}
-                                    </Typography>
-                                    <Typography
-                                        variant="body2"
-                                        sx={{
-                                            mt: 1.5,
-                                            color: isDark ? '#ccc' : '#666',
-                                            fontSize: '1rem',
-                                            lineHeight: 1.6,
-                                            fontFamily: 'Roboto, sans-serif',
-                                        }}
-                                    >
-                                        {isArabic
-                                            ? service.description.ar.slice(0, 90)
-                                            : service.description.en.slice(0, 90)}
-                                        ...
-                                    </Typography>
-                                </CardContent>
-                            </Card>
-                        </motion.div>
-                    </Grid>
-                ))}
-            </Grid>
-        </Container>
+                                    {/* Content */}
+                                    <CardContent>
+                                        <Typography
+                                            variant="h5"
+                                            sx={{
+                                                fontWeight: 700,
+                                                fontSize: '1.3rem',
+                                                color: 'text.primary',
+                                                fontFamily: 'Poppins, sans-serif',
+                                            }}
+                                        >
+                                            {isArabic ? service.title.ar : service.title.en}
+                                        </Typography>
+                                        <Typography
+                                            variant="body2"
+                                            sx={{
+                                                mt: 1.5,
+                                                color: isDark ? '#ccc' : '#666',
+                                                fontSize: '1rem',
+                                                lineHeight: 1.6,
+                                                fontFamily: 'Roboto, sans-serif',
+                                            }}
+                                        >
+                                            {isArabic
+                                                ? service.details.ar
+                                                : service.details.en
+                                            }
+                                        </Typography>
+                                    </CardContent>
+                                </Card>
+                            </motion.div>
+                        </Grid>
+                    ))}
+                </Grid>
+            </Container>
 
 
             {/* About Section */}

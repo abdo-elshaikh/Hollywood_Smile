@@ -25,7 +25,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useSnackbar } from '../../contexts/SnackbarProvider';
 import CustomPagination from "../common/CustomPagination";
-import { uploadFile } from "../../services/supabaseService";
+import { uploadFile, replaceFile, deleteFile } from "../../services/supabaseService";
 import { fetchServices } from "../../services/servicesService";
 
 const ManageOffers = () => {
@@ -40,7 +40,6 @@ const ManageOffers = () => {
         expiryDate: "",
         discount: "",
         imageUrl: "",
-        isActive: false,
         showInNotifications: false,
         showInHome: false,
         service: "",
@@ -94,6 +93,11 @@ const ManageOffers = () => {
             return;
         }
         setLoadingImage(true);
+        const oldImageUrl = newOffer.imageUrl;
+        if (oldImageUrl) {
+            await deleteFile(oldImageUrl).catch((err) => console.error("Failed to delete old image", err));
+        }
+
         try {
             const directoryPath = 'images/offers';
             const data = await uploadFile(file, directoryPath, newOffer.title.en.replace(/\s+/g, '-').toLowerCase());
@@ -151,18 +155,43 @@ const ManageOffers = () => {
         setEditOffer(null);
     };
 
+    const checkOfferValidity = (offer) => {
+        if (offer.title.en === "" || offer.title.ar === "") {
+            showSnackbar("Please enter title in both languages", "error");
+            return false;
+        } else if (offer.description.en === "" || offer.description.ar === "") {
+            showSnackbar("Please enter description in both languages", "error");
+            return false;
+        } else if (offer.discount === "" || !/^(\d+(\.\d+)?%)?$/.test(offer.discount)) {
+            showSnackbar("Please enter a valid discount percentage", "error");
+            return false;
+        } else if (offer.expiryDate === "" || new Date(offer.expiryDate) < new Date()) {
+            showSnackbar("Please enter expiry date", "error");
+            return false;
+        } else if (offer.service === "") {
+            showSnackbar("Please select a service", "error");
+            return false;
+        } 
+        return true;
+    };
+
     const handleSubmit = async (e) => {
+        if (!checkOfferValidity(newOffer)) return;
+        console.log('is edit offer', editOffer);
+        console.log('new offer', newOffer);
         e.preventDefault();
         try {
             if (editOffer) {
                 const result = await updateOffer(editOffer._id, newOffer);
-                setOffers(offers.map((offer) => (offer._id === editOffer._id ? result : offer)));
+                console.log('update offer result', result);
+                showSnackbar("Offer updated successfully", "success");
             } else {
                 const result = await createOffer(newOffer);
-                setOffers([...offers, result]);
+                console.log('new offer result', result);
+                showSnackbar("Offer created successfully", "success");
             }
+            fetchOffers();
             closeDialog();
-            showSnackbar("Offer saved successfully", "success");
         } catch (err) {
             showSnackbar("Failed to save offer", "error");
         }

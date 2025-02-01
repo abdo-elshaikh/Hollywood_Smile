@@ -60,21 +60,21 @@ const Sidebar = ({ open, sidebarWidth, onToggleDrawer, setCurrentPage, setOpen }
     const items = [
         { title: "Home", icon: <HomeIcon />, link: "/dashboard" },
         { title: "Users", icon: <PersonIcon />, link: "/dashboard/users" },
+        { title: "Clinic Information", icon: <MedicalInformationIcon />, link: "/dashboard/clinic-info" },
         { title: "Online Bookings", icon: <BookOnlineIcon />, link: "/dashboard/online-bookings" },
         { title: "Services", icon: <HandymanIcon />, link: "/dashboard/services" },
         { title: "Doctors", icon: <Diversity3 />, link: "/dashboard/doctors" },
-        { title: "Manage Offers", icon: <LocalOfferIcon />, link: "/dashboard/offers" },
-        { title: "Clinic Information", icon: <MedicalInformationIcon />, link: "/dashboard/clinic-info" },
+        { title: "Offers", icon: <LocalOfferIcon />, link: "/dashboard/offers" },
         { title: "Gallery", icon: <BurstMode />, link: "/dashboard/gallery" },
         { title: "Befor & After", icon: <ChangeCircle />, link: "/dashboard/before-after" },
         { title: "Testimonials", icon: <Grade />, link: "/dashboard/testimonials" },
-        { title: "Subscriptions", icon: <BookmarkIcon />, link: "/dashboard/subscriptions" },
         { title: "FAQs", icon: <QuizIcon />, link: "/dashboard/faqs" },
+        { title: "Subscriptions", icon: <BookmarkIcon />, link: "/dashboard/subscriptions" },
         { title: "Blog Dashboard", icon: <RssFeed />, link: "/blog-dashboard" },
         { title: "Support Dashboard", icon: <SupportAgent />, link: "/support-dashboard" },
         {
             title: "Settings", icon: <SettingsIcon />, subItems: [
-                { title: "Customization", icon: <AutoAwesome />, link: "/dashboard/settings/customization" },
+                { title: "Theme Customize", icon: <AutoAwesome />, link: "/dashboard/settings/customization" },
                 { title: "Messages", icon: <Message />, link: "/dashboard/messages" },
                 { title: "Notifications", icon: <Notifications />, link: "/dashboard/notifications" },
             ]

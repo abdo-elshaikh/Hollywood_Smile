@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const { getOffers, createOffer, updateOffer, deleteOffer } = require('../controllers/offersController');
-const { protect, authorize } = require('../middlewares/authMiddleware');
+const { protect } = require('../middlewares/authMiddleware');
 
 router.get('/', getOffers);
-router.post('/', protect, authorize('admin'), createOffer);
-router.put('/:id', protect, authorize('admin'), updateOffer);
-router.delete('/:id', protect, authorize('admin'), deleteOffer);
+router.post('/', protect, createOffer);
+router.put('/:id', protect, updateOffer);
+router.delete('/:id', protect, deleteOffer);
 
 module.exports = router;

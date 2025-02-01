@@ -30,12 +30,6 @@ const OffersSchema = new mongoose.Schema(
         discount: {
             type: String,
             required: [true, 'Discount is required'],
-            validate: {
-                validator: function (v) {
-                    return /^(\d+(\.\d+)?%)?$/.test(v);
-                },
-                message: 'Discount should be a percentage value (e.g., "10%")',
-            },
         },
         imageUrl: {
             type: String,

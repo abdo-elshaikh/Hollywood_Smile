@@ -15,7 +15,7 @@ const VideoSection = () => {
             sx={{
                 position: "relative",
                 height: "85vh",
-                minWidth: "0",
+                width: "100%",
                 margin: "0 auto",
                 overflow: "hidden",
             }}
@@ -42,7 +42,7 @@ const VideoSection = () => {
                         width: "100%",
                         height: "100%",
                         objectFit: "cover",
-                        filter: "brightness(0.9)",
+                        filter: "brightness(0.85)",
                     }}
                 >
                     <source src={heroVideo} type="video/mp4" />
@@ -50,7 +50,7 @@ const VideoSection = () => {
                 </Box>
             </Box>
 
-            {/* Overlay */}
+            {/* Darkened Overlay */}
             <Box
                 sx={{
                     position: "absolute",
@@ -58,10 +58,10 @@ const VideoSection = () => {
                     left: 0,
                     width: "100%",
                     height: "100%",
-                    background: "linear-gradient(180deg, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.3) 100%)",
+                    background: "linear-gradient(180deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.6) 100%)",
                     zIndex: 2,
                 }}
-            ></Box>
+            />
 
             {/* Content */}
             <Container
@@ -73,43 +73,58 @@ const VideoSection = () => {
                     justifyContent: "center",
                     alignItems: "flex-start",
                     height: "100%",
-                    gap: 4,
+                    gap: 3,
                     px: { xs: 2, sm: 4 },
                 }}
             >
+                {/* Title */}
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: -30 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 1 }}
+                    transition={{ duration: 0.8, delay: 0.3 }}
                 >
-                    {/* Centered Text with Call to Action */}
                     <Typography
                         variant="h5"
                         sx={{
-                            mb: 3,
-                            fontSize: "1.5rem",
-                            fontFamily: "cairo, sans-serif",
+                            mb: 1,
+                            fontSize: "1.7rem",
+                            fontFamily: "Cairo, sans-serif",
                             color: "secondary.main",
-                            textShadow: "2px 2px 8px rgba(0, 0, 0, 0.6)",
-                            fontWeight: 600,
+                            textShadow: "2px 2px 10px rgba(0, 0, 0, 0.7)",
+                            fontWeight: 700,
                         }}
                     >
                         {isArabic ? "مركز هوليوود سمايل" : "Hollywood Smile Center"}
                     </Typography>
+                </motion.div>
+
+                <Divider sx={{ height: 2, width: '15%', backgroundColor: "secondary.main" }} />
+
+                {/* Heading */}
+                <motion.div
+                    initial={{ opacity: 0, y: 40 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.6 }}
+                >
                     <Typography
                         variant="h2"
                         sx={{
                             fontWeight: "bold",
-                            mb: 2,
                             fontSize: { xs: '2.5rem', sm: '3rem', md: '4rem' },
                             color: "#fff",
-                            textShadow: "3px 3px 12px rgba(0, 0, 0, 0.9)",
+                            textShadow: "4px 4px 15px rgba(0, 0, 0, 1)",
                         }}
                     >
                         {isArabic ? "أفضل مركز للعناية بالأسنان" : "Best Dental Care Center"}
                     </Typography>
+                </motion.div>
 
-                    {/* Additional Info */}
+                {/* Subtitle */}
+                <motion.div
+                    initial={{ opacity: 0, y: 50 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.9 }}
+                >
                     <Typography
                         variant="h6"
                         sx={{
@@ -121,9 +136,16 @@ const VideoSection = () => {
                     >
                         {isArabic
                             ? "نحن نقدم أفضل الخدمات الطبية لعلاج الأسنان بأحدث التقنيات وأفضل الأطباء"
-                            : "We provide the best medical services for dental treatment with the latest technologies and the best doctors"}
+                            : "We provide top dental care with advanced technology and expert doctors."}
                     </Typography>
+                </motion.div>
 
+                {/* Call to Action Button */}
+                <motion.div
+                    initial={{ scale: 0.9, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ duration: 0.5, delay: 1.2 }}
+                >
                     <Button
                         variant="contained"
                         color="primary"
@@ -131,20 +153,21 @@ const VideoSection = () => {
                         sx={{
                             py: 1.5,
                             px: 4,
-                            fontSize: "1.1rem",
+                            fontSize: "1.2rem",
                             fontWeight: 500,
-                            letterSpacing: "1px",
+                            letterSpacing: "0.8px",
                             borderRadius: "8px",
-                            boxShadow: 3,
+                            boxShadow: "0px 4px 15px rgba(0, 0, 0, 0.3)",
+                            transition: "all 0.3s ease-in-out",
                             "&:hover": {
                                 backgroundColor: "#1976d2",
-                                boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.3)",
+                                transform: "scale(1.05)",
+                                boxShadow: "0px 6px 20px rgba(0, 0, 0, 0.4)",
                             },
                         }}
                     >
                         {isArabic ? "احجز موعدًا" : "Book Appointment"}
                     </Button>
-                    
                 </motion.div>
             </Container>
         </Box>

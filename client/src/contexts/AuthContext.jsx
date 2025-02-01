@@ -33,7 +33,6 @@ const AuthProvider = ({ children }) => {
     const register = async (userData) => {
         try {
             const data = await registerUser(userData);
-            // console.log('Registered user:', data);
             setUser(data);
             return data;
         } catch (err) {
@@ -46,12 +45,11 @@ const AuthProvider = ({ children }) => {
     const login = async (userData) => {
         try {
             const data = await loginUser(userData);
-            console.log('Logged in user:', data);
             setUser(data.user);
             return data.user;
         } catch (err) {
             setError(err.response.data.message || 'Login failed');
-            console.log(err);
+            throw err;
         }
     };
 
@@ -75,7 +73,6 @@ const AuthProvider = ({ children }) => {
     const fetchUserProfile = async () => {
         try {
             const data = await getUserProfile();
-            console.log('Fetched user profile:', data);
             return data.user;
         } catch (err) {
             setError(err.response.data.message || 'Could not fetch user profile');

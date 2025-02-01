@@ -43,8 +43,13 @@ const updateService = async (req, res) => {
 
 const deleteService = async (req, res) => {
     try {
-        await Services.findByIdAndDelete(req.params.id);
-        res.status(204).json();
+        const service = await Services.findByIdAndDelete(req.params.id);
+        if (!service) {
+            res.status(404).json({ message: 'Service not found!' });
+            return;
+        }
+        res.status(200).json(service);
+
     } catch (err) {
         res.status(400).json({ message: err.message });
     }
