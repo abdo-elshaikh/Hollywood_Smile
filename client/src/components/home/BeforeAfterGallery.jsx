@@ -102,11 +102,9 @@ const BeforeAfterGallery = () => {
                 sx={{
                   position: 'relative',
                   overflow: 'hidden',
-                  // borderRadius: 2,
                   boxShadow: 3,
                   transition: 'box-shadow 0.3s',
                   '&:hover': { boxShadow: 6 },
-                  height: '250px',
                 }}
               >
                 <ReactCompareImage
@@ -115,13 +113,21 @@ const BeforeAfterGallery = () => {
                   aspectRatio="wider"
                   sliderLineColor={theme.palette.primary.main}
                   sliderLineWidth={3}
-                  handleSize={40}
-                  leftImageCss={{ borderRadius: '2px', height: '250px' }}
-                  rightImageCss={{ borderRadius: '2px', height: '250px' }}
+                  handleSize={50}
+                  leftImageCss={{ height: 'auto' }}
+                  rightImageCss={{ height: 'auto' }}
                   leftImageAlt="Before"
                   rightImageAlt="After"
                   leftImageLabel={t('BeforeAfterGallery.before')}
                   rightImageLabel={t('BeforeAfterGallery.after')}
+                  leftImageLabelStyle={{
+                    color: theme.palette.primary.main,
+                    fontWeight: 'bold',
+                  }}
+                  rightImageLabelStyle={{
+                    color: theme.palette.primary.main,
+                    fontWeight: 'bold',
+                  }}
                   skeleton={<CircularProgress />}
                 />
               </Box>

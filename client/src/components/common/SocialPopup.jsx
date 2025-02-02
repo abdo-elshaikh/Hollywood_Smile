@@ -1,0 +1,126 @@
+import React, { useState, useEffect } from "react";
+import { Box, IconButton, Tooltip, Fade, Stack } from "@mui/material";
+import { Facebook, Instagram, Twitter, LinkedIn, Public, Close } from "@mui/icons-material";
+import { motion } from "framer-motion";
+
+// Array holding the social links data
+const SOCIAL_LINKS = [
+  {
+    title: "Facebook",
+    icon: <Facebook />,
+    href: "https://facebook.com",
+    backgroundColor: "#1877F2",
+    hoverColor: "rgba(24, 119, 242, 0.9)",
+  },
+  {
+    title: "Instagram",
+    icon: <Instagram />,
+    href: "https://instagram.com",
+    backgroundColor: "#E1306C",
+    hoverColor: "rgba(225, 48, 108, 0.9)",
+  },
+  {
+    title: "Twitter",
+    icon: <Twitter />,
+    href: "https://twitter.com",
+    backgroundColor: "#1DA1F2",
+    hoverColor: "rgba(29, 161, 242, 0.9)",
+  },
+  {
+    title: "LinkedIn",
+    icon: <LinkedIn />,
+    href: "https://linkedin.com",
+    backgroundColor: "#0077B5",
+    hoverColor: "rgba(0, 119, 181, 0.9)",
+  },
+];
+
+const SocialPopup = () => {
+  const [open, setOpen] = useState(false);
+
+  // Toggle the popup state
+  const togglePopup = () => {
+    setOpen((prev) => !prev);
+  };
+
+  // Automatically close the popup after 7 seconds if it's open
+  useEffect(() => {
+    if (open) {
+      const timeoutId = setTimeout(() => {
+        setOpen(false);
+      }, 7000);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [open]);
+
+  return (
+    <Box
+      sx={{
+        position: "fixed",
+        bottom: "50%",
+        right: 10,
+        zIndex: 1000,
+      }}
+    >
+      {/* Social Links Button */}
+      <motion.div
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ duration: 0.5, type: "spring", stiffness: 260, damping: 20 }}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9, rotate: 360 }}
+      >
+        <IconButton
+          onClick={togglePopup}
+          aria-label="Toggle social links popup"
+          sx={{
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            boxShadow: 3,
+            border: "1px solid",
+            borderColor: "divider",
+            "&:hover": { backgroundColor: "background.paper" },
+          }}
+        >
+            {open ? <Close /> : <Public />}
+        </IconButton>
+      </motion.div>
+
+      {/* Social Links Popup */}
+      <Fade in={open} timeout={300}>
+        <Box
+          sx={{
+            position: "absolute",
+            top: 50,
+            right: 0,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            borderRadius: 2,
+          }}
+        >
+          <Stack direction="column" spacing={1}>
+            {SOCIAL_LINKS.map(({ title, icon, href, backgroundColor, hoverColor }, index) => (
+              <Tooltip key={index} title={title} placement="left">
+                <IconButton
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`Visit ${title}`}
+                  sx={{
+                    backgroundColor,
+                    color: "white",
+                    "&:hover": { backgroundColor: hoverColor },
+                  }}
+                >
+                  {icon}
+                </IconButton>
+              </Tooltip>
+            ))}
+          </Stack>
+        </Box>
+      </Fade>
+    </Box>
+  );
+};
+
+export default SocialPopup;

@@ -30,6 +30,7 @@ import MapLocationSection from '../components/home/MapLocationSection';
 
 import Footer from '../components/home/Footer';
 import ScrollToTopButton from '../components/common/ScrollToTopButton';
+import SocialPopup from '../components/common/SocialPopup';
 
 const HomePage = () => {
   const { i18n } = useTranslation();
@@ -53,18 +54,16 @@ const HomePage = () => {
       {/* Core Functionalities */}
       <DetectBookingSection />
       <ServicesSection />
-      {/* <AppointmentSection /> */}
 
       {/* Trust & Social Proof */}
       <TeamSection />
       <BeforeAfterGallery />
       <TestimonySection />
-      <AchievementsSection />
+      <NewsletterSection />
 
       {/* Engagement & Offers */}
       <PricingSection />
-      {/* <OffersSection /> */}
-      <NewsletterSection />
+      <AchievementsSection />
       <FAQSection />
 
       {/* Additional Content */}
@@ -76,6 +75,7 @@ const HomePage = () => {
       {/* Footer & Extras */}
       <Footer />
       <ScrollToTopButton />
+      <SocialPopup />
     </Box>
   );
 };
