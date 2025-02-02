@@ -11,13 +11,13 @@ import {
     ListItemText,
     Button,
     Container,
-    Link,
     Tooltip,
     Avatar,
     MenuItem,
     Menu,
     Divider,
     ListItemIcon,
+    Link as MuiLink,
 } from '@mui/material';
 import {
     DarkModeOutlined, LightModeOutlined, Menu as MenuIcon,
@@ -27,6 +27,7 @@ import {
     Home, LocalOffer, BookOnline, Medication, Close,
     MedicalInformation, Handyman, DriveFileMove
 } from '@mui/icons-material';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useCustomTheme } from '../../contexts/ThemeProvider';
 import EnglishIcon from '../../assets/flags/english.svg';
@@ -123,10 +124,9 @@ const HeaderSection = () => {
                     {/* Desktop Menu */}
 
                     <Box
-                        sx={{ display: 'flex', alignItems: 'center', gap: 2, cursor: 'pointer', textDecoration: 'none' }}
                         component={Link}
-                        href="/" // Navigate to the home page
-                    >                      
+                        to="/"
+                        sx={{ display: 'flex', alignItems: 'center', gap: 2, flexShrink: 0, cursor: 'pointer', textDecoration: 'none' }}>
                         <Avatar
                             src={isDark ? clinicInfo?.logo.dark : clinicInfo?.logo.light}
                             alt={clinicInfo?.name.en}
@@ -462,7 +462,7 @@ const MenuItems = ({ items }) => {
                     key={index}
                     transition={{ type: 'spring', stiffness: 250, damping: 15 }}
                 >
-                    <Link
+                    <MuiLink
                         onClick={() => onClick(item.href)}
                         underline="none"
                         sx={{
@@ -501,7 +501,7 @@ const MenuItems = ({ items }) => {
                         }}
                     >
                         {item.label}
-                    </Link>
+                    </MuiLink>
                 </motion.div>
             ))}
         </Box>

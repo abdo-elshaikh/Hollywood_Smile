@@ -21,7 +21,6 @@ import AchievementsSection from '../components/home/AchievementsSection';
 
 import NewsletterSection from '../components/home/NewsletterSection';
 import PricingSection from '../components/home/PricingSection';
-import OffersSection from '../components/home/OffersSection';
 import FAQSection from '../components/home/FAQSection';
 
 import GallerySection from '../components/home/GallerySection';
