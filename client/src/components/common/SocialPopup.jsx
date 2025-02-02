@@ -78,10 +78,13 @@ const SocialPopup = () => {
                     onClick={togglePopup}
                     aria-label="Toggle social links popup"
                     sx={{
-                        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                        width: 50,
+                        height: 50,
+                        backgroundColor: 'primary.main',
                         boxShadow: 3,
                         border: "1px solid",
                         borderColor: "divider",
+                        color: "white",
                         "&:hover": { backgroundColor: "background.paper" },
                     }}
                 >
@@ -94,7 +97,7 @@ const SocialPopup = () => {
                 <Box
                     sx={{
                         position: "absolute",
-                        bottom: 50,
+                        bottom: 60,
                         right: 0,
                         display: "flex",
                         flexDirection: "column",
@@ -114,6 +117,8 @@ const SocialPopup = () => {
                                         backgroundColor,
                                         color: "white",
                                         "&:hover": { backgroundColor: hoverColor },
+                                        width: 50,
+                                        height: 50,
                                     }}
                                 >
                                     {icon}
