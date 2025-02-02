@@ -8,6 +8,7 @@ import HeaderSection from '../components/home/HeaderSection';
 import Footer from '../components/home/Footer';
 import MainHeaderPages from '../components/common/MainHeaderPages';
 import ScrollToTopButton from '../components/common/ScrollToTopButton';
+import OffersSection from '../components/home/OffersSection';
 import axiosInstance from '../services/axiosInstance';
 
 const ContactUsPage = () => {
@@ -75,13 +76,11 @@ const ContactUsPage = () => {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
             >
+                <Typography variant="h4" align="center" sx={{ mt: 4, mb: 2 }}>
+                    {t('contactUs.formTitle')}
+                </Typography>
                 <Container maxWidth="lg" sx={{ mt: 6, mb: 6 }}>
-                    <Typography variant="h3" align="center" gutterBottom>
-                        {t('contactUs.title')}
-                    </Typography>
-
                     <Grid container spacing={4}>
-                        {/* Contact Details */}
                         <Grid item xs={12} md={4}>
                             <Paper sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
                                 <Avatar sx={{ bgcolor: 'primary.main', width: 60, height: 60, mb: 2, p: 2, fontSize: 32, boxShadow: 4 }}>
@@ -107,8 +106,6 @@ const ContactUsPage = () => {
                         {/* Contact Form */}
                         <Grid item xs={12} md={8}>
                             <Paper sx={{ p: 3 }}>
-                                <Typography variant="h5" gutterBottom>{t('contactUs.formTitle')}</Typography>
-
                                 <form onSubmit={handleSubmit}>
                                     <Grid container spacing={3}>
                                         <Grid item xs={12} md={6}>
@@ -165,6 +162,9 @@ const ContactUsPage = () => {
                     </Grid>
 
                     <Divider sx={{ my: 6 }} />
+                    <OffersSection />
+
+                    <Divider sx={{ my: 6 }} />
 
                     {/* Testimonial Section */}
                     <Box sx={{ mt: 8 }}>
@@ -211,7 +211,7 @@ const ContactUsPage = () => {
                                 height="100%"
                                 style={{ border: 0 }}
                                 allowFullScreen=""
-                                // loading="lazy"
+                            // loading="lazy"
                             ></iframe>
                         </Box>
                     </Box>

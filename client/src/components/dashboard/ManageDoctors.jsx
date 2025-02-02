@@ -169,7 +169,7 @@ const ManageDoctors = () => {
         })
     };
 
-    const handleImageChange = async (event, action) => {
+    const handleImageChange = async (event) => {
         const file = event.target.files[0];
         if (doctorData.name.en === '') {
             showSnackbar('Please enter the name of the doctor first', 'error');
@@ -179,11 +179,16 @@ const ManageDoctors = () => {
         const directoryPath = 'images/doctors';
         setUploading(true);
         if (file) {
-            const data = action === 'upload' ?
-                await uploadFile(file, directoryPath, fileName) :
-                await replaceFile(file, directoryPath, fileName);
-            setDoctorData((prev) => ({ ...prev, imageUrl: data.fullUrl }));
-            showSnackbar('Image uploaded successfully', 'success');
+            const oldImagePath = doctorData.imagePath;
+            if (oldImagePath) {
+                deleteFile(oldImagePath).then(() => setDoctorData((prev) => ({ ...prev, imageUrl: '' })));
+            }
+
+            uploadFile(file, directoryPath, fileName).then((data) =>
+                setDoctorData((prev) => ({ ...prev, imageUrl: data.fullUrl }))
+            ).catch((error) => showSnackbar('Error uploading file: ' + error.message, 'error'));
+
+            showSnackbar('Upload Image Successfully Upload', 'success');
         } else {
             showSnackbar('Please select an image', 'error');
         }
@@ -411,7 +416,7 @@ const ManageDoctors = () => {
                                         id='image-upload'
                                         type="file"
                                         accept="image/*"
-                                        onChange={(e) => handleImageChange(e, doctorId ? 'replace' : 'upload')}
+                                        onChange={(e) => handleImageChange(e)}
                                         style={{ display: 'none' }}
                                     />
                                     {doctorData.imageUrl && (

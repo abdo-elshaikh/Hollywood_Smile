@@ -48,7 +48,7 @@ const OffersSection = () => {
     <Container
       maxWidth="lg"
       sx={{
-        py: 8,
+        py: 4,
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -133,7 +133,7 @@ const DentalCard = ({
         boxShadow: 3,
         display: "flex",
         flexDirection: "column",
-        minHeight: 450,
+        minHeight: 400,
         m: 2,
         p: 2,
         borderRadius: 2,
@@ -186,21 +186,11 @@ const DentalCard = ({
           sx={{
             borderColor: "primary.main",
             color: "primary.main",
+            fontWeight: 600,
             "&:hover": { backgroundColor: "primary.dark", color: "#fff" },
           }}
         >
           {buttonText}
-        </Button>
-        <Button
-          variant="contained"
-          size="small"
-          onClick={handleOfferClick}
-          sx={{
-            backgroundColor: "primary.main",
-            "&:hover": { backgroundColor: "primary.dark" },
-          }}
-        >
-          {contactText}
         </Button>
       </Stack>
     </Box>

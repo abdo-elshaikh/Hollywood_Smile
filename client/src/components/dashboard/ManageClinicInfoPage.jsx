@@ -264,12 +264,12 @@ const ManageClinicPage = () => {
     ];
 
     const socialInput = [
-        { label: "Facebook", name: "facebook", icon: <Facebook color={'primary'} />, value: socialLinks.facebook, onChange: (e) => setSocialLinks({ ...socialLinks, facebook: e.target.value }) },
-        { label: "Twitter", name: "twitter", icon: <Twitter color={'primary'} />, value: socialLinks.twitter, onChange: (e) => setSocialLinks({ ...socialLinks, twitter: e.target.value }) },
-        { label: "Instagram", name: "instagram", icon: <Instagram color={'primary'} />, value: socialLinks.instagram, onChange: (e) => setSocialLinks({ ...socialLinks, instagram: e.target.value }) },
-        { label: "LinkedIn", name: "linkedin", icon: <LinkedIn color={'primary'} />, value: socialLinks.linkedin, onChange: (e) => setSocialLinks({ ...socialLinks, linkedin: e.target.value }) },
-        { label: "YouTube", name: "youtube", icon: <YouTube color={'primary'} />, value: socialLinks.youtube, onChange: (e) => setSocialLinks({ ...socialLinks, youtube: e.target.value }) },
-        { label: "TikTok", name: "tiktok", icon: <X color={'primary'} />, value: socialLinks.tiktok, onChange: (e) => setSocialLinks({ ...socialLinks, tiktok: e.target.value }) }
+        { label: "Facebook", name: "facebook", value: socialLinks.facebook, onChange: (e) => setSocialLinks({ ...socialLinks, facebook: e.target.value }), icon: <Facebook /> },
+        { label: "Twitter", name: "twitter", value: socialLinks.twitter, onChange: (e) => setSocialLinks({ ...socialLinks, twitter: e.target.value }), icon: <Twitter /> },
+        { label: "Instagram", name: "instagram", value: socialLinks.instagram, onChange: (e) => setSocialLinks({ ...socialLinks, instagram: e.target.value }), icon: <Instagram /> },
+        { label: "LinkedIn", name: "linkedin", value: socialLinks.linkedin, onChange: (e) => setSocialLinks({ ...socialLinks, linkedin: e.target.value }), icon: <LinkedIn /> },
+        { label: "YouTube", name: "youtube", value: socialLinks.youtube, onChange: (e) => setSocialLinks({ ...socialLinks, youtube: e.target.value }), icon: <YouTube /> },
+        { label: "TikTok", name: "tiktok", value: socialLinks.tiktok, onChange: (e) => setSocialLinks({ ...socialLinks, tiktok: e.target.value }), icon: <X /> },
     ];
 
     return (

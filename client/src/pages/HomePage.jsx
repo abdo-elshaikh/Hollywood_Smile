@@ -1,33 +1,36 @@
 import React from 'react';
-import NotificationSection from '../components/home/NotificationSection';
+import { Box } from '@mui/material';
+import { useTranslation } from 'react-i18next';
+
 import TopbarSection from '../components/home/TopbarSection';
+import NotificationSection from '../components/home/NotificationSection';
 import HeaderSection from '../components/home/HeaderSection';
+
 import HeroSection from '../components/home/HeroSection';
+import VideoSection from '../components/home/VideoSection';
 import AboutSection from '../components/home/AboutSection';
-import AppointmentSection from '../components/home/AppointmentSection';
+
+import DetectBookingSection from '../components/home/DetectBookingSection';
 import ServicesSection from '../components/home/ServicesSection';
-import MeetOurDentists from '../components/home/MeetOurDentists';
+import AppointmentSection from '../components/home/AppointmentSection';
+
 import TeamSection from '../components/home/TeamSection';
-import AchievementsSection from '../components/home/AchievementsSection';
-import PricingSection from '../components/home/PricingSection';
-import NewsletterSection from '../components/home/NewsletterSection';
 import TestimonySection from '../components/home/TestimonySection';
+import BeforeAfterGallery from '../components/home/BeforeAfterGallery';
+import AchievementsSection from '../components/home/AchievementsSection';
+
+import NewsletterSection from '../components/home/NewsletterSection';
+import PricingSection from '../components/home/PricingSection';
+import OffersSection from '../components/home/OffersSection';
+import FAQSection from '../components/home/FAQSection';
+
 import GallerySection from '../components/home/GallerySection';
 import BlogSection from '../components/home/BlogSection';
 import ContactSection from '../components/home/ContactSection';
 import MapLocationSection from '../components/home/MapLocationSection';
-import FAQSection from '../components/home/FAQSection';
-import OffersSection from '../components/home/OffersSection';
-import FooterSection from '../components/home/FooterSection';
-import BeforeAfterGallery from '../components/home/BeforeAfterGallery';
-import SmileLoveCare from '../components/home/SmileLoveCare';
-import ClientTestimonial from '../components/home/ClientTestimonial';
-import DetectBookingSection from '../components/home/DetectBookingSection';
+
 import Footer from '../components/home/Footer';
 import ScrollToTopButton from '../components/common/ScrollToTopButton';
-import { Box } from '@mui/material';
-import { useTranslation } from 'react-i18next';
-import VideoSection from '../components/home/VideoSection';
 
 const HomePage = () => {
   const { i18n } = useTranslation();
@@ -39,24 +42,39 @@ const HomePage = () => {
         direction: isRtl ? 'rtl' : 'ltr',
       }}
     >
+      {/* Top Navigation */}
       <HeaderSection />
-      <VideoSection />
+
+      {/* Hero & Introduction */}
       {/* <HeroSection /> */}
+      <VideoSection />
       <NotificationSection />
       <AboutSection />
+
+      {/* Core Functionalities */}
       <DetectBookingSection />
       <ServicesSection />
+      {/* <AppointmentSection /> */}
+
+      {/* Trust & Social Proof */}
       <TeamSection />
-      <NewsletterSection />
-      <PricingSection />
-      <AchievementsSection />
-      <TestimonySection />
-      <GallerySection />
-      <FAQSection />
-      <BlogSection />
-      <ContactSection />
       <BeforeAfterGallery />
+      <TestimonySection />
+      <AchievementsSection />
+
+      {/* Engagement & Offers */}
+      <PricingSection />
+      {/* <OffersSection /> */}
+      <NewsletterSection />
+      <FAQSection />
+
+      {/* Additional Content */}
+      <GallerySection />
+      <ContactSection />
+      <BlogSection />
       <MapLocationSection />
+
+      {/* Footer & Extras */}
       <Footer />
       <ScrollToTopButton />
     </Box>

@@ -48,6 +48,7 @@ import ImageDetailsPage from './pages/ImageDetailsPage';
 import ServicesPage from './pages/ServicesPage';
 import ViewProfile from './pages/ViewProfile';
 import ProfilePage from './pages/ProfilePage';
+import BeforeAfterPage from './pages/BeforeAfterPage';
 import ClientBookings from './pages/ClientBookings';
 import Error404Page from './pages/404Page';
 import NotFoundPage from './pages/NotFoundPage';
@@ -82,6 +83,7 @@ const ScrollToTop = () => {
     '/services': { ar: 'الخدمات | مركز هوليود سمايل', en: 'Services | Hollywood Smile Center' },
     '/view-profile': { ar: 'عرض الملف الشخصي | مركز هوليود سمايل', en: 'View Profile | Hollywood Smile Center' },
     '/client-bookings': { ar: 'حجوزات العملاء | مركز هوليود سمايل', en: 'Client Bookings | Hollywood Smile Center' },
+    '/before-after': { ar: 'قبل وبعد | مركز هوليود سمايل', en: 'Before & After | Hollywood Smile Center' },
     '/rate-doctor': { ar: 'تقييم الدكتور | مركز هوليود سمايل', en: 'Rate Doctor | Hollywood Smile Center' },
     '/not-found': { ar: 'الصفحة غير موجودة | مركز هوليود سمايل', en: 'Page Not Found | Hollywood Smile Center' },
     '/unauthorized': { ar: 'غير مصرح لك | مركز هوليود سمايل', en: 'Unauthorized | Hollywood Smile Center' },
@@ -160,6 +162,7 @@ const App = () => {
             <Route path="/faq" element={<FaqPage />} />
             <Route path="/contact-us" element={<ContactUsPage />} />
             <Route path="/doctors" element={<DoctorsPage />} />
+            <Route path="/before-after" element={<BeforeAfterPage />} />
             <Route path="/doctors/:id" element={<ViewProfile />} />
             <Route path="/rate-doctor/:id" element={<RateDoctorPage />} />
             <Route path="/gallery" element={<GalleryPage />} />

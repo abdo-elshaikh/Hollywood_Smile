@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {
     Box, Container, Typography, Button, Grid, Dialog, DialogActions, DialogContent, DialogTitle,
-    TextField, Divider, Accordion, AccordionSummary, AccordionDetails, Modal
+    TextField, Divider, Accordion, AccordionSummary, AccordionDetails, Modal, Card
 } from '@mui/material';
-import { Close, ExpandMore as ExpandMoreIcon, KeyboardArrowRight } from '@mui/icons-material';
+import { Close, ExpandMore as ExpandMoreIcon, KeyboardArrowRight, KeyboardArrowLeft, Refresh } from '@mui/icons-material';
 import { useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { format } from 'date-fns';
@@ -224,6 +224,13 @@ const BookingPage = () => {
         setOpenDialog(true);
     };
 
+    const resetBooking = () => {
+        setSelectedDate(dayjs());
+        setSelectedTime('');
+        setBookingData({ ...bookingData, date: new Date(), time: '' });
+        setPredefinedTimeSlots([]);
+    };
+
     return (
         <Box>
             <HeaderSection />
@@ -323,127 +330,186 @@ const BookingPage = () => {
                     borderRadius: 2,
                     border: '1px solid',
                     borderColor: isDark ? 'primary.main' : 'primary.light',
-                    boxShadow: 2,
-                }}>
-                {/* back button */}
-                <Button
-                    variant="text"
-                    startIcon={<KeyboardArrowRight sx={{ color: 'primary.main', mx: 1 }} />}
-                    onClick={() => navigate(-1)}
-                    sx={{ my: 2, color: 'primary.main' }}
-                >
-                    {isArabic ? 'العودة' : 'Back'}
-                </Button>
+                    boxShadow: 3,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 3,
+                }}
+            >
+                {/* back button and reset */}
+                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Button
+                        variant="contained"
+                        color="secondary"
+                        startIcon={isArabic ? <KeyboardArrowRight sx={{ mx: 1 }} /> : <KeyboardArrowLeft sx={{ mx: 1 }} />}
+                        onClick={() => navigate(-1)}
+                    >
+                        {isArabic ? 'العودة' : 'Back'}
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="error"
+                        startIcon={<Refresh sx={{ mx: 1 }} />}
+                        onClick={resetBooking}
+                    >
+                        {isArabic ? 'إعادة تعيين' : 'Reset'}
+                    </Button>
+                </Box>
+
                 <Grid container spacing={4}>
                     {/* Date */}
                     <Grid item xs={12} md={4}>
-                        <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1, color: 'primary.main' }}>
-                            {isArabic ? 'تاريخ الحجز' : 'Booking Date'} : {selectedDate ? selectedDate.format('DD/MM/YYYY') : ''}
-                        </Typography>
-                        <Divider sx={{ my: 1 }} />
-                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <DateCalendar
-                                defaultValue={dayjs()}
-                                value={selectedDate}
-                                onChange={(date) => handleDateSelection(new Date(date))}
-                                views={['year', 'month', 'day']}
-                                minDate={dayjs()}
-                                maxDate={dayjs().add(1, 'week')}
-                                sx={{ mt: 2, width: '100%', height: '100%' }}
-                                disablePast
-                                style={{
-                                    width: '100%',
-                                    height: '100%',
-                                    border: '1px solid',
-                                    borderColor: 'divider',
-                                    borderRadius: 2,
-                                    backgroundColor: isDark ? 'rgba(0, 0, 0, 0.5)' : 'rgba(255, 255, 255, 0.5)',
-                                }}
-                            />
-                        </LocalizationProvider>
+                        <Card
+                            sx={{
+                                p: 2,
+                                backgroundColor: isDark ? 'rgba(0, 0, 0, 0.5)' : 'rgba(255, 255, 255, 0.5)',
+                                borderRadius: 2,
+                                boxShadow: 1,
+                            }}
+                        >
+                            <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+                                {isArabic ? 'تاريخ الحجز' : 'Booking Date'} : {selectedDate ? selectedDate.format('DD/MM/YYYY') : ''}
+                            </Typography>
+                            <Divider sx={{ my: 1 }} />
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <DateCalendar
+                                    defaultValue={dayjs()}
+                                    value={selectedDate}
+                                    onChange={(date) => handleDateSelection(new Date(date))}
+                                    views={['year', 'month', 'day']}
+                                    minDate={dayjs()}
+                                    maxDate={dayjs().add(1, 'week')}
+                                    sx={{ mt: 2, width: '100%' }}
+                                    disablePast
+                                    style={{
+                                        '& .MuiPickersDay-day': {
+                                            color: 'primary.main',
+                                        },
+                                        '& .MuiPickersDay-daySelected': {
+                                            backgroundColor: 'primary.main',
+                                        },
+                                        '& .MuiPickersDay-dayDisabled': {
+                                            color: 'text.disabled',
+                                        },
+                                        backgroundColor: isDark ? 'rgba(0, 0, 0, 0.8)' : 'rgba(255, 255, 255, 0.8)',
+                                        borderRadius: '20px',
+                                        boxShadow: 'rgba(0, 0, 0, 0.1) 0px 5px 15px',
+                                    }}
+                                />
+                            </LocalizationProvider>
+                        </Card>
                     </Grid>
+
                     {/* Time */}
-                    <Grid item xs={12} md={4} sx={{ px: 2 }}>
-                        <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1, color: 'primary.main' }}>
-                            {isArabic ? 'وقت الحجز :' : 'Bookable Times :'} {selectedTime ? selectedTime : ''}
-                        </Typography>
-                        <Divider sx={{ my: 1 }} />
-                        <Grid container spacing={2} sx={{ mt: 2 }}>
-                            {predefinedTimeSlots.length > 0 ?
-                                predefinedTimeSlots.map((time, index) => (
-                                    <Grid item xs={4} key={index}>
-                                        <Button
-                                            variant="contained"
-                                            color={bookingData.time === time ? 'primary' : 'secondary'}
-                                            sx={{ width: '100%' }}
-                                            onClick={() => handleTimeSelection(time)} disabled={usableTime(time)}
-                                        >
-                                            {time}
-                                        </Button>
-                                    </Grid>
-                                )) : (
+                    <Grid item xs={12} md={4}>
+                        <Card
+                            sx={{
+                                p: 2,
+                                backgroundColor: isDark ? 'rgba(0, 0, 0, 0.5)' : 'rgba(255, 255, 255, 0.5)',
+                                borderRadius: 2,
+                                boxShadow: 1,
+                            }}
+                        >
+                            <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+                                {isArabic ? 'وقت الحجز :' : 'Bookable Times :'} {selectedTime ? selectedTime : ''}
+                            </Typography>
+                            <Divider sx={{ my: 1 }} />
+                            <Grid container spacing={2} sx={{ mt: 2 }}>
+                                {predefinedTimeSlots.length > 0 ? (
+                                    predefinedTimeSlots.map((time, index) => (
+                                        <Grid item xs={4} key={index}>
+                                            <Button
+                                                variant="contained"
+                                                color={bookingData.time === time ? 'primary' : 'secondary'}
+                                                sx={{ width: '100%' }}
+                                                onClick={() => handleTimeSelection(time)}
+                                                disabled={usableTime(time)}
+                                            >
+                                                {time}
+                                            </Button>
+                                        </Grid>
+                                    ))
+                                ) : (
                                     <Grid item xs={12}>
-                                        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%' }}>
+                                        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                                             <Typography variant="h6" color="textSecondary">
                                                 {isArabic ? 'لا توجد أوقات متاحة لهذا اليوم' : 'No available times for this day'}
                                             </Typography>
                                         </Box>
                                     </Grid>
                                 )}
-                        </Grid>
+                            </Grid>
+                        </Card>
                     </Grid>
-                    {/* service */}
+
+                    {/* Service */}
                     <Grid item xs={12} md={4}>
-                        <Accordion
-                            expanded={expanded}
-                            square
-                            disableGutters
-                            elevation={0}
-                            onChange={() => setExpanded(!expanded)}
-                            sx={{ backgroundColor: isDark ? 'rgba(0, 0, 0, 0.5)' : 'rgba(255, 255, 255, 0.5)', backdropFilter: 'blur(8px)', color: isDark ? 'white' : 'dark.main' }}
+                        <Card
+                            sx={{
+                                p: 2,
+                                backgroundColor: isDark ? 'rgba(0, 0, 0, 0.5)' : 'rgba(255, 255, 255, 0.5)',
+                                borderRadius: 2,
+                                boxShadow: 1,
+                            }}
                         >
-                            <AccordionSummary
-                                expandIcon={<ExpandMoreIcon />}
-                                aria-controls="panel1a-content"
-                                id="panel1a-header"
+                            <Accordion
+                                expanded={expanded}
+                                square
+                                disableGutters
                                 elevation={0}
+                                onChange={() => setExpanded(!expanded)}
+                                sx={{ backgroundColor: 'transparent', color: isDark ? 'white' : 'dark.main' }}
                             >
-                                <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
-                                    {isArabic ? 'الخدمة المحددة' : 'Selected Service'}
-                                </Typography>
-                            </AccordionSummary>
-                            <Divider />
-                            <AccordionDetails>
-                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, width: '100%' }}>
+                                <AccordionSummary
+                                    expandIcon={<ExpandMoreIcon />}
+                                    aria-controls="panel1a-content"
+                                    id="panel1a-header"
+                                >
                                     <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                                        {isArabic ? selectedService.title.ar : selectedService.title.en}
+                                        {isArabic ? 'الخدمة المحددة' : 'Selected Service'}
                                     </Typography>
-                                    <Typography variant="body1">
-                                        {isArabic ? selectedService.description.ar : selectedService.description.en}
-                                    </Typography>
-                                    <Typography variant="body1" sx={{ color: 'color.error' }}>
-                                        {isArabic ? 'تاريخ الحجز' : 'Booking Date'} : {selectedDate ? selectedDate.format('DD/MM/YYYY') : ''}
-                                    </Typography>
-                                    <Typography variant="body1" sx={{ color: 'info' }}>
-                                        {isArabic ? 'وقت الحجز' : 'Booking Time'} : {selectedTime}
-                                    </Typography>
-                                </Box>
-                            </AccordionDetails>
-                        </Accordion>
-                        <Box sx={{ mt: 2 }}>
-                            <Button
-                                variant="contained"
-                                color="error"
-                                onClick={handleClick}
-                                fullWidth
-                                disabled={loading}
-                            >
-                                {isArabic ? 'استكمل البيانات للحجز' : 'Complete Booking Data'}
-                            </Button>
-                        </Box>
+                                </AccordionSummary>
+                                <Divider />
+                                <AccordionDetails>
+                                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                                        <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                                            {isArabic ? selectedService.title.ar : selectedService.title.en}
+                                        </Typography>
+                                        <Typography variant="body1">
+                                            {isArabic ? selectedService.description.ar : selectedService.description.en}
+                                        </Typography>
+                                        <Typography variant="body1" sx={{ color: 'error.main' }}>
+                                            {isArabic ? 'تاريخ الحجز' : 'Booking Date'} : {selectedDate ? selectedDate.format('DD/MM/YYYY') : ''}
+                                        </Typography>
+                                        <Typography variant="body1" sx={{ color: 'info.main' }}>
+                                            {isArabic ? 'وقت الحجز' : 'Booking Time'} : {selectedTime}
+                                        </Typography>
+                                    </Box>
+                                </AccordionDetails>
+                            </Accordion>
+
+                            <Box sx={{ mt: 2 }}>
+                                <Button
+                                    variant="contained"
+                                    color="error"
+                                    onClick={handleClick}
+                                    fullWidth
+                                    disabled={loading}
+                                    sx={{
+                                        '&:hover': {
+                                            backgroundColor: 'error.main',
+                                            color: 'white',
+                                        },
+                                    }}
+                                >
+                                    {isArabic ? 'استكمل البيانات للحجز' : 'Complete Booking Data'}
+                                </Button>
+                            </Box>
+                        </Card>
                     </Grid>
                 </Grid>
             </Container>
+
 
             <InformationSection />
             <BeforeAfterGallery />

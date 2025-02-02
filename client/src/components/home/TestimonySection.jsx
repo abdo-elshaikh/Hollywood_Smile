@@ -25,8 +25,6 @@ const TestimonySection = () => {
     fetchTestimonials();
   }, []);
 
-
-
   const cardData = useMemo(() => {
     return testimonials.map((item) => ({
       id: item._id,
@@ -36,27 +34,25 @@ const TestimonySection = () => {
       imgUrl: item.imageUrl,
       rating: item.rating,
     }));
-  }, [testimonials, isArabic]);
-
+  }, [testimonials]);
 
   return (
-    <Container maxWidth="lg" sx={{ py: 10 }}>
-      {/* Section Header */}
+    <Container maxWidth="lg" sx={{ py: 5 }}>
       <Box textAlign="center" sx={{ mb: 8 }}>
-        <Typography variant="h3" sx={{ fontWeight: "bold", color: "primary.main", mb: 3 }}>
+        <Typography variant="h3" sx={{ fontWeight: "bold", mb: 3, color: "primary.main" }}>
           {t("testimonials.title")}
         </Typography>
-        <Typography variant="subtitle1" sx={{ color: "text.secondary", mb: 2 }}>
+        <Typography variant="subtitle1" sx={{ mb: 2 }}>
           {t("testimonials.description")}
         </Typography>
         <Box
           sx={{
-            textAlign: 'center',
-            mb: 2,
+            textAlign: "center",
+            mb: 4,
             width: 100,
-            borderBottom: '4px solid',
+            borderBottom: "4px solid",
             borderColor: 'primary.main',
-            margin: '0 auto',
+            margin: "0 auto",
           }}
         />
       </Box>
@@ -67,19 +63,14 @@ const TestimonySection = () => {
           spaceBetween={30}
           slidesPerView={2}
           slidesPerGroup={2}
-          breakpoints={{
-            0: {
-              slidesPerView: 1,
-              slidesPerGroup: 1,
-            },
-            768: {
-              slidesPerView: 2,
-              slidesPerGroup: 2,
-            },
-          }}
           loop={true}
           autoplay={{ delay: 5000 }}
           pagination={{ clickable: true }}
+          breakpoints={{
+            0: { type: 'bullets', slidesPerView: 1, slidesPerGroup: 1 },
+            600: { type: 'bullets', slidesPerView: 1, slidesPerGroup: 1 },
+            960: { type: 'bullets', slidesPerView: 2, slidesPerGroup: 2 },
+          }}
         >
           {cardData.map((item, index) => (
             <motion.div
@@ -88,7 +79,7 @@ const TestimonySection = () => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              <SwiperSlide key={item.id}>
+              <SwiperSlide>
                 <TestimonyCard
                   name={item.name}
                   position={item.position}
@@ -116,32 +107,31 @@ const TestimonyCard = ({ name, position, quote, imgUrl, rating, t, isArabic }) =
     <Box
       sx={{
         backgroundColor: "background.paper",
-        boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+        boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
         borderRadius: "12px",
         p: 4,
         mb: 8,
         mx: 2,
-        minHeight: 200,
+        minHeight: 250,
         textAlign: isArabic ? "right" : "left",
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
         ":hover": {
           transform: "translateY(-5px)",
-          boxShadow: "0px 6px 15px rgba(0, 0, 0, 0.15)",
+          boxShadow: "0px 6px 18px rgba(0, 0, 0, 0.15)",
           transition: "all 0.3s ease-in-out",
         },
       }}
     >
-      {/* User Info */}
       <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
         <Avatar
           src={imgUrl}
           alt={name}
           sx={{
-            width: 80,
-            height: 80,
-            border: "3px solid",
+            width: 90,
+            height: 90,
+            border: "4px solid",
             borderColor: "primary.main",
             mr: isArabic ? 0 : 2,
             ml: isArabic ? 2 : 0,
@@ -154,16 +144,10 @@ const TestimonyCard = ({ name, position, quote, imgUrl, rating, t, isArabic }) =
           <Typography variant="subtitle2" sx={{ color: "text.secondary" }}>
             {position}
           </Typography>
-          <Rating
-            value={rating}
-            readOnly
-            precision={0.5}
-            sx={{ mt: 1, color: "primary.main" }}
-          />
+          <Rating value={rating} readOnly precision={0.5} sx={{ mt: 1, color: "primary.main" }} />
         </Box>
       </Box>
 
-      {/* Testimonial Quote */}
       <Typography
         variant="body1"
         sx={{

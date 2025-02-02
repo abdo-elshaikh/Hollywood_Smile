@@ -47,7 +47,7 @@ const ServicesSection = () => {
 
     return (
         <Box sx={{ py: 10 }}>
-            <Container sx={{ py: 10, textAlign: 'center' }}>
+            <Container sx={{ py: 5, textAlign: 'center' }}>
                 {/* Section Title */}
                 <motion.div
                     initial={{ opacity: 0, y: -30 }}

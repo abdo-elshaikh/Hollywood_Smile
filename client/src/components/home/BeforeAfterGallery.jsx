@@ -9,27 +9,22 @@ import {
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import ReactCompareImage from 'react-compare-image';
 import axiosInstance from '../../services/axiosInstance';
 
 const BeforeAfterGallery = () => {
   const { t } = useTranslation();
   const theme = useTheme();
+  const navigate = useNavigate();
   const [data, setData] = useState([]);
-  const [visibleCount, setVisibleCount] = useState(3);
-  const [showAll, setShowAll] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-
-  const handleToggleView = () => {
-    setVisibleCount(showAll ? 3 : data.length);
-    setShowAll(!showAll);
-  };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const res = await axiosInstance.get('/before-after');
-        setData(res.data);
+        setData(res.data.slice(-4)); // Get the last 4 patients
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
@@ -91,12 +86,12 @@ const BeforeAfterGallery = () => {
         </Box>
       ) : (
         <Grid container spacing={4} sx={{ justifyContent: 'center', mt: 4 }}>
-          {data.slice(0, visibleCount).map((patient, index) => (
+          {data.map((patient, index) => (
             <Grid
               item
               xs={12}
               sm={6}
-              md={4}
+              md={3}
               key={index}
               component={motion.div}
               initial={{ opacity: 0, y: 50 }}
@@ -107,7 +102,7 @@ const BeforeAfterGallery = () => {
                 sx={{
                   position: 'relative',
                   overflow: 'hidden',
-                  borderRadius: 2,
+                  // borderRadius: 2,
                   boxShadow: 3,
                   transition: 'box-shadow 0.3s',
                   '&:hover': { boxShadow: 6 },
@@ -130,51 +125,44 @@ const BeforeAfterGallery = () => {
                   skeleton={<CircularProgress />}
                 />
               </Box>
-              <Box
-                sx={{
-                  mt: 2,
-                  px: 2,
-                  py: 1,
-                  backgroundColor: 'primary.light',
-                  borderRadius: 2,
-                  textAlign: 'center',
-                  boxShadow: 1,
-                }}
-              >
-                <Typography
-                  variant="h6"
-                  color="white"
-                  sx={{ fontWeight: 'bold', mb: 1 }}
-                >
-                  {patient.title}
-                </Typography>
-              </Box>
             </Grid>
           ))}
         </Grid>
       )}
 
-      {/* Toggle Button */}
-      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 6 }}>
+      <Typography
+        variant="h6"
+        sx={{
+          mt: 2,
+          textAlign: 'center',
+          fontWeight: 'bold',
+          color: theme.palette.primary.main,
+        }}
+      >
+        {t('BeforeAfterGallery.extraInfo')}
+      </Typography>
+
+      {/* View More Button */}
+      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
         <Button
           variant="contained"
           color="primary"
-          onClick={handleToggleView}
+          onClick={() => navigate('/before-after')}
           size="large"
           sx={{
             px: 4,
             py: 1.5,
-            fontSize: "1rem",
-            fontWeight: "bold",
-            textTransform: "uppercase",
+            fontSize: '1rem',
+            fontWeight: 'bold',
+            textTransform: 'uppercase',
             borderRadius: 50,
-            background: "linear-gradient(90deg, #2196F3, #21CBF3)",
-            "&:hover": {
-              background: "linear-gradient(90deg, #21CBF3, #2196F3)",
+            background: 'linear-gradient(90deg, #2196F3, #21CBF3)',
+            '&:hover': {
+              background: 'linear-gradient(90deg, #21CBF3, #2196F3)',
             },
           }}
         >
-          {showAll ? t('BeforeAfterGallery.viewLess') : t('BeforeAfterGallery.viewMore')}
+          {t('BeforeAfterGallery.viewMore')}
         </Button>
       </Box>
     </Box>
