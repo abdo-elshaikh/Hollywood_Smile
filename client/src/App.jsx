@@ -58,6 +58,7 @@ import LoadingSpinner from './components/common/LoadingSpinner';
 import ErrorBoundary from './components/common/ErrorBoundary';
 import RateDoctorPage from './pages/RateDoctorPage';
 import PrivateRoute from './components/PrivateRoute';
+import OfferPopup from './components/common/OfferPopup';
 
 import { Box } from '@mui/material';
 import './i18n';
@@ -132,6 +133,7 @@ const App = () => {
     <Router>
       <ErrorBoundary>
         <ScrollToTop />
+        <OfferPopup />
         <Box
           component="main"
           sx={{ overflowX: 'hidden' }}
