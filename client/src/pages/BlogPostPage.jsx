@@ -125,35 +125,21 @@ const BlogPostPage = () => {
     return (
         <>
             <HeaderSection />
+            {/* Blog Post Header */}
             <Box
                 sx={{
-                    background: mode === 'dark'
-                        ? 'linear-gradient(45deg, #333, #222)'
-                        : 'linear-gradient(135deg, #C9E6F0, #f5f5f5)',
-                    py: 8,
-                    borderBottom: `1px solid ${mode === 'dark' ? '#555' : '#ccc'}`,
+                    backgroundColor: mode === 'dark' ? '#333' : '#f4f4f4',
+                    color: mode === 'dark' ? '#fff' : '#333',
                     textAlign: 'center',
+                    py: 16,
+
                 }}
             >
-                <Container maxWidth="md">
-                    <Typography
-                        variant="h3"
-                        sx={{
-                            fontWeight: 'bold',
-                            color: mode === 'dark' ? '#FFD700' : '#1976d2',
-                            mb: 1,
-                            fontFamily: 'Poppins, sans-serif',
-                        }}
-                    >
-                        {isArabic ? 'المدونات' : 'Blog Post'}
+                <Container>
+                    <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
+                        {isArabic ? 'المدونة' : 'Blog Post'}
                     </Typography>
-                    <Typography
-                        variant="h6"
-                        sx={{
-                            color: mode === 'dark' ? '#bbb' : '#333',
-                            fontFamily: 'Roboto, sans-serif',
-                        }}
-                    >
+                    <Typography variant="h6" sx={{ mt: 2 }}>
                         {blog.title}
                     </Typography>
                 </Container>
@@ -163,9 +149,8 @@ const BlogPostPage = () => {
                 {/* Blog Post Section */}
                 <Grid item xs={12} md={8}>
                     <Box sx={{ maxWidth: 'lg', mx: 'auto', px: 2, py: 4 }}>
-
                         {/* Blog Content */}
-                        <Paper elevation={1} sx={{ p: 3, borderRadius: 2 }}>
+                        <Paper elevation={1} sx={{ p: 3 }}>
                             {/* Author Info */}
                             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                                 <Avatar src={blog.author?.avatarUrl} alt={blog.author?.name} sx={{ width: 50, height: 50 }} />
@@ -256,33 +241,20 @@ const BlogPostPage = () => {
 
                 {/* Sidebar Section */}
                 <Grid item xs={12} md={4}>
-                    <Paper sx={{ p: 3, height: '100%' }}>
-                        <Typography
-                            variant="h6"
-                            sx={{
-                                fontWeight: 'bold',
-                                color: mode === 'dark' ? '#FFD700' : '#1976d2',
-                                mb: 3,
-                            }}
-                        >
-                            {t('Explore More')}
+                    <Box sx={{ mx: 'auto', px: 2, py: 6 }}>
+                        <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 2 }}>
+                            {isArabic ? 'أحدث المدونات' : 'Latest Blogs'}
                         </Typography>
-                        {/* More content can be added here */}
-                        <Box sx={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            gap: 2,
-                        }}>
-                            {latestBlogs.map((index, item) => (
-                                <Box key={item.id} sx={{ cursor: 'pointer' }} onClick={() => navigate(`/blog/${item.id}`)}>
-                                    <Typography variant="subtitle1">{item.title}</Typography>
-                                    <Typography variant="subtitle2" color="text.secondary">
-                                        {new Date(item.date).toLocaleString()}
-                                    </Typography>
-                                </Box>
-                            ))}
-                        </Box>
-                    </Paper>
+                        <Divider sx={{ mb: 2 }} />
+                        {latestBlogs.map((item) => (
+                            <Box key={item.id} sx={{ mb: 2, cursor: 'pointer' }} onClick={() => navigate(`/blog/${item._id}`)}>
+                                <Typography variant="subtitle1">{item.title}</Typography>
+                                <Typography variant="subtitle2" color="text.secondary">
+                                    {new Date(item.date).toLocaleString()}
+                                </Typography>
+                            </Box>
+                        ))}
+                    </Box>
                 </Grid>
             </Grid>
 
