@@ -37,7 +37,8 @@ const PricingSection = () => {
     const fetchOffers = useCallback(async () => {
         try {
             const response = await axiosInstance.get("/offers");
-            setOffers(response.data);
+            const offers = response.data.filter((offer) => offer.showInHome && new Date(offer.expiryDate) > Date.now());
+            setOffers(offers);
         } catch (error) {
             console.error("Error fetching offers:", error);
             setError(t("common.fetchError"));

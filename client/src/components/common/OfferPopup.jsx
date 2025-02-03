@@ -78,7 +78,7 @@ const OfferPopup = () => {
         try {
             const res = await axiosInstance.get('/offers');
             if (res.data.length > 0) {
-                setOffers(res.data);
+                setOffers(res.data.filter((offer) => new Date(offer.expiryDate) > Date.now()));
                 setCurrentIndex(0);
             }
         } catch (error) {

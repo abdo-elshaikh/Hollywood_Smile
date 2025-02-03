@@ -72,7 +72,10 @@ const HeaderSection = () => {
         document.body.dir = isArabic ? 'ltr' : 'rtl';
         closeMobileMenu();
     };
-    const handleThemeToggle = () => toggleMode();
+    const handleThemeToggle = () => {
+        toggleMode();
+        closeMobileMenu();
+    };
 
     const handleAdminMenuClick = (event) => {
         setAdminMenuAnchor(event.currentTarget);
