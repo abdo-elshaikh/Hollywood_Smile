@@ -59,7 +59,7 @@ const SocialPopup = () => {
         if (open) {
             const timeoutId = setTimeout(() => {
                 setOpen(false);
-            }, 7000);
+            }, 10000);
             return () => clearTimeout(timeoutId);
         }
     }, [open]);
@@ -69,16 +69,16 @@ const SocialPopup = () => {
             sx={{
                 position: "fixed",
                 bottom: 100,
-                right: 10,
+                left: 25,
                 zIndex: 1000,
             }}
         >
             {/* Social Links Button */}
             <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 0.5 }}
                 transition={{ duration: 0.5, type: "spring", stiffness: 260, damping: 20 }}
-                whileHover={{ scale: 1.03 }}
+                whileHover={{ scale: 1.03, opacity: 0.9 }}
                 whileTap={{ scale: 0.9, rotate: 360 }}
             >
                 <IconButton

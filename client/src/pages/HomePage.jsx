@@ -31,6 +31,7 @@ import MapLocationSection from '../components/home/MapLocationSection';
 import Footer from '../components/home/Footer';
 import ScrollToTopButton from '../components/common/ScrollToTopButton';
 import SocialPopup from '../components/common/SocialPopup';
+import OfferPopup from '../components/common/OfferPopup';
 
 const HomePage = () => {
   const { i18n } = useTranslation();
@@ -76,6 +77,7 @@ const HomePage = () => {
       <Footer />
       <ScrollToTopButton />
       <SocialPopup />
+      <OfferPopup />
     </Box>
   );
 };

@@ -108,6 +108,11 @@ const BookingPage = () => {
     };
 
     useEffect(() => {
+        fetchBookings();
+        fetchServices();
+    }, [id]);
+
+    useEffect(() => {
         const interval = setInterval(() => {
             const now = new Date();
             const currentDay = format(now, 'eeee').toLowerCase().replace(/(monday|tuesday|wednesday|thursday|friday|saturday|sunday)/, (m) => t(`days.${m}`));
@@ -140,11 +145,6 @@ const BookingPage = () => {
             console.error('Failed to fetch service:', error);
         }
     };
-
-    useEffect(() => {
-        fetchBookings();
-        fetchServices();
-    }, []);
 
     const usableTime = (time) => {
         if (!selectedDate) return false;
