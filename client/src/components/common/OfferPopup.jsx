@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Typography, Button, IconButton, Slide, Fade, Divider } from '@mui/material';
+import React, { useState, useEffect, useRef } from 'react';
+import { Box, Typography, Button, IconButton, Slide, Fade, Divider, useTheme, useMediaQuery } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { styled } from '@mui/system';
 import axiosInstance from '../../services/axiosInstance';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
-const PopupContainer = styled(Box)(({ theme }) => ({
+const PopupContainer = styled(Box)(({ theme, isMobile }) => ({
     position: 'fixed',
-    bottom: 20,
-    right: 20,
-    width: 320,
-    maxWidth: '90%',
+    bottom: isMobile ? 10 : 20,
+    right: isMobile ? 10 : 20,
+    width: isMobile ? 'calc(100% - 100px)' : 300,
+    maxWidth: '95%',
     backgroundColor: theme.palette.background.paper,
     color: theme.palette.text.primary,
     boxShadow: '0 6px 18px rgba(0,0,0,0.3)',
@@ -21,6 +21,7 @@ const PopupContainer = styled(Box)(({ theme }) => ({
     flexDirection: 'column',
     alignItems: 'center',
     zIndex: 1100,
+    touchAction: 'pan-y', // Ensure vertical scrolling is not blocked
 }));
 
 const OfferPopup = () => {
@@ -31,10 +32,11 @@ const OfferPopup = () => {
     const { t, i18n } = useTranslation();
     const EN = i18n.language === 'en';
     const navigate = useNavigate();
-
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    const touchStartX = useRef(null); // Track touch start position
 
     useEffect(() => {
-
         fetchOffers();
 
         // Auto open popup after 5 seconds for the first time
@@ -98,12 +100,47 @@ const OfferPopup = () => {
         navigate(`/booking/${offerId}`);
     };
 
+    const handleTouchStart = (e) => {
+        touchStartX.current = e.touches[0].clientX; // Record the initial touch position
+    };
+
+    const handleTouchEnd = (e) => {
+        if (touchStartX.current === null) return;
+
+        const touchEndX = e.changedTouches[0].clientX; // Record the final touch position
+        const deltaX = touchEndX - touchStartX.current; // Calculate the horizontal distance
+
+        if (Math.abs(deltaX) > 50) { // Minimum swipe distance threshold
+            if (deltaX > 0) {
+                // Swipe right: go to the previous offer
+                setFade(false);
+                setTimeout(() => {
+                    setCurrentIndex((prevIndex) => (prevIndex - 1 + offers.length) % offers.length);
+                    setFade(true);
+                }, 200);
+            } else {
+                // Swipe left: go to the next offer
+                setFade(false);
+                setTimeout(() => {
+                    setCurrentIndex((prevIndex) => (prevIndex + 1) % offers.length);
+                    setFade(true);
+                }, 200);
+            }
+        }
+
+        touchStartX.current = null; // Reset the touch start position
+    };
+
     const currentOffer = offers[currentIndex];
 
     return (
         <Slide direction="up" in={open} mountOnEnter unmountOnExit>
             <Fade in={fade}>
-                <PopupContainer>
+                <PopupContainer
+                    isMobile={isMobile}
+                    onTouchStart={handleTouchStart}
+                    onTouchEnd={handleTouchEnd}
+                >
                     <IconButton
                         onClick={handleClose}
                         sx={{ position: 'absolute', top: 5, right: 5 }}
@@ -127,7 +164,7 @@ const OfferPopup = () => {
                                     src={currentOffer.imageUrl}
                                     alt="Offer"
                                     loading="lazy"
-                                    style={{ width: '100%', borderRadius: 8, objectFit: 'cover' }}
+                                    style={{ width: '100%', borderRadius: 8, objectFit: 'cover', objectPosition: 'center' }}
                                 />
                             </Box>
                             <Button
