@@ -97,6 +97,9 @@ const ManageClinicPage = () => {
     };
 
     const updateClinicInfo = async (data) => {
+        formData.openHours = openHours;
+        formData.onlineTimes = onlineTimes;
+        formData.socialLinks = socialLinks;
         try {
             const response = await axiosInstance.put("/clinics", data);
             setClinicInfo(response.data);
@@ -104,7 +107,6 @@ const ManageClinicPage = () => {
             console.error("Error updating clinic info:", error);
         }
     };
-
 
     const handleChange = (e, lang = '') => {
         const { name, value } = e.target;

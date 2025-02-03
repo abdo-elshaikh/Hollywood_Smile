@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Box, IconButton, Tooltip, Fade, Stack } from "@mui/material";
-import { Facebook, Instagram, Twitter, LinkedIn, Public, Close } from "@mui/icons-material";
+import { Facebook, Instagram, Twitter, LinkedIn, Public, Close, YouTube } from "@mui/icons-material";
 import { motion } from "framer-motion";
 import { useClinicContext } from '../../contexts/ClinicContext';
 
@@ -40,6 +40,13 @@ const SocialPopup = () => {
             backgroundColor: "#0077B5",
             hoverColor: "rgba(0, 119, 181, 0.9)",
         },
+        {
+            title: "YouTube",
+            icon: <YouTube />,
+            href: socialLinks?.youtube || "https://youtube.com",
+            backgroundColor: "#FF0000",
+            hoverColor: "rgba(255, 0, 0, 0.9)",
+        }
     ];
 
     // Toggle the popup state
@@ -71,7 +78,7 @@ const SocialPopup = () => {
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ duration: 0.5, type: "spring", stiffness: 260, damping: 20 }}
-                whileHover={{ scale: 1.1 }}
+                whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.9, rotate: 360 }}
             >
                 <IconButton
@@ -85,7 +92,7 @@ const SocialPopup = () => {
                         border: "1px solid",
                         borderColor: "divider",
                         color: "white",
-                        "&:hover": { backgroundColor: "background.paper" },
+                        "&:hover": { backgroundColor: "background.paper", color: "primary.main" },
                     }}
                 >
                     {open ? <Close /> : <Public />}
