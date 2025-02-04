@@ -139,11 +139,11 @@ const HeaderSection = () => {
                             <Typography
                                 color='primary'
                                 fontWeight="bold"
-                                sx={{ fontSize: 18, lineHeight: 1.2, letterSpacing: 1 }}
+                                sx={{ fontSize: 18, lineHeight: 1.2, letterSpacing: 1, fontFamily: '"Cairo Play", serif' }}
                             >
                                 {isArabic ? clinicInfo?.name.ar : clinicInfo?.name.en}
                             </Typography>
-                            <Typography variant="body2" color="text.secondary" >
+                            <Typography variant="body2" color="text.secondary" fontWeight={'bold'} fontFamily={'"Fustat", serif'} >
                                 {isArabic ? clinicInfo?.subtitle.ar : clinicInfo?.subtitle.en}
                             </Typography>
                         </Box>
