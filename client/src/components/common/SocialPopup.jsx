@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Box, IconButton, Tooltip, Fade, Stack } from "@mui/material";
-import { Facebook, Instagram, Twitter, LinkedIn, Public, Close, YouTube } from "@mui/icons-material";
+import { Facebook, Instagram, Twitter, LinkedIn, Public, Close, YouTube, Share } from "@mui/icons-material";
 import { motion } from "framer-motion";
 import { useClinicContext } from '../../contexts/ClinicContext';
 
@@ -95,7 +95,7 @@ const SocialPopup = () => {
                         "&:hover": { backgroundColor: "background.paper", color: "primary.main" },
                     }}
                 >
-                    {open ? <Close /> : <Public />}
+                    {open ? <Close /> : <Share />}
                 </IconButton>
             </motion.div>
 
