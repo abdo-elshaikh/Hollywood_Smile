@@ -73,10 +73,10 @@ const BookingPage = () => {
             const data = response.data;
             console.log('bokking data', data);
             if (data.success) {
+                await handleAddNotification(data);
                 showSnackBar(isArabic ? 'تم حجز الموعد بنجاح' : 'Appointment booked successfully.', 'success');
                 setOpenDialog(false);
                 setSuccess(true);
-                handleAddNotification(data);
             } else {
                 showSnackBar(isArabic ? 'حدث خطأ أثناء الحجز' : 'Error occurred during booking.', 'error');
             }
