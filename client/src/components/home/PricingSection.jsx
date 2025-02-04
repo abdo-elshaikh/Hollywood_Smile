@@ -19,7 +19,6 @@ import { useClinicContext } from "../../contexts/ClinicContext";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../services/axiosInstance";
 import { useCustomTheme } from "../../contexts/ThemeProvider";
-import { getOffers } from "../../../../server/controllers/offersController";
 
 const PricingSection = () => {
     const { t, i18n } = useTranslation();
