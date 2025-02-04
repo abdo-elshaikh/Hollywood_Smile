@@ -10,12 +10,14 @@ import MainHeaderPages from '../components/common/MainHeaderPages';
 import ScrollToTopButton from '../components/common/ScrollToTopButton';
 import OffersSection from '../components/home/OffersSection';
 import axiosInstance from '../services/axiosInstance';
+import { useSnackbar } from '../contexts/SnackbarProvider';
 
 const ContactUsPage = () => {
     const { t, i18n } = useTranslation();
     const isArabic = i18n.language === 'ar';
     const { clinicInfo } = useClinicContext();
     const [testimonials, setTestimonials] = useState([]);
+    const showSnackbar = useSnackbar();
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -34,22 +36,24 @@ const ContactUsPage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!formData.name || !formData.phone || !formData.message) {
-            alert(t('contactUs.requiredFields'));
+            showSnackbar(t('ContactSection.validationMessage'), 'error');
             return;
         }
 
         try {
-            await axiosInstance.post('/contact', formData);
-            alert(t('contactUs.successMessage'));
-            setFormData({
-                name: '',
-                email: '',
-                phone: '',
-                message: '',
-            });
+            const response = await axiosInstance.post('/messages', formData);
+            if (response.status === 201) {
+                showSnackbar(t('ContactSection.successMessage'), 'success');
+                setFormData({
+                    name: '',
+                    email: '',
+                    phone: '',
+                    message: '',
+                });
+            }
         } catch (error) {
             console.error('Error submitting contact form:', error);
-            alert(t('contactUs.errorMessage'));
+            showSnackbar(t('ContactSection.errorMessage'), 'error');
         }
     };
 

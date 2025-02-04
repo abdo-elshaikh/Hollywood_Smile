@@ -43,7 +43,6 @@ const TopbarSection = ({ clinicinfo }) => {
         <Box
             sx={{
                 display: { xs: "none", md: 'block' },
-                backgroundColor: 'background.default',
                 boxShadow: 1,
                 borderBottom: isDark ? '1px solid #092635' : '1px solid #ddd',
                 height: 60,
