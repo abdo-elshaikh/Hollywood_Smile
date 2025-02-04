@@ -45,8 +45,10 @@ const TopbarSection = ({ clinicinfo }) => {
                 display: { xs: "none", md: 'block' },
                 backgroundColor: 'background.default',
                 boxShadow: 1,
-                borderBottom: isDark ? '1px solid #333' : '1px solid #ddd',
+                borderBottom: isDark ? '1px solid #092635' : '1px solid #ddd',
                 height: 60,
+                backdropFilter: 'blur(10px)',
+                backgroundColor: isDark ? 'rgba(0, 0, 0, 0.8)' : 'rgba(255, 255, 255, 0.8)',
             }}
         >
             <Grid container justifyContent="space-between" alignItems="center">
@@ -57,7 +59,7 @@ const TopbarSection = ({ clinicinfo }) => {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.6 }}
                     >
-                        <Box display="flex" alignItems="center" justifyContent="flex-start">
+                        <Box display="flex" alignItems="center" justifyContent="flex-start"  p={1}>
                             <AccessTimeIcon color="primary" sx={{ mx: 2, fontSize: 25 }} />
                             <Typography variant="body2" color="textSecondary" sx={{ fontWeight: 'bold' }}>
                                 {isArabic ? 'من السبت إلى الخميس من 10 صباحًا حتى 10 مساءً | الجمعه من 3 مساءً' : 'Saturday - Thursday 10:00 AM - 10:00 PM | Friday 3:00 PM'}
@@ -68,9 +70,9 @@ const TopbarSection = ({ clinicinfo }) => {
 
                 {/* Right Section */}
                 <Grid item xs={12} md={6} sx={{ position: "relative", height: 60, overflow: 'hidden' }}>
-                    <Box sx={triangleStyles(100, isDark ? '#555' : '#EEF5FF', 2)} />
-                    <Box sx={triangleStyles(95, isDark ? '#333' : '#B4D4FF', 3)} />
-                    <Box sx={triangleStyles(90, isDark ? '#222' : '#86B6F6', 4)} />
+                    <Box sx={triangleStyles(100, isDark ? '#9EC8B9' : '#EEF5FF', 2)} />
+                    <Box sx={triangleStyles(95, isDark ? '#5C8374' : '#B4D4FF', 3)} />
+                    <Box sx={triangleStyles(90, isDark ? '#1B4242' : '#86B6F6', 4)} />
 
                     <Box
                         sx={{
