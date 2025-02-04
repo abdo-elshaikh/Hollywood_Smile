@@ -120,7 +120,7 @@ const PricingSection = () => {
                             variant="contained"
                             color="primary"
                             sx={{ mt: 3, width: "100%" }}
-                            onClick={() => navigate(`/services/${plan.serviceId}`)}
+                            onClick={() => navigate(`/booking/${plan.serviceId}`)}
                             aria-label={EN ? "Book Now" : "احجز الآن"}
                         >
                             {EN ? "Book Now" : "احجز الآن"}
