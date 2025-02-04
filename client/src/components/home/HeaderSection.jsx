@@ -143,7 +143,7 @@ const HeaderSection = () => {
                             >
                                 {isArabic ? clinicInfo?.name.ar : clinicInfo?.name.en}
                             </Typography>
-                            <Typography variant="body2" color="text.secondary" fontWeight={'bold'} fontFamily={'"Fustat", serif'} >
+                            <Typography variant="body2" color="text.secondary" fontWeight={'bold'} fontFamily={'"Fustat", serif'}>
                                 {isArabic ? clinicInfo?.subtitle.ar : clinicInfo?.subtitle.en}
                             </Typography>
                         </Box>
