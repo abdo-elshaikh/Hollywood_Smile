@@ -9,7 +9,7 @@ import Confetti from 'react-confetti';
 const SuccessMessage = ({ name, phone, date, time }) => {
     const { t } = useTranslation();
     const navigate = useNavigate();
-    const theme = useTheme(); // Access the theme for consistent styling
+    const theme = useTheme();
     const [seconds, setSeconds] = useState(20);
     const [showConfetti, setShowConfetti] = useState(true);
 
@@ -33,6 +33,19 @@ const SuccessMessage = ({ name, phone, date, time }) => {
     // Format countdown to show minutes:seconds
     const formattedCountdown = `${Math.floor(seconds / 60)}:${(seconds % 60).toString().padStart(2, '0')}`;
 
+    // Animation variants for Framer Motion
+    const iconAnimation = {
+        initial: { scale: 0.8, opacity: 0 },
+        animate: { scale: 1, opacity: 1 },
+        transition: { duration: 0.6, ease: 'easeOut' },
+    };
+
+    const textAnimation = (delay) => ({
+        initial: { opacity: 0, y: 15 },
+        animate: { opacity: 1, y: 0 },
+        transition: { delay, duration: 0.6, ease: 'easeOut' },
+    });
+
     return (
         <>
             {/* Confetti Animation */}
@@ -42,6 +55,7 @@ const SuccessMessage = ({ name, phone, date, time }) => {
                     height={window.innerHeight}
                     recycle={false}
                     numberOfPieces={1000}
+                    onConfettiComplete={() => setShowConfetti(false)}
                 />
             )}
 
@@ -56,28 +70,23 @@ const SuccessMessage = ({ name, phone, date, time }) => {
                     borderRadius: theme.shape.borderRadius,
                     boxShadow: theme.shadows[3],
                 }}
+                aria-live="polite"
+                aria-atomic="true"
             >
                 {/* Success Icon Animation */}
-                <motion.div
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ duration: 0.6, ease: 'easeOut' }}
-                >
+                <motion.div {...iconAnimation}>
                     <CheckCircle
                         sx={{
                             color: 'success.main',
                             fontSize: '4rem',
                             mb: 3,
                         }}
+                        aria-hidden="true"
                     />
                 </motion.div>
 
                 {/* Title Animation */}
-                <motion.div
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2, duration: 0.6, ease: 'easeOut' }}
-                >
+                <motion.div {...textAnimation(0.2)}>
                     <Typography
                         variant="h4"
                         sx={{
@@ -91,11 +100,7 @@ const SuccessMessage = ({ name, phone, date, time }) => {
                 </motion.div>
 
                 {/* Description Animation */}
-                <motion.div
-                    initial={{ opacity: 0, x: 50 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.4, duration: 0.6, ease: 'easeOut' }}
-                >
+                <motion.div {...textAnimation(0.4)}>
                     <Typography
                         variant="body1"
                         sx={{
@@ -108,11 +113,7 @@ const SuccessMessage = ({ name, phone, date, time }) => {
                 </motion.div>
 
                 {/* Contact Information Animation */}
-                <motion.div
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.6, duration: 0.6, ease: 'easeOut' }}
-                >
+                <motion.div {...textAnimation(0.6)}>
                     <Typography
                         variant="body1"
                         sx={{
@@ -128,11 +129,7 @@ const SuccessMessage = ({ name, phone, date, time }) => {
                 <Divider sx={{ my: 4 }} />
 
                 {/* Countdown Animation */}
-                <motion.div
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.8, duration: 0.6, ease: 'easeOut' }}
-                >
+                <motion.div {...textAnimation(0.8)}>
                     <Typography
                         variant="body1"
                         sx={{

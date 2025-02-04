@@ -19,6 +19,7 @@ import { useClinicContext } from "../../contexts/ClinicContext";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../services/axiosInstance";
 import { useCustomTheme } from "../../contexts/ThemeProvider";
+import { getOffers } from "../../../../server/controllers/offersController";
 
 const PricingSection = () => {
     const { t, i18n } = useTranslation();
@@ -120,7 +121,7 @@ const PricingSection = () => {
                             variant="contained"
                             color="primary"
                             sx={{ mt: 3, width: "100%" }}
-                            onClick={() => navigate(`/booking/${plan.serviceId}`)}
+                            onClick={() => navigate(`/services/${plan.serviceId}`)}
                             aria-label={EN ? "Book Now" : "احجز الآن"}
                         >
                             {EN ? "Book Now" : "احجز الآن"}

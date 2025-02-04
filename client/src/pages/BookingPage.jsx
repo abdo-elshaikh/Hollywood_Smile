@@ -66,23 +66,23 @@ const BookingPage = () => {
             showSnackBar(isArabic ? 'الرجاء ملء جميل الحقول المطلوبة!' : 'please fill all required fields !', 'error');
             return;
         }
-        // bookingData.date = bookingData.date.toLocaleDateString();
-        console.log('Booking Data:', bookingData);
+
         setLoading(true);
         try {
             const response = await axiosInstance.post('/bookings', bookingData);
             const data = response.data;
-            console.log('Booking Data Response:', data);
+            console.log('bokking data', data);
             if (data.success) {
                 showSnackBar(isArabic ? 'تم حجز الموعد بنجاح' : 'Appointment booked successfully.', 'success');
                 setOpenDialog(false);
                 setSuccess(true);
+                handleAddNotification(data);
             } else {
                 showSnackBar(isArabic ? 'حدث خطأ أثناء الحجز' : 'Error occurred during booking.', 'error');
             }
-            await handleAddNotification(data._id, 'info');
+
         } catch (error) {
-            handleAddNotification(null, 'error');
+            handleAddNotification(null);
             showSnackBar(error?.response?.data?.message, 'error');
         } finally {
             setLoading(false);
@@ -110,7 +110,7 @@ const BookingPage = () => {
     useEffect(() => {
         fetchBookings();
         fetchServices();
-    }, [id]);
+    }, []);
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -140,6 +140,7 @@ const BookingPage = () => {
     const fetchServices = async () => {
         try {
             const response = await axiosInstance.get(`/services/${id}`);
+            console.log('service data', response.data);
             setSelectedService(response.data);
         } catch (error) {
             console.error('Failed to fetch service:', error);
@@ -192,15 +193,16 @@ const BookingPage = () => {
         setOpenDialog(false);
     };
 
-    const handleAddNotification = async (refId = null, type = 'info') => {
+    const handleAddNotification = async (data) => {
         try {
             const notificationData = {
-                title: 'New Appointment',
-                message: type === 'info' ?
-                    'You have a new appointment. Please check your appointments for more details.' : 'Failed to book an appointment. Please try again.',
-                type: type,
+                title: 'New Booking Appointment',
+                message: data._id ?
+                    `New appointment booked by ${data.name} on ${format(new Date(data.date), 'dd/MM/yyyy')} at ${data.time}`
+                    : `Failed to create appointment on ${format(new Date(), 'dd/MM/yyyy')} at ${format(new Date(), 'hh:mm:ss a')}`,
+                type: data._id ? 'success' : 'error',
                 ref: 'booking',
-                refId: refId,
+                refId: data._id,
             };
             await notificationService.createNotification(notificationData);
         } catch (error) {
@@ -473,13 +475,13 @@ const BookingPage = () => {
                                 <AccordionDetails>
                                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                                         <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                                            {isArabic ? selectedService.title.ar : selectedService.title.en}
+                                            {isArabic ? selectedService?.title.ar : selectedService?.title.en}
                                         </Typography>
                                         <Typography variant="body1">
-                                            {isArabic ? selectedService.description.ar : selectedService.description.en}
+                                            {isArabic ? selectedService?.description.ar : selectedService?.description.en}
                                         </Typography>
                                         <Typography variant="body1" sx={{ color: 'error.main' }}>
-                                            {isArabic ? 'تاريخ الحجز' : 'Booking Date'} : {selectedDate ? selectedDate.format('DD/MM/YYYY') : ''}
+                                            {isArabic ? 'تاريخ الحجز' : 'Booking Date'} : {selectedDate ? selectedDate?.format('DD/MM/YYYY') : ''}
                                         </Typography>
                                         <Typography variant="body1" sx={{ color: 'info.main' }}>
                                             {isArabic ? 'وقت الحجز' : 'Booking Time'} : {selectedTime}

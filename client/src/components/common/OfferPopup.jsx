@@ -95,9 +95,9 @@ const OfferPopup = () => {
         }, 400);
     };
 
-    const handleClaimOffer = (offerId) => {
+    const handleClaimOffer = (id) => {
         handleClose();
-        navigate(`/booking/${offerId}`);
+        navigate(`/booking/${id}`);
     };
 
     const handleTouchStart = (e) => {
@@ -176,7 +176,7 @@ const OfferPopup = () => {
                                     borderRadius: 8,
                                     textTransform: 'none',
                                     fontWeight: 'bold',
-                                    '&:hover': { backgroundColor: '#D81B60' },
+                                    '&:hover': { backgroundColor: 'secondary.main' },
                                 }}
                                 onClick={() => handleClaimOffer(currentOffer._id)}
                             >
