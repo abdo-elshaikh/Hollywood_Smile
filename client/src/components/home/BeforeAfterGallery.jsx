@@ -49,10 +49,10 @@ const BeforeAfterGallery = () => {
         component={motion.h3}
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        variant="h3"
+        variant="h4"
         align="center"
         color="primary"
-        sx={{ fontWeight: 'bold', mb: 3 }}
+        sx={{ fontWeight: 'bold', mb: 3, fontFamily: '"Cairo Play", serif' }}
       >
         {t('BeforeAfterGallery.title')}
       </Typography>

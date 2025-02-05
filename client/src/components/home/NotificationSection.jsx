@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Box, Typography, Divider, Button } from '@mui/material';
+import { Box, Typography, Divider, Button, Modal } from '@mui/material';
 import { useCustomTheme } from '../../contexts/ThemeProvider';
 import axiosInstance from '../../services/axiosInstance';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { useClinicContext } from '../../contexts/ClinicContext';
+import TestimonialForm from '../common/TestimonialForm';
+import { RateReview, Call } from '@mui/icons-material';
 
 const NotificationSection = () => {
   const { mode } = useCustomTheme();
@@ -13,6 +15,7 @@ const NotificationSection = () => {
   const isDark = mode === 'dark';
   const isArabic = i18n.language === 'ar';
   const [notifications, setNotifications] = useState([]);
+  const [openTestimonialModal, setOpenTestimonialModal] = useState(false);
 
   useEffect(() => {
     const fetchNotifications = async () => {
@@ -90,14 +93,17 @@ const NotificationSection = () => {
           </Typography>
         )}
       </Box>
+
       <Box
         sx={{
-          p: 4,
-          background: isDark
-            ? 'linear-gradient(to top, #7C7C7C, #636363, #424242)'
-            : 'linear-gradient(to top, #E0F0FD, #D7EFFB, #B6DBF9)',
+          p: 6,
+          borderRadius: 3,
           textAlign: 'center',
-          boxShadow: 1,
+          background: isDark
+            ? 'linear-gradient(to top, #4a4a4a, #292929)'
+            : 'linear-gradient(to top, #F3F9FF, #E2F1FB)',
+          boxShadow: 4,
+          transition: 'all 0.3s ease-in-out',
         }}
       >
         <motion.div
@@ -109,34 +115,107 @@ const NotificationSection = () => {
             variant="h3"
             color="primary.main"
             fontWeight="bold"
-            mb={2}
-            sx={{ textTransform: 'uppercase', letterSpacing: 1.5 }}
+            mb={3}
+            fontFamily={'"Cairo Play", serif'}
+            sx={{ textTransform: 'uppercase', letterSpacing: 2 }}
           >
             {t('appointmentSection.emergency.title')}
           </Typography>
-          <Divider sx={{ mb: 2, width: '50%', mx: 'auto' }} />
-          <Typography variant="h6" color="text.secondary" mb={2} px={2}>
+          <Divider sx={{ mb: 3, width: '40%', mx: 'auto' }} />
+          <Typography variant="h6" color="text.secondary" mb={4} px={2} fontFamily={'"Fustat", serif'}>
             {t('appointmentSection.emergency.description')}
           </Typography>
-          <Button
-            variant="contained"
-            href={`tel:${clinicInfo?.phone}`}
+          <Box
             sx={{
-              mt: 2,
-              px: 4,
-              py: 1.2,
-              transition: 'all 0.3s ease-in-out',
-              '&:hover': {
-                backgroundColor: isDark ? 'primary.light' : 'primary.dark',
-                color: 'white',
-                transform: 'scale(1.05)',
-              },
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: 3,
+              flexWrap: 'wrap',
             }}
           >
-            <strong>{t('appointmentSection.emergency.call')}</strong> {clinicInfo?.phone}
-          </Button>
+            <Button
+              variant="contained"
+              href={`tel:${clinicInfo?.phone}`}
+              startIcon={<Call sx={{ fontSize: 26, mx: 2 }} />}
+              sx={{
+                px: 5,
+                py: 1.5,
+                fontSize: '1.1rem',
+                fontWeight: 'bold',
+                borderRadius: '30px',
+                background: 'linear-gradient(135deg, #1976d2, #1565c0)',
+                color: '#fff',
+                boxShadow: '0px 5px 15px rgba(25, 118, 210, 0.3)',
+                transition: 'all 0.3s ease-in-out',
+                '&:hover': {
+                  background: 'linear-gradient(135deg, #1565c0, #0d47a1)',
+                  transform: 'scale(1.07)',
+                  boxShadow: '0px 8px 20px rgba(25, 118, 210, 0.4)',
+                },
+              }}
+            >
+              {clinicInfo?.phone}
+            </Button>
+
+            <Button
+              variant="contained"
+              onClick={() => setOpenTestimonialModal(true)}
+              startIcon={<RateReview sx={{ fontSize: 26, mx: 2 }} />}
+              sx={{
+                px: 5,
+                py: 1.5,
+                fontSize: '1.1rem',
+                fontWeight: 'bold',
+                borderRadius: '30px',
+                background: 'linear-gradient(135deg, #FF9800, #F57C00)',
+                color: '#fff',
+                boxShadow: '0px 5px 15px rgba(255, 152, 0, 0.3)',
+                transition: 'all 0.3s ease-in-out',
+                '&:hover': {
+                  background: 'linear-gradient(135deg, #F57C00, #E65100)',
+                  transform: 'scale(1.07)',
+                  boxShadow: '0px 8px 20px rgba(255, 152, 0, 0.4)',
+                },
+              }}
+            >
+              {t('appointmentSection.emergency.feedback')}
+            </Button>
+          </Box>
+
         </motion.div>
       </Box>
+
+      {/* Testimonial Modal with Glassmorphism */}
+      <Modal
+        open={openTestimonialModal}
+        onClose={() => setOpenTestimonialModal(false)}
+        aria-labelledby="Testimonial Form"
+        aria-describedby="Testimonial Form"
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <Box
+          sx={{
+            backgroundColor: 'background.default',
+            backdropFilter: 'blur(10px)',
+            p: 4,
+            borderRadius: 3,
+            boxShadow: 6,
+            width: '100%',
+            maxWidth: 'sm',
+            textAlign: 'center',
+            border: '1px solid',
+            borderColor: 'divider',
+          }}
+        >
+          <TestimonialForm />
+        </Box>
+      </Modal>
+
     </Box>
   );
 };

@@ -130,7 +130,8 @@
         "emergency": {
             "title": "Emergency Cases",
             "description": "We provide emergency dental care for urgent cases. Contact us immediately for assistance.",
-            "call": "Call: "
+            "call": "Call: ",
+            "feedback": "Feedback"
         },
         "openHours": {
             "title": "Opening Hours",

@@ -56,11 +56,11 @@ const ServicesSection = () => {
                     transition={{ duration: 0.6 }}
                 >
                     <Typography
-                        variant="h3"
+                        variant="h4"
                         sx={{
                             fontWeight: 800,
                             color: 'primary.main',
-                            fontFamily: 'Poppins, sans-serif',
+                            fontFamily: '"Cairo Play", serif',
                             letterSpacing: '1px',
                         }}
                     >

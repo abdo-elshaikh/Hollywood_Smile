@@ -50,6 +50,7 @@ const GallerySection = () => {
         sx={{
           mb: 4,
           fontWeight: "bold",
+          fontFamily: "'Cairo', sans-serif",
           color: themeMode === "dark" ? "text.primary" : "text.secondary",
         }}
       >

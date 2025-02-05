@@ -39,7 +39,7 @@ const TestimonySection = () => {
   return (
     <Container maxWidth="lg" sx={{ py: 5 }}>
       <Box textAlign="center" sx={{ mb: 8 }}>
-        <Typography variant="h3" sx={{ fontWeight: "bold", mb: 3, color: "primary.main" }}>
+        <Typography variant="h4" sx={{ fontWeight: "bold", mb: 3, color: "primary.main", fontFamily: '"Cairo Play", serif' }}>
           {t("testimonials.title")}
         </Typography>
         <Typography variant="subtitle1" sx={{ mb: 2 }}>

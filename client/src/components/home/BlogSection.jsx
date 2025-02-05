@@ -62,7 +62,7 @@ const BlogSection = () => {
         <Box textAlign="center" sx={{ mb: 6 }}>
           <Typography
             variant="h4"
-            sx={{ mb: 2, fontWeight: "bold", color: "primary.main", fontSize: 50 }}
+            sx={{ mb: 2, fontWeight: "bold", color: "primary.main", fontFamily: '"Cairo Play", serif' }}
           >
             {t("BlogSection.title")}
           </Typography>

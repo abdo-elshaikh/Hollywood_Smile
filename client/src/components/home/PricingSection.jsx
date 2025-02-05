@@ -145,6 +145,7 @@ const PricingSection = () => {
                             variant="h3"
                             color="primary"
                             fontWeight="bold"
+                            sx={{ textTransform: "uppercase", fontFamily: '"Cairo Play", serif', letterSpacing: 1.2, mb: 2 }}
                         >
                             {EN ? 'Special Offers' : 'عروض خاصة'}
                         </Typography>
