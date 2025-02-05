@@ -41,14 +41,14 @@ const GallerySection = () => {
       sx={{
         py: 8,
         px: 2,
-        bgcolor: themeMode === "dark" ? "#121212" : "#f5f5f5",
+        bgcolor: themeMode === "dark" ? '#121212' : '#f9f9f9',
       }}
     >
       <Typography
         variant="h3"
         align="center"
         sx={{
-          mb: 4,
+          mb: 6,
           fontWeight: "bold",
           fontFamily: "'Cairo', sans-serif",
           color: themeMode === "dark" ? "text.primary" : "text.secondary",
