@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
     Box,
     AppBar,
@@ -20,6 +20,9 @@ import {
     Tooltip,
     TextField,
     InputAdornment,
+    CircularProgress,
+    Snackbar,
+    Alert,
 } from '@mui/material';
 import {
     Search,
@@ -46,86 +49,28 @@ import ManageComments from '../components/blogDashboard/ManageComments';
 import NotificationPopupMenu from '../components/common/NotificationPopupMenu';
 import { useAuth } from '../contexts/AuthContext';
 import { useCustomTheme } from '../contexts/ThemeProvider';
-import blogService from '../services/blogService';
-import commentService from '../services/commentService';
 import ScrollToTopButton from '../components/common/ScrollToTopButton';
 
 const BlogDashboard = () => {
-    // Destructuring from context
     const { logout, user } = useAuth();
     const { mode, toggleMode } = useCustomTheme();
     const theme = useTheme();
     const navigate = useNavigate();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-    // State variables
     const [anchorEl, setAnchorEl] = useState(null);
     const [menuOpen, setMenuOpen] = useState(!isMobile);
-    const [blogs, setBlogs] = useState([]);
-    const [comments, setComments] = useState([]);
-    const [lastCode, setLastCode] = useState('');
+    const [error, setError] = useState(null);
+    const [successMessage, setSuccessMessage] = useState(null);
 
-    // Fetch blogs and comments when component mounts
-    useEffect(() => {
-        fetchBlogs();
-        fetchComments();
+
+    const handleDrawerToggle = useCallback(() => {
+        setMenuOpen((prev) => !prev);
     }, []);
 
-    useEffect(() => {
-        generateBlogCode();
-    }, [blogs]);
+    const handleMenuOpen = (event) => setAnchorEl(event.currentTarget);
+    const handleMenuClose = () => setAnchorEl(null);
 
-    // Fetch blogs data
-    const fetchBlogs = async () => {
-        try {
-            const data = await blogService.getBlogs();
-            const sortedData = data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-            setBlogs(sortedData);
-        } catch (error) {
-            console.error('Error fetching blogs:', error);
-        }
-    };
-
-    // Fetch comments data
-    const fetchComments = async () => {
-        try {
-            const data = await commentService.getComments();
-            const sortedData = data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-            setComments(sortedData);
-        } catch (error) {
-            console.error('Error fetching comments:', error);
-        }
-    };
-
-    // Toggle the drawer open/close
-    const handleDrawerToggle = () => {
-        setMenuOpen(!menuOpen);
-    };
-
-    // Generate new blog code based on the last blog's code
-    const generateBlogCode = () => {
-        let lastCode = '0000';
-
-        if (blogs && blogs.length > 0) {
-            // Sort blogs by createdAt (most recent blog first)
-            const lastBlogCode = blogs
-                .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0].code;
-
-            if (lastBlogCode) {
-                const lastBlogCodeParts = lastBlogCode.split('-');
-                lastCode = lastBlogCodeParts[1];
-                console.log('lastCode: ', lastCode);
-            }
-        }
-
-        // Generate new code by incrementing the last code
-        const newCode = `B-${(parseInt(lastCode, 10) + 1).toString().padStart(4, '0')}`;
-        console.log('newCode: ', newCode);
-        setLastCode(newCode);
-    };
-
-
-    // Drawer items for the sidebar menu
     const drawerItems = [
         { text: 'Dashboard', icon: <Home />, path: '/blog-dashboard' },
         { text: 'All Blogs', icon: <PostAdd />, path: '/blog-dashboard/blogs' },
@@ -135,7 +80,6 @@ const BlogDashboard = () => {
         { text: 'Exit', icon: <ExitToApp />, path: '/' },
     ];
 
-    // Drawer list UI
     const drawerList = (
         <Box>
             <Toolbar />
@@ -150,7 +94,13 @@ const BlogDashboard = () => {
                         whileHover={{ scale: 1.05 }}
                     >
                         <Tooltip title={item.text} placement="right" arrow>
-                            <ListItemButton onClick={() => navigate(item.path)}>
+                            <ListItemButton
+                                selected={window.location.pathname === item.path}
+                                onClick={() => {
+                                    navigate(item.path);
+                                    if (isMobile) handleDrawerToggle();
+                                }}
+                            >
                                 <ListItemIcon>{item.icon}</ListItemIcon>
                                 <ListItemText primary={item.text} sx={{ typography: 'subtitle1', fontWeight: 'medium' }} />
                             </ListItemButton>
@@ -161,8 +111,14 @@ const BlogDashboard = () => {
         </Box>
     );
 
+    useEffect(() => {
+        if (!user) {
+            navigate('/login');
+        }
+    }, [user, navigate]);
+    
     return (
-        <Box direction="ltr" sx={{ display: 'flex', height: '100vh', backgroundColor: theme.palette.background.default }}>
+        <Box sx={{ display: 'flex', height: '100vh', backgroundColor: theme.palette.background.default }}>
             <CssBaseline />
             <AppBar position="fixed" sx={{ zIndex: theme.zIndex.drawer + 1 }}>
                 <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -172,13 +128,19 @@ const BlogDashboard = () => {
                         </IconButton>
                         <Typography
                             variant="h6"
-                            sx={{ fontWeight: 'bold', textTransform: 'uppercase', display: { xs: 'none', sm: 'block' } }}
+                            sx={{
+                                fontWeight: 'bold',
+                                textTransform: 'uppercase',
+                                display: { xs: 'none', sm: 'block' },
+                                color: theme.palette.primary.main,
+                            }}
                         >
                             Blog Dashboard
                         </Typography>
                     </Box>
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <TextField
+                            aria-label="Search blogs"
                             size="small"
                             placeholder="Search …"
                             sx={{ backgroundColor: theme.palette.background.paper, mr: 2, borderRadius: 1 }}
@@ -187,10 +149,10 @@ const BlogDashboard = () => {
                             }}
                         />
                         <NotificationPopupMenu source="blog-dashboard" />
-                        <IconButton onClick={(event) => setAnchorEl(event.currentTarget)} color="inherit">
+                        <IconButton onClick={handleMenuOpen} color="inherit">
                             <Avatar alt={user?.name?.split(' ')[0]} src={user?.avatarUrl} />
                         </IconButton>
-                        <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={() => setAnchorEl(null)}>
+                        <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
                             <MenuItem onClick={() => navigate('/profile')}>
                                 <ListItemIcon><AccountCircle /></ListItemIcon>
                                 <ListItemText primary="Profile" />
@@ -212,24 +174,37 @@ const BlogDashboard = () => {
                 open={menuOpen}
                 onClose={handleDrawerToggle}
                 sx={{
-                    '& .MuiDrawer-paper': { width: 240, boxSizing: 'border-box' },
+                    '& .MuiDrawer-paper': { width: 240, boxSizing: 'border-box', backgroundColor: theme.palette.background.paper },
                 }}
             >
                 {drawerList}
             </Drawer>
-            <Box component="main" sx={{ flexGrow: 1, p: 3, ml: menuOpen && !isMobile ? '240px' : 0 }}>
+            <Box component="main" sx={{ flexGrow: 1, overflow: 'auto', p: 1 }}>
                 <Toolbar />
                 <Routes>
-                    <Route path="/" element={<MainContentPage blogs={blogs} comments={comments} />} />
+                    <Route path="/" element={<MainContentPage />} />
                     <Route path="/blogs" element={<ManageBlogs />} />
                     <Route path="/settings" element={<Settings />} />
-                    <Route path="/add-blog" element={<BlogCreatePage newCode={lastCode} />} />
+                    <Route path="/add-blog" element={<BlogCreatePage />} />
                     <Route path="/edit-blog/:id" element={<BlogEditPage />} />
                     <Route path="/view-blog/:id" element={<BlogDetailPage />} />
-                    <Route path="/comments" element={<ManageComments comments={comments} />} />
+                    <Route path="/comments" element={<ManageComments />} />
                     <Route path="/notifications" element={<Notifications />} />
                 </Routes>
             </Box>
+
+            {/* Success Snackbar */}
+            <Snackbar
+                open={!!successMessage}
+                autoHideDuration={6000}
+                onClose={() => setSuccessMessage(null)}
+            >
+                <Alert severity="success" onClose={() => setSuccessMessage(null)}>
+                    {successMessage}
+                </Alert>
+            </Snackbar>
+
+            {/* Scroll to Top Button */}
             <ScrollToTopButton />
         </Box>
     );

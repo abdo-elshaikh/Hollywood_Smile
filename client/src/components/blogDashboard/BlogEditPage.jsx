@@ -10,7 +10,7 @@ import { Delete, AddPhotoAlternate, Upload } from '@mui/icons-material';
 import { useSnackbar } from '../../contexts/SnackbarProvider';
 import { useAuth } from '../../contexts/AuthContext';
 import FileExplorerDialog from '../common/FileExplorerDialog';
-import { replaceFile } from '../../services/supabaseService';
+import { replaceFile, deleteFile } from '../../services/supabaseService';
 
 const BlogEditPage = () => {
     const { id } = useParams();
@@ -33,7 +33,6 @@ const BlogEditPage = () => {
     const [uploading, setUploading] = useState(false);
 
     useEffect(() => {
-        // Fetch existing blog data by ID
         const fetchBlogData = async () => {
             try {
                 const response = await axiosInstance.get(`/blogs/${id}`);
@@ -95,12 +94,23 @@ const BlogEditPage = () => {
         try {
             const data = await replaceFile(file, 'images/blogs/', formData.code);
             setFormData({ ...formData, imageUrl: data.fullUrl });
-            showSnackbar('Image uploaded successfully', 'success');
+            showSnackbar('Image Changed successfully', 'success');
         } catch (error) {
             console.error('Error uploading file:', error);
             showSnackbar('Error uploading file', 'error');
         } finally {
             setUploading(false);
+        }
+    };
+
+    const deleteImage = async () => {
+        try {
+            await deleteFile(formData.imageUrl);
+            setFormData({ ...formData, imageUrl: '' });
+            showSnackbar('Image removed successfully', 'success');
+        } catch (error) {
+            console.error('Error deleting file:', error);
+            showSnackbar('Error deleting file', 'error');
         }
     };
 
@@ -149,14 +159,11 @@ const BlogEditPage = () => {
                             )}
                         </Paper>
                         <Stack direction="row" spacing={1} justifyContent="center" sx={{ mt: 2 }}>
-                            <Button variant="outlined" color="primary" onClick={() => setOpen(true)} startIcon={<AddPhotoAlternate />}>
-                                Select Image
-                            </Button>
                             <Button component="label" variant="outlined" color="secondary" startIcon={<Upload />}>
-                                Upload Image
+                                Change Image
                                 <input type="file" accept="image/*" hidden onChange={(e) => handleUpload(e.target.files[0])} />
                             </Button>
-                            <Button variant="outlined" color="error" startIcon={<Delete />} onClick={() => setFormData({ ...formData, imageUrl: '' })}>
+                            <Button variant="outlined" color="error" startIcon={<Delete />} onClick={deleteImage}>
                                 Remove Image
                             </Button>
                         </Stack>

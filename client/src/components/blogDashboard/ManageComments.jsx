@@ -19,9 +19,11 @@ const ManageComments = () => {
     const fetchComments = async () => {
         try {
             const data = await commentService.getComments();
-            console.log('comments:', data);
-            const filteredData = data.filter((comment) => comment.blog?.author?._id === user._id);
-            setComments(filteredData);
+            const sortedData = data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            console.log('comments:', sortedData);
+            const filteredData = sortedData.filter((comment) => comment.blog?.author === user._id);
+            console.log('filtered comments:', filteredData);
+            setComments(sortedData);
         } catch (err) {
             showSnackbar(err.message, "error");
         }

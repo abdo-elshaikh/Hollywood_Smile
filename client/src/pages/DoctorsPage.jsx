@@ -53,13 +53,14 @@ const DoctorsPage = () => {
                 }}
             >
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
-                    <Typography variant="h1" align="center" sx={{
-                        fontWeight: 900,
-                        color: 'primary.main',
-                        mb: 2,
-                        fontSize: { xs: '2.5rem', md: '4rem' },
-                        textShadow: '2px 2px 4px rgba(0,0,0,0.2)'
-                    }}>
+                    <Typography variant="h1" align="center"
+                        sx={{
+                            fontWeight: 900,
+                            color: 'primary.main',
+                            mb: 2,
+                            fontSize: { xs: '2.5rem', md: '4rem' },
+                            textShadow: '2px 2px 4px rgba(0,0,0,0.2)'
+                        }}>
                         {t('doctorsPage.title')}
                     </Typography>
                     <Typography variant="h5" align="center" sx={{

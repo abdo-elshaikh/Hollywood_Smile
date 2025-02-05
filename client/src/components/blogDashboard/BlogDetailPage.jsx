@@ -1,14 +1,32 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Container, Typography, Divider, Chip, Button } from '@mui/material';
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-import EditIcon from '@mui/icons-material/Edit';
+import {
+    Box,
+    Container,
+    Typography,
+    Divider,
+    Chip,
+    Button,
+    Stack,
+    Avatar,
+    IconButton,
+    CircularProgress
+} from '@mui/material';
+import {
+    ArrowBack as BackIcon,
+    Edit as EditIcon,
+    ThumbUp as LikeIcon,
+    ThumbDown as DislikeIcon,
+    Visibility as ViewsIcon,
+    Comment as CommentIcon
+} from '@mui/icons-material';
 import { useParams, useNavigate } from 'react-router-dom';
 import axiosInstance from '../../services/axiosInstance';
 import commentService from '../../services/commentService';
 import { useSnackbar } from '../../contexts/SnackbarProvider';
+import { format } from 'date-fns';
 
 const BlogDetailPage = () => {
-    const { id } = useParams(); // Get the blog ID from the URL parameters
+    const { id } = useParams();
     const showSnackbar = useSnackbar();
     const navigate = useNavigate();
     const [blog, setBlog] = useState(null);
@@ -42,23 +60,26 @@ const BlogDetailPage = () => {
         fetchComments();
     }, []);
 
-    if (loading) {
-        return <Typography>Loading...</Typography>;
-    }
-
-    if (!blog) {
-        return <Typography>Blog not found.</Typography>;
-    }
-
-
-
+    
     const handleDeleteComment = async (commentId) => {
         try {
             await commentService.deleteComment(commentId);
             fetchComments();
+            showSnackbar('Comment deleted successfully', 'success');
         } catch (error) {
             console.error('Error deleting comment:', error);
             showSnackbar('Error deleting comment', 'error');
+        }
+    };
+
+    const handleDeleteReply = async (commentId, replyId) => {
+        try {
+            await commentService.deleteReply(commentId, replyId);
+            fetchComments();
+            showSnackbar('Reply deleted successfully', 'success');
+        } catch (error) {
+            console.error('Error deleting reply:', error);
+            showSnackbar('Error deleting reply', 'error');
         }
     };
 
@@ -76,119 +97,224 @@ const BlogDetailPage = () => {
         }
     };
 
+    if (loading) {
+        return (
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+                <CircularProgress />
+            </Box>
+        );
+    }
+
+    if (!blog) {
+        return (
+            <Container maxWidth="md" sx={{ mt: 4, textAlign: 'center' }}>
+                <Typography variant="h5" color="error">Blog not found</Typography>
+            </Container>
+        );
+    }
+
     return (
-        <Container maxWidth="md" sx={{ mt: 4 }}>
-            <Button
-                variant="text"
-                startIcon={<ArrowBackIosNewIcon />}
-                onClick={() => navigate('/blog-dashboard/blogs')}
-                sx={{ mb: 2 }}
-            >
-                Back to Blogs
-            </Button>
-            <Button
-                variant="text"
-                startIcon={<EditIcon />}
-                onClick={() => navigate(`/blog-dashboard/edit-blog/${id}`)}
-                sx={{ mb: 2, ml: 2 }}
-            >
-                Edit Blog
-            </Button>
-            <Typography variant="h4" gutterBottom>
+        <Container maxWidth="lg" sx={{ py: 4 }}>
+            <Stack direction="row" spacing={4} sx={{ mb: 4 }}>
+                <Button
+                    variant="outlined"
+                    startIcon={<BackIcon />}
+                    onClick={() => navigate('/blog-dashboard/blogs')}
+                >
+                    Back
+                </Button>
+                <Button
+                    variant="contained"
+                    startIcon={<EditIcon />}
+                    onClick={() => navigate(`/blog-dashboard/edit-blog/${id}`)}
+                >
+                    Edit
+                </Button>
+            </Stack>
+
+            <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: 700 }}>
                 {blog.title}
             </Typography>
-            <Typography variant="body1" color="textSecondary" gutterBottom>
-                By {blog.author?.name} | {new Date(blog.date).toLocaleDateString()}
-            </Typography>
-            <img
-                src={blog.imageUrl || 'https://via.placeholder.com/400x200'}
+
+            <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 4 }}>
+                <Avatar src={blog.author?.avatar} sx={{ width: 56, height: 56 }} />
+                <div>
+                    <Typography variant="subtitle1" fontWeight="500">
+                        {blog.author?.name || 'Unknown Author'}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                        {format(new Date(blog.date), 'MMM dd, yyyy - HH:mm')}
+                    </Typography>
+                </div>
+            </Stack>
+
+            <Box
+                component="img"
+                src={blog.imageUrl}
                 alt={blog.title}
-                style={{
+                sx={{
                     width: '100%',
-                    height: 'auto',
-                    borderRadius: '8px',
-                    marginBottom: '16px',
+                    maxHeight: 400,
+                    borderRadius: 2,
+                    objectFit: 'cover',
+                    mb: 4,
+                    boxShadow: 3
                 }}
             />
-            <Typography variant="body1" paragraph>
+
+            <Typography
+                variant="body1"
+                paragraph
+                sx={{
+                    fontSize: '1.1rem',
+                    lineHeight: 1.7,
+                    whiteSpace: 'pre-wrap'
+                }}
+            >
                 {blog.content}
             </Typography>
 
-            <Divider sx={{ my: 2 }} />
-            <Box sx={{ mb: 2, display:'flex', gap: 2 }}>
-                <Typography variant="h6">{blog.likes} Likes</Typography>
-                <Typography variant="h6">{blog.dislikes} Dislikes</Typography>
-                <Typography variant="h6">{blog.views} Views</Typography>
-            </Box>
-            <Divider sx={{ my: 2 }} />
-            <Typography variant="h6">Categories</Typography>
-            <Box sx={{ mb: 2 }}>
-                {blog.categories.map((category) => (
-                    <Chip key={category} label={category} sx={{ mr: 1, mb: 1 }} />
-                ))}
-            </Box>
+            <Divider sx={{ my: 4 }} />
 
-            <Typography variant="h6">Tags</Typography>
-            <Box sx={{ mb: 2 }}>
-                {blog.tags.map((tag) => (
-                    <Chip key={tag} label={tag} sx={{ mr: 1, mb: 1 }} />
-                ))}
-            </Box>
+            <Stack direction="row" spacing={4} sx={{ mb: 4 }}>
+                <Stack direction="row" spacing={1} alignItems="center">
+                    <LikeIcon color="action" />
+                    <Typography variant="body1">{blog.likes}</Typography>
+                </Stack>
+                <Stack direction="row" spacing={1} alignItems="center">
+                    <DislikeIcon color="action" />
+                    <Typography variant="body1">{blog.dislikes}</Typography>
+                </Stack>
+                <Stack direction="row" spacing={1} alignItems="center">
+                    <ViewsIcon color="action" />
+                    <Typography variant="body1">{blog.views}</Typography>
+                </Stack>
+                <Stack direction="row" spacing={1} alignItems="center">
+                    <CommentIcon color="action" />
+                    <Typography variant="body1">{blogComments.length}</Typography>
+                </Stack>
+            </Stack>
 
-            <Divider sx={{ my: 2 }} />
-            <Typography variant="h6">Comments</Typography>
-            {blogComments.map((comment) => (
-                <Box key={comment._id} sx={{ mb: 2 }}>
-                    <Typography variant="body1">{comment.text}</Typography>
-                    <Typography variant="body2" color="textSecondary">
-                        By {comment.user?.name || 'unknown'} | {new Date(comment.date).toLocaleDateString()}
-                    </Typography>
-                    <Box>
-                        <Button
-                            variant="text"
+            <Box sx={{ mb: 4 }}>
+                <Typography variant="h6" gutterBottom>Categories</Typography>
+                <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                    {blog.categories.map((category) => (
+                        <Chip
+                            key={category}
+                            label={category}
                             color="primary"
-                            onClick={() => approveComment(comment._id)}
-                            disabled={comment.approved}
+                            variant="outlined"
+                        />
+                    ))}
+                </Stack>
+            </Box>
+
+            <Box sx={{ mb: 4 }}>
+                <Typography variant="h6" gutterBottom>Tags</Typography>
+                <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                    {blog.tags.map((tag) => (
+                        <Chip
+                            key={tag}
+                            label={tag}
+                            variant="outlined"
+                            color="secondary"
+                        />
+                    ))}
+                </Stack>
+            </Box>
+
+            <Divider sx={{ my: 4 }} />
+
+            <Typography variant="h5" gutterBottom>Comments</Typography>
+
+            {blogComments.length === 0 ? (
+                <Typography variant="body1" color="text.secondary" fontStyle="italic">
+                    No comments yet
+                </Typography>
+            ) : (
+                <Stack spacing={3}>
+                    {blogComments.map((comment) => (
+                        <Box
+                            key={comment._id}
+                            sx={{
+                                p: 3,
+                                borderRadius: 2,
+                                bgcolor: 'background.paper',
+                                boxShadow: 1
+                            }}
                         >
-                            {comment.approved ? 'Approved' : 'Approve'}
-                        </Button>
-                        <Button
-                            variant="text"
-                            color="error"
-                            onClick={() => handleDeleteComment(comment._id)}
-                        >
-                            Delete
-                        </Button>
-                    </Box>
-                    <Typography variant="body2" color="textSecondary">
-                        {comment.likes} Likes | {comment.dislikes} Dislikes
-                    </Typography>
-                    <Typography variant="body2" color="text.primary">
-                        Replies: {comment.replies.length} Replies |{' '}
-                    </Typography>
-                    {comment.replies.map((reply, index) => (
-                        <Box key={reply._id} sx={{ ml: 2, mt: 2, bgcolor: 'background.paper' }}>
-                            <Typography variant="body2">{index + 1}: {reply.content}</Typography>
-                            <Typography variant="body2" color="textSecondary">
-                                By {reply.user?.name || 'unknown'} | {new Date(reply.date).toLocaleDateString()}
-                            </Typography>
-                            <Box>
-                                <Button
-                                    variant="text"
-                                    color="error"
-                                    onClick={() => commentService.deleteReply(comment._id, reply._id)}
-                                >
-                                    Delete
-                                </Button>
-                                <Typography variant="body2" color="text.primary">
-                                    {reply.likes} Likes | {reply.dislikes} Dislikes
-                                </Typography>
-                            </Box>
+                            <Stack direction="row" spacing={2} alignItems="flex-start">
+                                <Avatar src={comment.user?.avatar} />
+                                <Box sx={{ flexGrow: 1 }}>
+                                    <Typography variant="subtitle1" fontWeight="500">
+                                        {comment.user?.name || 'Anonymous'}
+                                    </Typography>
+                                    <Typography variant="body2" color="text.secondary">
+                                        {format(new Date(comment.date), 'MMM dd, yyyy - HH:mm')}
+                                    </Typography>
+                                    <Typography variant="body1" sx={{ mt: 1 }}>
+                                        {comment.text}
+                                    </Typography>
+
+                                    <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
+                                        <Button
+                                            size="small"
+                                            color={comment.approved ? 'success' : 'primary'}
+                                            onClick={() => approveComment(comment._id)}
+                                            disabled={comment.approved}
+                                        >
+                                            {comment.approved ? 'Approved' : 'Approve'}
+                                        </Button>
+                                        <Button
+                                            size="small"
+                                            color="error"
+                                            onClick={() => handleDeleteComment(comment._id)}
+                                        >
+                                            Delete
+                                        </Button>
+                                    </Stack>
+
+                                    {comment.replies.length > 0 && (
+                                        <Box sx={{ mt: 3, ml: 4, borderLeft: 2, borderColor: 'divider', pl: 2 }}>
+                                            <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                                                Replies ({comment.replies.length})
+                                            </Typography>
+                                            <Stack spacing={2}>
+                                                {comment.replies.map((reply) => (
+                                                    <Box key={reply._id} sx={{ p: 2, bgcolor: 'background.default', borderRadius: 2 }}>
+                                                        <Stack direction="row" spacing={2} alignItems="flex-start">
+                                                            <Avatar sx={{ width: 24, height: 24 }} src={reply.user?.avatar} />
+                                                            <Box sx={{ flexGrow: 1 }}>
+                                                                <Typography variant="body2" fontWeight="500">
+                                                                    {reply.user?.name || 'Anonymous'}
+                                                                </Typography>
+                                                                <Typography variant="body2" color="text.secondary">
+                                                                    {format(new Date(reply.date), 'MMM dd, yyyy - HH:mm')}
+                                                                </Typography>
+                                                                <Typography variant="body2" sx={{ mt: 0.5 }}>
+                                                                    {reply.content}
+                                                                </Typography>
+                                                                <IconButton
+                                                                    size="small"
+                                                                    color="error"
+                                                                    onClick={() => handleDeleteReply(comment._id, reply._id)}
+                                                                    sx={{ mt: 0.5 }}
+                                                                >
+                                                                    Delete
+                                                                </IconButton>
+                                                            </Box>
+                                                        </Stack>
+                                                    </Box>
+                                                ))}
+                                            </Stack>
+                                        </Box>
+                                    )}
+                                </Box>
+                            </Stack>
                         </Box>
                     ))}
-                </Box>
-            ))}
-            {blogComments.length === 0 && <Typography variant="body1" color="textSecondary" marginTop={2}>No comments available.</Typography>}
+                </Stack>
+            )}
         </Container>
     );
 };

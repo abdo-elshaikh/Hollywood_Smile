@@ -4,21 +4,20 @@ import {
     Box, TextField, Button, Typography, Checkbox, FormControlLabel,
     FormControl, FormLabel, Grid, Divider, Stack, Switch, Tooltip, IconButton
 } from '@mui/material';
-import { Delete, AddPhotoAlternate, Upload } from '@mui/icons-material';
+import { Delete, Upload } from '@mui/icons-material';
 import { useSnackbar } from '../../contexts/SnackbarProvider';
 import { useAuth } from '../../contexts/AuthContext';
-import FileExplorerDialog from '../common/FileExplorerDialog';
-import { uploadFile, replaceFile } from '../../services/supabaseService';
 import { useNavigate } from 'react-router-dom';
+import blogService from "../../services/blogService";
+import { uploadFile, deleteFile } from '../../services/supabaseService';
 
-const BlogCreatePage = ({ newCode }) => {
+const BlogCreatePage = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
     const showSnackbar = useSnackbar();
-    const [open, setOpen] = useState(false);
-    const [currentDate, setCurrentDate] = useState(new Date());
+
     const [formData, setFormData] = useState({
-        code: newCode,
+        code: 'B-0000',
         title: '',
         content: '',
         imageUrl: '',
@@ -33,13 +32,18 @@ const BlogCreatePage = ({ newCode }) => {
     const tags = ['Dental Implants', 'Teeth Whitening', 'Invisalign', 'Root Canal', 'Dental Crowns', 'Dental Bridges', 'Dentures', 'others'];
 
     useEffect(() => {
-        const timer = setInterval(() => setCurrentDate(new Date()), 1000);
-        return () => clearInterval(timer);
+        const fetchBlogs = async () => {
+            const data = await blogService.getBlogs();
+            if (data.length) {
+                setFormData({ ...formData, code: generateCode(data[data.length - 1]) });
+            }
+        };
+        fetchBlogs();
     }, []);
 
-    const selectImage = (file) => {
-        setFormData({ ...formData, imageUrl: file.path });
-        setOpen(false);
+    const generateCode = (blog) => {
+        const lastCodePart = blog.code.split('-')[1];
+        return `B-${(parseInt(lastCodePart, 10) + 1).toString().padStart(4, '0')}`;
     };
 
     const handleChange = (e) => {
@@ -48,7 +52,7 @@ const BlogCreatePage = ({ newCode }) => {
     };
 
     const handleCheckboxChange = (e) => {
-        const { name, checked, value } = e.target;
+        const { name, value, checked } = e.target;
         setFormData((prev) => ({
             ...prev,
             [name]: checked
@@ -68,7 +72,7 @@ const BlogCreatePage = ({ newCode }) => {
             if (response.status === 201) {
                 showSnackbar('Blog created successfully', 'success');
                 setFormData({
-                    code: '',
+                    code: 'B-0000',
                     title: '',
                     content: '',
                     imageUrl: '',
@@ -83,12 +87,15 @@ const BlogCreatePage = ({ newCode }) => {
         } catch (error) {
             console.error('Error creating blog:', error);
             showSnackbar('Error creating blog', 'error');
+            if (formData.imageUrl) {
+                await deleteFile(formData.imageUrl);
+            }
         }
     };
 
     const handleUpload = async (file) => {
         try {
-            const data = await uploadFile(file, 'images/blogs/', newCode);
+            const data = await uploadFile(file, 'images/blogs/', formData.code);
             setFormData({ ...formData, imageUrl: data.fullUrl });
             showSnackbar('Image uploaded successfully', 'success');
         } catch (error) {
@@ -103,7 +110,7 @@ const BlogCreatePage = ({ newCode }) => {
                 Create a New Blog
             </Typography>
             <Typography align="center" color="textSecondary">
-                Author: {user?.name} | Date: {currentDate.toLocaleString()}
+                Author: {user?.name} | Date: {formData.date.toLocaleString()}
             </Typography>
 
             <Divider sx={{ my: 2 }} />
@@ -112,7 +119,7 @@ const BlogCreatePage = ({ newCode }) => {
                 <Box textAlign="center">
                     <Typography variant="h6">Blog Code: <strong>{formData.code}</strong></Typography>
                     <img
-                        src={formData.imageUrl || 'https://via.placeholder.com/400x200'}
+                        src={formData.imageUrl || 'https://via.placeholder.com/300'}
                         alt="Blog"
                         style={{
                             width: '100%',
@@ -124,9 +131,6 @@ const BlogCreatePage = ({ newCode }) => {
                         }}
                     />
                     <Stack direction="row" spacing={1} justifyContent="center" mt={2}>
-                        <Button variant="outlined" startIcon={<AddPhotoAlternate />} onClick={() => setOpen(true)}>
-                            Select Image
-                        </Button>
                         <Button
                             component="label"
                             variant="outlined"
@@ -224,7 +228,6 @@ const BlogCreatePage = ({ newCode }) => {
                     Submit
                 </Button>
             </Stack>
-            <FileExplorerDialog open={open} onClose={() => setOpen(false)} onSelectFile={selectImage} />
         </Box>
     );
 };

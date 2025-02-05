@@ -60,7 +60,7 @@ router.delete('/:id', protect, async (req, res) => {
     try {
         const comment = await Comment.findById(req.params.id);
         if (!comment) return res.status(404).json({ message: 'Comment not found' });
-        if (comment.user != req.user._id) {
+        if (comment.user != req.user._id || req.user.role != 'admin') {
             return res.status(403).json({ message: 'You are not authorized to delete this comment' });
         }
         const replies = comment.replies;
