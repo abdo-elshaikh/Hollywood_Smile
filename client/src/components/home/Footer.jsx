@@ -25,13 +25,13 @@ const Footer = () => {
   const isDark = mode === 'dark';
 
   const navigationLinks = [
-    'about',
+    'about-us',
     'services',
     'doctors',
     'blog',
     'booking',
     'faq',
-    'contact',
+    'contact-us',
   ];
 
   const services = [
@@ -87,7 +87,7 @@ const Footer = () => {
               {services.map((text) => (
                 <Link
                   key={text}
-                  href="#"
+                  href="/services"
                   underline="hover"
                   sx={{
                     color: 'text.primary',
