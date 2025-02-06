@@ -153,41 +153,7 @@ const TestimonialsManager = () => {
                     />
                 )}
             </Box>
-            <Dialog
-                open={openFormDialog}
-                onClose={handleCloseFormDialog}
-                fullScreen={isMobile}
-                fullWidth
-            >
-                <DialogTitle>
-                    <Box
-                        display="flex"
-                        justifyContent="space-between"
-                        alignItems="center"
-                        sx={{
-                            p: 1,
-                            borderRadius: 1,
-                            bgcolor: 'background.default',
-                            color: 'text.primary',
-                        }}
-                    >
-                        {selectedTestimonial ? 'Edit Testimonial' : 'Add Testimonial'}
-                        <Button onClick={handleCloseFormDialog}>&times;</Button>
-                    </Box>
-                </DialogTitle>
-                <DialogContent
-                    sx={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        flexDirection: 'column',
-                        bgcolor: 'background.paper',
-                        p: 2,
-                    }}
-                >
-                    <TestimonialForm testimonial={selectedTestimonial} />
-                </DialogContent>
-            </Dialog>
+            <TestimonialForm open={openFormDialog} setOpen={setOpenFormDialog} testimonial={selectedTestimonial} />
         </Box>
     );
 };

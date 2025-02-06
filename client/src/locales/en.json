@@ -300,13 +300,13 @@
         "Navigation": {
             "title": "Navigation",
             "home": "Home",
-            "about": "About",
+            "about-us": "About",
             "services": "Services",
             "doctors": "Doctors",
             "blog": "Blog",
             "booking": "Booking",
             "faq": "FAQ",
-            "contact": "Contact"
+            "contact-us": "Contact"
         },
         "Services": {
             "title": "Services",

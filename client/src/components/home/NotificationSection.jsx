@@ -182,39 +182,11 @@ const NotificationSection = () => {
               {t('appointmentSection.emergency.feedback')}
             </Button>
           </Box>
-
         </motion.div>
       </Box>
 
       {/* Testimonial Modal with Glassmorphism */}
-      <Modal
-        open={openTestimonialModal}
-        onClose={() => setOpenTestimonialModal(false)}
-        aria-labelledby="Testimonial Form"
-        aria-describedby="Testimonial Form"
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <Box
-          sx={{
-            backgroundColor: 'background.default',
-            backdropFilter: 'blur(10px)',
-            p: 4,
-            borderRadius: 3,
-            boxShadow: 6,
-            width: '100%',
-            maxWidth: 'sm',
-            textAlign: 'center',
-            border: '1px solid',
-            borderColor: 'divider',
-          }}
-        >
-          <TestimonialForm />
-        </Box>
-      </Modal>
+      <TestimonialForm open={openTestimonialModal} setOpen={setOpenTestimonialModal} />
 
     </Box>
   );

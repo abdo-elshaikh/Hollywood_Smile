@@ -300,13 +300,13 @@
         "Navigation": {
             "title": "اقسام الموقع",
             "home": "الرئيسية",
-            "about": "حول",
+            "about-us": "حول",
             "services": "الخدمات",
             "doctors": "الأطباء",
             "blog": "المدونة",
             "booking": "الحجز",
             "faq": "الأسئلة الشائعة",
-            "contact": "اتصل"
+            "contact-us": "اتصل"
         },
         "Services": {
             "title": "خدمات المركز",

@@ -31,7 +31,7 @@ const TestimonySection = () => {
       name: item.name,
       position: item.position,
       quote: item.quote,
-      imgUrl: item.imageUrl,
+      imgUrl: item.imgUrl,
       rating: item.rating,
     }));
   }, [testimonials]);
@@ -126,7 +126,7 @@ const TestimonyCard = ({ name, position, quote, imgUrl, rating, t, isArabic }) =
     >
       <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
         <Avatar
-          src={imgUrl}
+          src={imgUrl || "images/unknown.jpg"}
           alt={name}
           sx={{
             width: 90,

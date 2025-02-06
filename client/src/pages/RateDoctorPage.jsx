@@ -259,24 +259,7 @@ const RateDoctorPage = () => {
                 )}
             </Container>
             {/* testonal dialog */}
-            <Dialog
-                open={openDialog}
-                onClose={() => setOpenDialog(false)}
-                fullWidth
-                maxWidth="sm"
-            >
-                <DialogTitle>
-                    <Box display="flex" justifyContent="space-between" alignItems="center">
-                        <Typography variant="h5">
-                            {isArabic ? 'أضف توصياتك' : 'Add your Testimonial'}
-                        </Typography>
-                        <Button onClick={() => setOpenDialog(false)}>{isArabic ? 'إغلاق' : 'Close'}</Button>
-                    </Box>
-                </DialogTitle>
-                <DialogContent>
-                    <TestimonialForm doctorId={id} />
-                </DialogContent>
-            </Dialog>
+            <TestimonialForm open={openDialog} setOpen={setOpenDialog} />
             <ScrollToTopButton />
             <Footer />
         </Box>
