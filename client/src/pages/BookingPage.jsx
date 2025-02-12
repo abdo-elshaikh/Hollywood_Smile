@@ -8,22 +8,24 @@ import { Close, ExpandMore as ExpandMoreIcon, KeyboardArrowRight, KeyboardArrowL
 import { useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { format } from 'date-fns';
-import HeaderSection from '../components/home/HeaderSection';
-import ScrollToTopButton from '../components/common/ScrollToTopButton';
-import Footer from '../components/home/Footer';
 import { useCustomTheme } from '../contexts/ThemeProvider';
 import { useClinicContext } from '../contexts/ClinicContext';
 import { useTranslation } from 'react-i18next';
 import { useSnackbar } from '../contexts/SnackbarProvider';
-import bookingService from '../services/bookingService';
 import { useAuth } from '../contexts/AuthContext';
+
+import bookingService from '../services/bookingService';
 import SuccessMessage from "../components/common/SuccessMessage";
 import axiosInstance from '../services/axiosInstance';
 import notificationService from '../services/notificationService';
 import InformationSection from '../components/common/InformationSection';
 import BeforeAfterGallery from '../components/common/BeforeAfterGallery';
+import HeaderSection from '../components/home/HeaderSection';
+import ScrollToTopButton from '../components/common/ScrollToTopButton';
+import Footer from '../components/home/Footer';
 import bgImage from '../assets/vectors/dental.jpg';
-// date picker
+
+// date picker imports
 import dayjs from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
@@ -41,8 +43,13 @@ const BookingPage = () => {
     const [selectedService, setSelectedService] = useState({ title: { en: '', ar: '' }, description: { en: '', ar: '' }, price: 0, duration: 0, image: '' });
     const [openDialog, setOpenDialog] = useState(false);
     const [expanded, setExpanded] = useState(true);
-    const [doctors, setDoctors] = useState([]); // State to hold available doctors
-    const [selectedDoctor, setSelectedDoctor] = useState({}); // State for selected doctor
+    const [doctors, setDoctors] = useState([]);
+
+    const [selectedDoctor, setSelectedDoctor] = useState({
+        _id: '',
+        name: { en: '', ar: '' },
+        workingHours: [{ day: '', startTime: '', endTime: '' }],
+    });
 
     const [currentDateTime, setCurrentDateTime] = useState({
         day: format(new Date(), 'eeee').toLowerCase()
@@ -91,6 +98,7 @@ const BookingPage = () => {
             setLoading(false);
         }
     };
+
     const handleSuccessClose = () => {
         setSuccess(false);
     };
@@ -154,17 +162,23 @@ const BookingPage = () => {
     const fetchDoctors = async () => {
         try {
             const response = await axiosInstance.get('/doctors');
-            setDoctors(response.data);
+            setDoctors(response?.data);
         } catch (error) {
             console.error('Failed to fetch doctors:', error);
         }
     };
 
     const handleDoctorSelection = (event) => {
-        const doctor = doctors.find((doc) => doc._id === event.target.value);
-        setSelectedDoctor(doctor);
-        setBookingData({ ...bookingData, doctor: event.target.value });
-        showSnackBar(isArabic ? `تم اختيار الطبيب : ${doctor.name.ar}` : `Selected Doctor : ${doctor.name.en}`, 'info');
+        const selected = event.target.value;
+        const doctor = doctors.find((doc) => doc._id === selected);
+        if (selected === 'not-preferred') {
+            setSelectedDoctor({ _id: '', name: { en: '', ar: '' }, workingHours: [{ day: '', startTime: '', endTime: '' }] });
+        } else {
+            setSelectedDoctor(doctor);
+        }
+        setBookingData({ ...bookingData, doctor: selected });
+        showSnackBar(isArabic ? `تم اختيار الطبيب : ${doctor?.name?.ar}` : `Selected Doctor : ${doctor?.name?.en}`, 'info');
+
     };
 
     const usableTime = (time) => {
@@ -195,8 +209,8 @@ const BookingPage = () => {
         }
 
         if (times) {
-            const from = new Date(`01/01/2000 ${times.from}`);
-            const to = new Date(`01/01/2000 ${times.to}`);
+            const from = new Date(`01/01/2000 ${times.from || times.startTime}`);
+            const to = new Date(`01/01/2000 ${times.to || times.endTime}`);
             const slots = [];
             while (from <= to) {
                 slots.push(format(from, 'hh:mm a'));
@@ -257,6 +271,11 @@ const BookingPage = () => {
         setSelectedTime('');
         setBookingData({ ...bookingData, date: new Date(), time: '' });
         setPredefinedTimeSlots([]);
+        setSelectedDoctor({
+            _id: '',
+            name: { en: '', ar: '' },
+            workingHours: [{ day: '', startTime: '', endTime: '' }],
+        });
     };
 
     return (
@@ -398,16 +417,22 @@ const BookingPage = () => {
                     </Typography>
                     <Divider sx={{ my: 1 }} />
                     <FormControl fullWidth sx={{ mt: 2 }}>
-                        <InputLabel id="doctor-select-label">{isArabic ? 'اختر الطبيب' : 'Select Doctor'}</InputLabel>
-                        <Select labelId="doctor-select-label" id="doctor-select" value={selectedDoctor} label="Select Doctor" onChange={handleDoctorSelection}>
+                        <Select displayEmpty id="doctor-select" value={selectedDoctor._id} onChange={handleDoctorSelection}>
                             <MenuItem value="">
-                                <em>{isArabic ? 'لا شيء' : 'None'}</em>
+                                <em>{isArabic ? 'اختر الطبيب' : 'Select Doctor'}</em>
                             </MenuItem>
                             {doctors.map((doctor, index) => (
                                 <MenuItem key={index} value={doctor._id}>
-                                    {isArabic ? doctor.name.ar : doctor.name.en}
+                                    <Typography variant="body1" font-weight="bold">
+                                        {isArabic ? doctor.name.ar : doctor.name.en}
+                                    </Typography>
                                 </MenuItem>
                             ))}
+                            <MenuItem value="not-preferred">
+                                <Typography variant="body1" font-weight="bold" color='primary.main'>
+                                    {isArabic ? 'أي طبيب متاح' : 'Any available doctor'}
+                                </Typography>
+                            </MenuItem>
                         </Select>
                     </FormControl>
                 </Card>
@@ -573,7 +598,6 @@ const BookingPage = () => {
                 </Grid>
             </Container>
 
-
             <InformationSection />
             <BeforeAfterGallery />
             <ScrollToTopButton />
@@ -613,7 +637,6 @@ const BookingPage = () => {
                     </Box>
                 </Modal>
             </motion.div>
-
 
             {/* Booking Dialog */}
             < Dialog open={openDialog} onClose={handleDialogClose} >
@@ -671,4 +694,3 @@ const BookingPage = () => {
 };
 
 export default BookingPage;
-
