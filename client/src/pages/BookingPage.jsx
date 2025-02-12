@@ -28,7 +28,6 @@ import dayjs from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import Doctors from '../../../server/models/Doctors';
 
 const BookingPage = () => {
     const { clinicInfo } = useClinicContext();
@@ -182,13 +181,18 @@ const BookingPage = () => {
             return;
         }
 
+
         const selectedDay = format(date, 'eeee').toLowerCase();
         showSnackBar(isArabic ? `تم اختيار اليوم : ${t(`days.${selectedDay}`)}` : `Selected Day : ${t(`days.${selectedDay}`)}`, 'info');
-
         setSelectedDate(dayjs(date));
-        // showSnackBar(date.toLocaleDateString(), 'info');
+
         setBookingData({ ...bookingData, date: date });
-        const times = clinicInfo?.onlineTimes.find((time) => time.day.toLowerCase() === selectedDay);
+        let times;
+        if (selectedDoctor?._id) {
+            times = selectedDoctor?.workingHours.find((time) => time.day.toLowerCase() === selectedDay);
+        } else {
+            times = clinicInfo?.onlineTimes.find((time) => time.day.toLowerCase() === selectedDay);
+        }
 
         if (times) {
             const from = new Date(`01/01/2000 ${times.from}`);
@@ -244,10 +248,7 @@ const BookingPage = () => {
             showSnackBar(isArabic ? 'الرجاء اختيار الوقت أولاً' : 'Please select a time first', 'error');
             return;
         }
-        if (!selectedDoctor) {
-            showSnackBar(isArabic ? 'الرجاء اختيار الطبيب أولاً' : 'Please select a doctor first', 'error');
-            return;
-        }
+
         setOpenDialog(true);
     };
 
