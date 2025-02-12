@@ -1,62 +1,36 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useClinicContext } from './contexts/ClinicContext';
 
-// const HomePage = React.lazy(() => import('./pages/HomePage'));
-// const AuthPage = React.lazy(() => import('./pages/AuthPage'));
-// const AboutUsPage = React.lazy(() => import('./pages/AboutUsPage'));
-// const DashboardPage = React.lazy(() => import('./pages/DashboardPage'));
-// const SupportDashboard = React.lazy(() => import('./pages/SupportDashboard'));
-// const BlogDashboard = React.lazy(() => import('./pages/BlogDashboard'));
-// const BlogPage = React.lazy(() => import('./pages/BlogPage'));
-// const BlogPostPage = React.lazy(() => import('./pages/BlogPostPage'));
-// const BookingPage = React.lazy(() => import('./pages/BookingPage'));
-// const BookingServicePage = React.lazy(() => import('./pages/BookingServicePage'));
-// const FaqPage = React.lazy(() => import('./pages/FaqPage'));
-// const ContactUsPage = React.lazy(() => import('./pages/ContactUsPage'));
-// const DoctorsPage = React.lazy(() => import('./pages/DoctorsPage'));
-// const GalleryPage = React.lazy(() => import('./pages/GalleryPage'));
-// const ImageDetailsPage = React.lazy(() => import('./pages/ImageDetailsPage'));
-// const ServicesPage = React.lazy(() => import('./pages/ServicesPage'));
-// const ViewProfile = React.lazy(() => import('./pages/ViewProfile'));
-// const ProfilePage = React.lazy(() => import('./pages/ProfilePage'));
-// const ClientBookings = React.lazy(() => import('./pages/ClientBookings'));
-// const Error404Page = React.lazy(() => import('./pages/404Page'));
-// const NotFoundPage = React.lazy(() => import('./pages/NotFoundPage'));
-// const Error403Page = React.lazy(() => import('./pages/403Page'));
-// const Error500Page = React.lazy(() => import('./pages/500Page'));
-// const LoadingSpinner = React.lazy(() => import('./components/common/LoadingSpinner'));
-// const ErrorBoundary = React.lazy(() => import('./components/common/ErrorBoundary'));
-// const RateDoctorPage = React.lazy(() => import('./pages/RateDoctorPage'));
+const HomePage = lazy(() => import('./pages/HomePage'));
+const AuthPage = lazy(() => import('./pages/AuthPage'));
+const AboutUsPage = lazy(() => import('./pages/AboutUsPage'));
+const DashboardPage = lazy(() => import('./pages/DashboardPage'));
+const SupportDashboard = lazy(() => import('./pages/SupportDashboard'));
+const BlogDashboard = lazy(() => import('./pages/BlogDashboard'));
+const BlogPage = lazy(() => import('./pages/BlogPage'));
+const BlogPostPage = lazy(() => import('./pages/BlogPostPage'));
+const BookingPage = lazy(() => import('./pages/BookingPage'));
+const BookingServicePage = lazy(() => import('./pages/BookingServicePage'));
+const FaqPage = lazy(() => import('./pages/FaqPage'));
+const ContactUsPage = lazy(() => import('./pages/ContactUsPage'));
+const DoctorsPage = lazy(() => import('./pages/DoctorsPage'));
+const GalleryPage = lazy(() => import('./pages/GalleryPage'));
+const ImageDetailsPage = lazy(() => import('./pages/ImageDetailsPage'));
+const ServicesPage = lazy(() => import('./pages/ServicesPage'));
+const ViewProfile = lazy(() => import('./pages/ViewProfile'));
+const ProfilePage = lazy(() => import('./pages/ProfilePage'));
+const BeforeAfterPage = lazy(() => import('./pages/BeforeAfterPage'));
+const ClientBookings = lazy(() => import('./pages/ClientBookings'));
+const Error404Page = lazy(() => import('./pages/404Page'));
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
+const Error403Page = lazy(() => import('./pages/403Page'));
+const Error500Page = lazy(() => import('./pages/500Page'));
+const LoadingSpinner = lazy(() => import('./components/common/LoadingSpinner'));
+const ErrorBoundary = lazy(() => import('./components/common/ErrorBoundary'));
+const RateDoctorPage = lazy(() => import('./pages/RateDoctorPage'));
 
-import HomePage from './pages/HomePage';
-import AuthPage from './pages/AuthPage';
-import AboutUsPage from './pages/AboutUsPage';
-import DashboardPage from './pages/DashboardPage';
-import SupportDashboard from './pages/SupportDashboard';
-import BlogDashboard from './pages/BlogDashboard';
-import BlogPage from './pages/BlogPage';
-import BlogPostPage from './pages/BlogPostPage';
-import BookingPage from './pages/BookingPage';
-import BookingServicePage from './pages/BookingServicePage';
-import FaqPage from './pages/FaqPage';
-import ContactUsPage from './pages/ContactUsPage';
-import DoctorsPage from './pages/DoctorsPage';
-import GalleryPage from './pages/GalleryPage';
-import ImageDetailsPage from './pages/ImageDetailsPage';
-import ServicesPage from './pages/ServicesPage';
-import ViewProfile from './pages/ViewProfile';
-import ProfilePage from './pages/ProfilePage';
-import BeforeAfterPage from './pages/BeforeAfterPage';
-import ClientBookings from './pages/ClientBookings';
-import Error404Page from './pages/404Page';
-import NotFoundPage from './pages/NotFoundPage';
-import Error403Page from './pages/403Page';
-import Error500Page from './pages/500Page';
-import LoadingSpinner from './components/common/LoadingSpinner';
-import ErrorBoundary from './components/common/ErrorBoundary';
-import RateDoctorPage from './pages/RateDoctorPage';
 import PrivateRoute from './components/PrivateRoute';
 import OfferPopup from './components/common/OfferPopup';
 
@@ -139,41 +113,41 @@ const App = () => {
           sx={{ overflowX: 'hidden' }}
         >
           <Routes>
-            <Route path="/" element={<HomePage />} />
+            <Route path="/" element={<Suspense fallback={<LoadingSpinner />}><HomePage /></Suspense>} />
             <Route path="/dashboard/*" element={
-              <PrivateRoute element={<DashboardPage />} requiredRoles={['admin']} />
+              <PrivateRoute element={<Suspense fallback={<LoadingSpinner />}><DashboardPage /></Suspense>} requiredRoles={['admin']} />
             } />
             <Route path="/blog-dashboard/*" element={
-              <PrivateRoute element={<BlogDashboard />} requiredRoles={['admin', 'editor', 'author']} />
+              <PrivateRoute element={<Suspense fallback={<LoadingSpinner />}><BlogDashboard /></Suspense>} requiredRoles={['admin', 'editor', 'author']} />
             } />
             <Route path="/support-dashboard" element={
-              <PrivateRoute element={<SupportDashboard />} requiredRoles={['admin', 'support']} />
+              <PrivateRoute element={<Suspense fallback={<LoadingSpinner />}><SupportDashboard /></Suspense>} requiredRoles={['admin', 'support']} />
             } />
             <Route path="/profile" element={
-              <PrivateRoute element={<ProfilePage />} requiredRoles={['visitor', 'admin', 'support', 'editor', 'author']} />
+              <PrivateRoute element={<Suspense fallback={<LoadingSpinner />}><ProfilePage /></Suspense>} requiredRoles={['visitor', 'admin', 'support', 'editor', 'author']} />
             } />
             <Route path="/detect-booking" element={
-              <PrivateRoute element={<ClientBookings />} requiredRoles={['visitor', 'admin', 'support', 'editor', 'author']} />
+              <PrivateRoute element={<Suspense fallback={<LoadingSpinner />}><ClientBookings /></Suspense>} requiredRoles={['visitor', 'admin', 'support', 'editor', 'author']} />
             } />
-            <Route path="/about-us" element={<AboutUsPage />} />
-            <Route path="/auth/*" element={<AuthPage />} />
-            <Route path="/blog" element={<BlogPage />} />
-            <Route path="/blog/:id" element={<BlogPostPage />} />
-            <Route path="/booking" element={<BookingServicePage />} />
-            <Route path="/booking/:id" element={<BookingPage />} />
-            <Route path="/faq" element={<FaqPage />} />
-            <Route path="/contact-us" element={<ContactUsPage />} />
-            <Route path="/doctors" element={<DoctorsPage />} />
-            <Route path="/before-after" element={<BeforeAfterPage />} />
-            <Route path="/doctors/:id" element={<ViewProfile />} />
-            <Route path="/rate-doctor/:id" element={<RateDoctorPage />} />
-            <Route path="/gallery" element={<GalleryPage />} />
-            <Route path="/gallery/:id" element={<ImageDetailsPage />} />
-            <Route path="/services" element={<ServicesPage />} />
-            <Route path="/not-found" element={<NotFoundPage />} />
-            <Route path="/unauthorized" element={<Error403Page />} />
-            <Route path="/server-error" element={<Error500Page />} />
-            <Route path="*" element={<Error404Page />} />
+            <Route path="/about-us" element={<Suspense fallback={<LoadingSpinner />}><AboutUsPage /></Suspense>} />
+            <Route path="/auth/*" element={<Suspense fallback={<LoadingSpinner />}><AuthPage /></Suspense>} />
+            <Route path="/blog" element={<Suspense fallback={<LoadingSpinner />}><BlogPage /></Suspense>} />
+            <Route path="/blog/:id" element={<Suspense fallback={<LoadingSpinner />}><BlogPostPage /></Suspense>} />
+            <Route path="/booking" element={<Suspense fallback={<LoadingSpinner />}><BookingServicePage /></Suspense>} />
+            <Route path="/booking/:id" element={<Suspense fallback={<LoadingSpinner />}><BookingPage /></Suspense>} />
+            <Route path="/faq" element={<Suspense fallback={<LoadingSpinner />}><FaqPage /></Suspense>} />
+            <Route path="/contact-us" element={<Suspense fallback={<LoadingSpinner />}><ContactUsPage /></Suspense>} />
+            <Route path="/doctors" element={<Suspense fallback={<LoadingSpinner />}><DoctorsPage /></Suspense>} />
+            <Route path="/before-after" element={<Suspense fallback={<LoadingSpinner />}><BeforeAfterPage /></Suspense>} />
+            <Route path="/doctors/:id" element={<Suspense fallback={<LoadingSpinner />}><ViewProfile /></Suspense>} />
+            <Route path="/rate-doctor/:id" element={<Suspense fallback={<LoadingSpinner />}><RateDoctorPage /></Suspense>} />
+            <Route path="/gallery" element={<Suspense fallback={<LoadingSpinner />}><GalleryPage /></Suspense>} />
+            <Route path="/gallery/:id" element={<Suspense fallback={<LoadingSpinner />}><ImageDetailsPage /></Suspense>} />
+            <Route path="/services" element={<Suspense fallback={<LoadingSpinner />}><ServicesPage /></Suspense>} />
+            <Route path="/not-found" element={<Suspense fallback={<LoadingSpinner />}><NotFoundPage /></Suspense>} />
+            <Route path="/unauthorized" element={<Suspense fallback={<LoadingSpinner />}><Error403Page /></Suspense>} />
+            <Route path="/server-error" element={<Suspense fallback={<LoadingSpinner />}><Error500Page /></Suspense>} />
+            <Route path="*" element={<Suspense fallback={<LoadingSpinner />}><Error404Page /></Suspense>} />
           </Routes>
         </Box>
       </ErrorBoundary>

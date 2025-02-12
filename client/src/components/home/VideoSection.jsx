@@ -1,9 +1,11 @@
-import React from "react";
-import { Box, Typography, Button, Container, Divider } from "@mui/material";
+import React, { lazy, Suspense } from "react";
+import { Box, Typography, Button, Container, Divider, CircularProgress } from "@mui/material";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import heroVideo from '../../assets/videos/hero-section.mp4';
+
+// Lazy load the Video component
+const VideoBackground = lazy(() => import('./VideoBackground'));
 
 const VideoSection = () => {
     const { i18n } = useTranslation();
@@ -20,35 +22,21 @@ const VideoSection = () => {
                 overflow: "hidden",
             }}
         >
-            {/* Video Background */}
-            <Box
-                sx={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    width: "100%",
-                    height: "100%",
-                    overflow: "hidden",
-                    zIndex: 1,
-                }}
-            >
+            {/* Lazy-loaded Video Background */}
+            <Suspense fallback={
                 <Box
-                    component="video"
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
                     sx={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                        filter: "brightness(0.85)",
+                        position: "absolute",
+                        top: "50%",
+                        left: "50%",
+                        transform: "translate(-50%, -50%)",
                     }}
                 >
-                    <source src={heroVideo} type="video/mp4" />
-                    Your browser does not support the video tag.
+                    <CircularProgress color="primary" size={100} />
                 </Box>
-            </Box>
+            }>
+                <VideoBackground />
+            </Suspense>
 
             {/* Darkened Overlay */}
             <Box

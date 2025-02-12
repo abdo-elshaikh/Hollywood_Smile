@@ -111,6 +111,12 @@ app.use('/sms', smsRoutes);
 // CORS Configuration
 // app.options('*', cors());
 
+//Caching headers
+app.use((req, res, next) => {
+    res.set('Cache-Control', 'public, max-age=31557600');
+    next();
+});
+
 // Error Handling Middleware
 app.use(error.notFound);
 app.use(error.errorHandler);

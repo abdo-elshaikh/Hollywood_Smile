@@ -48,6 +48,11 @@ const OnlineBookingSchema = new mongoose.Schema(
             ref: 'User',
             default: null,
         },
+        doctor: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Doctors',
+            required: [true, 'Doctor is required'],
+        },
     },
     { timestamps: true }
 );

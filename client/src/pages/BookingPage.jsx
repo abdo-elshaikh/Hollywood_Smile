@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {
     Box, Container, Typography, Button, Grid, Dialog, DialogActions, DialogContent, DialogTitle,
-    TextField, Divider, Accordion, AccordionSummary, AccordionDetails, Modal, Card
+    TextField, Divider, Accordion, AccordionSummary, AccordionDetails, Modal, Card,
+    FormControl, InputLabel, Select, MenuItem,
 } from '@mui/material';
 import { Close, ExpandMore as ExpandMoreIcon, KeyboardArrowRight, KeyboardArrowLeft, Refresh } from '@mui/icons-material';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -27,6 +28,7 @@ import dayjs from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import Doctors from '../../../server/models/Doctors';
 
 const BookingPage = () => {
     const { clinicInfo } = useClinicContext();
@@ -40,6 +42,8 @@ const BookingPage = () => {
     const [selectedService, setSelectedService] = useState({ title: { en: '', ar: '' }, description: { en: '', ar: '' }, price: 0, duration: 0, image: '' });
     const [openDialog, setOpenDialog] = useState(false);
     const [expanded, setExpanded] = useState(true);
+    const [doctors, setDoctors] = useState([]); // State to hold available doctors
+    const [selectedDoctor, setSelectedDoctor] = useState({}); // State for selected doctor
 
     const [currentDateTime, setCurrentDateTime] = useState({
         day: format(new Date(), 'eeee').toLowerCase()
@@ -58,7 +62,7 @@ const BookingPage = () => {
     const { id } = useParams();
     const [bookingData, setBookingData] = useState({
         name: '', email: '', phone: '', service: id || '',
-        date: new Date(), time: '', message: '', user: user?._id || null,
+        date: new Date(), time: '', message: '', user: user?._id || null, doctor: null
     });
 
     const handleSubmission = async () => {
@@ -108,6 +112,7 @@ const BookingPage = () => {
     };
 
     useEffect(() => {
+        fetchDoctors();
         fetchBookings();
         fetchServices();
     }, []);
@@ -145,6 +150,22 @@ const BookingPage = () => {
         } catch (error) {
             console.error('Failed to fetch service:', error);
         }
+    };
+
+    const fetchDoctors = async () => {
+        try {
+            const response = await axiosInstance.get('/doctors');
+            setDoctors(response.data);
+        } catch (error) {
+            console.error('Failed to fetch doctors:', error);
+        }
+    };
+
+    const handleDoctorSelection = (event) => {
+        const doctor = doctors.find((doc) => doc._id === event.target.value);
+        setSelectedDoctor(doctor);
+        setBookingData({ ...bookingData, doctor: event.target.value });
+        showSnackBar(isArabic ? `تم اختيار الطبيب : ${doctor.name.ar}` : `Selected Doctor : ${doctor.name.en}`, 'info');
     };
 
     const usableTime = (time) => {
@@ -221,6 +242,10 @@ const BookingPage = () => {
         }
         if (!selectedTime) {
             showSnackBar(isArabic ? 'الرجاء اختيار الوقت أولاً' : 'Please select a time first', 'error');
+            return;
+        }
+        if (!selectedDoctor) {
+            showSnackBar(isArabic ? 'الرجاء اختيار الطبيب أولاً' : 'Please select a doctor first', 'error');
             return;
         }
         setOpenDialog(true);
@@ -358,6 +383,34 @@ const BookingPage = () => {
                     </Button>
                 </Box>
 
+                {/* Doctor Selection */}
+                <Card
+                    sx={{
+                        p: 2,
+                        backgroundColor: isDark ? 'rgba(0, 0, 0, 0.5)' : 'rgba(255, 255, 255, 0.5)',
+                        borderRadius: 2,
+                        boxShadow: 1,
+                    }}
+                >
+                    <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+                        {isArabic ? 'اختيار الطبيب' : 'Select Doctor'}
+                    </Typography>
+                    <Divider sx={{ my: 1 }} />
+                    <FormControl fullWidth sx={{ mt: 2 }}>
+                        <InputLabel id="doctor-select-label">{isArabic ? 'اختر الطبيب' : 'Select Doctor'}</InputLabel>
+                        <Select labelId="doctor-select-label" id="doctor-select" value={selectedDoctor} label="Select Doctor" onChange={handleDoctorSelection}>
+                            <MenuItem value="">
+                                <em>{isArabic ? 'لا شيء' : 'None'}</em>
+                            </MenuItem>
+                            {doctors.map((doctor, index) => (
+                                <MenuItem key={index} value={doctor._id}>
+                                    {isArabic ? doctor.name.ar : doctor.name.en}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                </Card>
+
                 <Grid container spacing={4}>
                     {/* Date */}
                     <Grid item xs={12} md={4}>
@@ -479,6 +532,13 @@ const BookingPage = () => {
                                         </Typography>
                                         <Typography variant="body1">
                                             {isArabic ? selectedService?.description.ar : selectedService?.description.en}
+                                        </Typography>
+                                        <Typography variant="body1" sx={{ color: 'info.main' }}>
+                                            {isArabic ? 'السعر' : 'Price'} : {selectedService?.price} {isArabic ? 'جنيه' : 'EGP'}
+                                        </Typography>
+                                        <Divider />
+                                        <Typography variant="body1" sx={{ color: 'error.main' }}>
+                                            {isArabic ? 'الطبيب المعالج' : 'Attending Doctor'} : {isArabic ? selectedDoctor?.name.ar : selectedDoctor?.name.en}
                                         </Typography>
                                         <Typography variant="body1" sx={{ color: 'error.main' }}>
                                             {isArabic ? 'تاريخ الحجز' : 'Booking Date'} : {selectedDate ? selectedDate?.format('DD/MM/YYYY') : ''}

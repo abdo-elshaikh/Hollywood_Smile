@@ -2,8 +2,11 @@ const Doctors = require('../models/Doctors');
 
 const getDoctors = async (req, res) => {
     try {
-        const doctors = await Doctors.find().populate('socialLinks')
-            .populate('rating', 'name stars');
+        const doctors = await Doctors.find()
+            .populate('socialLinks')
+            .populate('workingHours')
+            .populate('rating');
+
         if (!doctors || doctors.length === 0) {
             return res.status(404).json({ message: 'No doctors found' });
         }
