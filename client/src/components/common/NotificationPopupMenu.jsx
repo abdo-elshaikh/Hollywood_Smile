@@ -70,7 +70,7 @@ const NotificationPopupMenu = ({ source = 'admin-dashboard' }) => {
 
     const handleViewAllNotifications = () => {
         if (source === 'admin-dashboard') {
-            navigate('/dashboard/notifications');
+            navigate('/admin-dashboard/notifications');
         } else {
             setDrawerOpen(true);
         }

@@ -60,7 +60,7 @@ const MessagePopupMenu = ({ source = 'admin-dashboard' }) => {
 
     const handleViewAllMessages = () => {
         if (source === 'admin-dashboard') {
-            navigate('/dashboard/messages');
+            navigate('/admin-dashboard/messages');
         } else {
             setDrawerOpen(true);
         }

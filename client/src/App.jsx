@@ -6,7 +6,7 @@ import { useClinicContext } from './contexts/ClinicContext';
 const HomePage = lazy(() => import('./pages/HomePage'));
 const AuthPage = lazy(() => import('./pages/AuthPage'));
 const AboutUsPage = lazy(() => import('./pages/AboutUsPage'));
-const DashboardPage = lazy(() => import('./pages/DashboardPage'));
+const DashboardPage = lazy(() => import('./pages/admin-dashboardPage'));
 const SupportDashboard = lazy(() => import('./pages/SupportDashboard'));
 const BlogDashboard = lazy(() => import('./pages/BlogDashboard'));
 const BlogPage = lazy(() => import('./pages/BlogPage'));
@@ -63,7 +63,7 @@ const ScrollToTop = () => {
     '/not-found': { ar: 'الصفحة غير موجودة | مركز هوليود سمايل', en: 'Page Not Found | Hollywood Smile Center' },
     '/unauthorized': { ar: 'غير مصرح لك | مركز هوليود سمايل', en: 'Unauthorized | Hollywood Smile Center' },
     '/server-error': { ar: 'خطأ في الخادم | مركز هوليود سمايل', en: 'Server Error | Hollywood Smile Center' },
-    '/dashboard': { ar: 'لوحة التحكم | مركز هوليود سمايل', en: 'Dashboard | Hollywood Smile Center' },
+    '/admin-dashboard': { ar: 'لوحة التحكم | مركز هوليود سمايل', en: 'Dashboard | Hollywood Smile Center' },
     '/blog-dashboard': { ar: 'لوحة التحكم | مركز هوليود سمايل', en: 'Blog Dashboard | Hollywood Smile Center' },
     '/support-dashboard': { ar: 'لوحة التحكم | مركز هوليود سمايل', en: 'Support Dashboard | Hollywood Smile Center' },
   }), []);
@@ -114,7 +114,7 @@ const App = () => {
         >
           <Routes>
             <Route path="/" element={<Suspense fallback={<LoadingSpinner />}><HomePage /></Suspense>} />
-            <Route path="/dashboard/*" element={
+            <Route path="/admin-dashboard/*" element={
               <PrivateRoute element={<Suspense fallback={<LoadingSpinner />}><DashboardPage /></Suspense>} requiredRoles={['admin']} />
             } />
             <Route path="/blog-dashboard/*" element={

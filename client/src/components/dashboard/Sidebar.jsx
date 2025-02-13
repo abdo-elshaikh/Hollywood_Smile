@@ -58,25 +58,25 @@ const Sidebar = ({ open, sidebarWidth, onToggleDrawer, setCurrentPage, setOpen }
     const [expanded, setExpanded] = React.useState({ settings: false });
 
     const items = [
-        { title: "Home", icon: <HomeIcon />, link: "/dashboard" },
-        { title: "Users", icon: <PersonIcon />, link: "/dashboard/users" },
-        { title: "Clinic Information", icon: <MedicalInformationIcon />, link: "/dashboard/clinic-info" },
-        { title: "Online Bookings", icon: <BookOnlineIcon />, link: "/dashboard/online-bookings" },
-        { title: "Services", icon: <HandymanIcon />, link: "/dashboard/services" },
-        { title: "Doctors", icon: <Diversity3 />, link: "/dashboard/doctors" },
-        { title: "Offers", icon: <LocalOfferIcon />, link: "/dashboard/offers" },
-        { title: "Gallery", icon: <BurstMode />, link: "/dashboard/gallery" },
-        { title: "Befor & After", icon: <ChangeCircle />, link: "/dashboard/before-after" },
-        { title: "Testimonials", icon: <Grade />, link: "/dashboard/testimonials" },
-        { title: "FAQs", icon: <QuizIcon />, link: "/dashboard/faqs" },
-        { title: "Subscriptions", icon: <BookmarkIcon />, link: "/dashboard/subscriptions" },
+        { title: "Home", icon: <HomeIcon />, link: "/admin-dashboard" },
+        { title: "Users", icon: <PersonIcon />, link: "/admin-dashboard/users" },
+        { title: "Clinic Information", icon: <MedicalInformationIcon />, link: "/admin-dashboard/clinic-info" },
+        { title: "Online Bookings", icon: <BookOnlineIcon />, link: "/admin-dashboard/online-bookings" },
+        { title: "Services", icon: <HandymanIcon />, link: "/admin-dashboard/services" },
+        { title: "Doctors", icon: <Diversity3 />, link: "/admin-dashboard/doctors" },
+        { title: "Offers", icon: <LocalOfferIcon />, link: "/admin-dashboard/offers" },
+        { title: "Gallery", icon: <BurstMode />, link: "/admin-dashboard/gallery" },
+        { title: "Befor & After", icon: <ChangeCircle />, link: "/admin-dashboard/before-after" },
+        { title: "Testimonials", icon: <Grade />, link: "/admin-dashboard/testimonials" },
+        { title: "FAQs", icon: <QuizIcon />, link: "/admin-dashboard/faqs" },
+        { title: "Subscriptions", icon: <BookmarkIcon />, link: "/admin-dashboard/subscriptions" },
         { title: "Blog Dashboard", icon: <RssFeed />, link: "/blog-dashboard" },
         { title: "Support Dashboard", icon: <SupportAgent />, link: "/support-dashboard" },
         {
             title: "Settings", icon: <SettingsIcon />, subItems: [
-                { title: "Theme Customize", icon: <AutoAwesome />, link: "/dashboard/settings/customization" },
-                { title: "Messages", icon: <Message />, link: "/dashboard/messages" },
-                { title: "Notifications", icon: <Notifications />, link: "/dashboard/notifications" },
+                { title: "Theme Customize", icon: <AutoAwesome />, link: "/admin-dashboard/settings/customization" },
+                { title: "Messages", icon: <Message />, link: "/admin-dashboard/messages" },
+                { title: "Notifications", icon: <Notifications />, link: "/admin-dashboard/notifications" },
             ]
         },
     ];

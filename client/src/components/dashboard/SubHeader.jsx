@@ -55,7 +55,7 @@ const SubHeader = ({ currentPage }) => {
                         </Link>
                         <Link
                             underline="hover"
-                            href="/dashboard"
+                            href="/admin-dashboard"
                             sx={{
                                 color: isDarkMode ? "#fff" : "#1976d2",
                                 fontWeight: 500,
