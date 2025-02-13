@@ -413,13 +413,13 @@ const BookingPage = () => {
                     }}
                 >
                     <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
-                        {isArabic ? 'اختيار الطبيب' : 'Select Doctor'}
+                        {isArabic ? 'اختر الطبيب :' : 'Select Doctor :'}
                     </Typography>
                     <Divider sx={{ my: 1 }} />
                     <FormControl fullWidth sx={{ mt: 2 }}>
                         <Select displayEmpty id="doctor-select" value={selectedDoctor._id} onChange={handleDoctorSelection}>
                             <MenuItem value="">
-                                <em>{isArabic ? 'اختر الطبيب' : 'Select Doctor'}</em>
+                                <em>{isArabic ? 'الطبيب المعالج' : 'Attending Doctor'}</em>
                             </MenuItem>
                             {doctors.map((doctor, index) => (
                                 <MenuItem key={index} value={doctor._id}>
@@ -449,7 +449,7 @@ const BookingPage = () => {
                             }}
                         >
                             <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
-                                {isArabic ? 'تاريخ الحجز' : 'Booking Date'} : {selectedDate ? selectedDate.format('DD/MM/YYYY') : ''}
+                                {isArabic ? 'أختر التاريخ المفضل :' : 'Select Perefare Date :'} {selectedDate ? selectedDate.format('DD/MM/YYYY') : ''}
                             </Typography>
                             <Divider sx={{ my: 1 }} />
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -492,7 +492,7 @@ const BookingPage = () => {
                             }}
                         >
                             <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
-                                {isArabic ? 'وقت الحجز :' : 'Bookable Times :'} {selectedTime ? selectedTime : ''}
+                                {isArabic ? 'الاوقات المتاحة :' : 'Available Times :'} {selectedTime ? selectedTime : ''}
                             </Typography>
                             <Divider sx={{ my: 1 }} />
                             <Grid container spacing={2} sx={{ mt: 2 }}>

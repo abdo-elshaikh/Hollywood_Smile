@@ -15,6 +15,7 @@ const ServicesSection = () => {
     const { t, i18n } = useTranslation();
     const [services, setServices] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [hoveredService, setHoveredService] = useState(null); // Added state for hover effect
     const isArabic = i18n.language === 'ar';
 
     useEffect(() => {
@@ -102,22 +103,41 @@ const ServicesSection = () => {
                                 transition={{ duration: 0.8, delay: index * 0.2 }}
                             >
                                 <Card
+                                    onMouseEnter={() => setHoveredService(index)}
+                                    onMouseLeave={() => setHoveredService(null)}
                                     sx={{
-                                        p: 3,
+                                        height: '100%',
+                                        minHeight: 250,
                                         textAlign: 'center',
-                                        borderRadius: 4,
+                                        borderRadius: '30px',
                                         background: isDark
-                                            ? 'linear-gradient(135deg, #2a2a2a, #1b1b1b)'
-                                            : 'linear-gradient(135deg, #ffffff, #f7f7f7)',
-                                        boxShadow: isDark
-                                            ? '0 10px 30px rgba(255, 255, 255, 0.08)'
-                                            : '0 10px 30px rgba(0, 0, 0, 0.1)',
-                                        transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-                                        '&:hover': {
-                                            transform: 'translateY(-10px)',
-                                            boxShadow: isDark
-                                                ? '0 15px 35px rgba(255, 255, 255, 0.1)'
-                                                : '0 15px 35px rgba(0, 0, 0, 0.15)',
+                                            ? 'linear-gradient(165deg, #2a2a2a, #1b1b1b)'
+                                            : 'linear-gradient(165deg, #ffffff, #f8f9fa)',
+                                        boxShadow: hoveredService === index
+                                            ? (isDark
+                                                ? '0 30px 60px rgba(255, 255, 255, 0.2)'
+                                                : '0 30px 60px rgba(0, 0, 0, 0.15)')
+                                            : (isDark
+                                                ? '0 15px 35px rgba(255, 255, 255, 0.05)'
+                                                : '0 15px 35px rgba(0, 0, 0, 0.08)'),
+                                        transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+                                        position: 'relative',
+                                        overflow: 'hidden',
+                                        border: isDark
+                                            ? '1px solid rgba(255, 255, 255, 0.08)'
+                                            : '1px solid rgba(0, 0, 0, 0.03)',
+                                        transform: hoveredService === index ? 'translateY(-20px) scale(1.02)' : 'translateY(0) scale(1)',
+                                        '&::before': {
+                                            content: '""',
+                                            position: 'absolute',
+                                            top: 0,
+                                            left: 0,
+                                            width: '100%',
+                                            height: '100%',
+                                            background: 'linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0))',
+                                            opacity: hoveredService === index ? 1 : 0,
+                                            transition: 'opacity 0.6s ease',
+                                            zIndex: 1,
                                         },
                                     }}
                                 >
@@ -131,11 +151,11 @@ const ServicesSection = () => {
                                             alignItems: 'center',
                                             justifyContent: 'center',
                                             mx: 'auto',
-                                            mb: 3,
+                                            mb: 2,
                                             background: isDark
                                                 ? 'linear-gradient(145deg, #ff6b6b, #ffa502)'
                                                 : 'linear-gradient(145deg, #3b82f6, #34d399)',
-                                            boxShadow: '0 10px 20px rgba(0, 0, 0, 0.1)',
+                                            boxShadow: '0 10px 20px rgba(0, 0, 0, 0.3)',
                                         }}
                                     >
                                         <img
