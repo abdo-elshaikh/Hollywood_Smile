@@ -32,6 +32,10 @@
         "register": "Register",
         "logout": "Logout",
         "adminMenu": "Admin Menu",
+        "switchEnglish": "English",
+        "switchArabic": "Arabic",
+        "lightMode": "Light Mode",
+        "darkMode": "Dark Mode",
         "languages": {
             "en": "English",
             "ar": "Arabic",

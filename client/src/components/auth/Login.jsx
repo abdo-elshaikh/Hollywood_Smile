@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSnackbar } from "../../contexts/SnackbarProvider";
@@ -8,181 +9,226 @@ import {
     Typography,
     Box,
     Avatar,
-    FormControlLabel,
-    Checkbox,
     InputAdornment,
+    CircularProgress,
+    IconButton,
+    useTheme,
+    useMediaQuery,
+    Container,
+    Paper,
 } from "@mui/material";
 import { Email, LockOutlined, Visibility, VisibilityOff, Person } from "@mui/icons-material";
 import { useAuth } from "../../contexts/AuthContext";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from 'react-i18next';
 import { useClinicContext } from "../../contexts/ClinicContext";
 
 const Login = () => {
-    const { mode: themeMode } = useCustomTheme();
+    const { mode } = useCustomTheme();
     const { t, i18n } = useTranslation();
     const { clinicInfo } = useClinicContext();
-    const isDarkMode = themeMode === "dark";
+    const isDarkMode = mode === "dark";
     const { login, error } = useAuth();
     const [formData, setFormData] = useState({ identifier: "", password: "" });
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const showSnackbar = useSnackbar();
     const navigate = useNavigate();
-    document.title = "HSC | Login";
     const isArabic = i18n.language === "ar";
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-    const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+    document.title = "HSC | Login";
+
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value.trim() });
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (!formData.identifier || !formData.password) {
+            showSnackbar(isArabic ? "جميع الحقول مطلوبة" : "All fields are required", "error");
+            return;
+        }
         setLoading(true);
         try {
             const user = await login(formData);
             if (!user) {
-                showSnackbar(isArabic? "اسم المستخدم او كلمة المرور غير صحيحة" : "Invalid username or password", "error");
+                showSnackbar(isArabic ? "اسم المستخدم او كلمة المرور غير صحيحة" : "Invalid credentials", "error");
                 return;
             }
-            showSnackbar(isArabic? "تم تسجيل الدخول بنجاح" : "Login successful", "success");
+            showSnackbar(isArabic ? "تم تسجيل الدخول بنجاح" : "Login successful", "success");
             navigate('/');
         } catch (err) {
-            showSnackbar(error || isArabic? "فشل تسجيل الدخول" : "Login failed", "error");
+            showSnackbar(error || (isArabic ? "فشل تسجيل الدخول" : "Login failed"), "error");
         } finally {
             setLoading(false);
         }
     };
 
-    const togglePasswordVisibility = () => setShowPassword(!showPassword);
-
     return (
-        <Box
-            component={motion.div}
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            sx={{
-                textAlign: "center",
-                p: 4,
-                backgroundColor: "background.paper",
-                borderRadius: 4,
-                boxShadow: isDarkMode ? "0px 0px 20px 5px rgba(66, 165, 245, 0.2)" : "0px 0px 20px 5px rgba(0, 123, 181, 0.2)",
-                maxWidth: '500px',
-                mx: "auto",
-                mb: 4,
-                border: `1px solid ${isDarkMode ? "#42a5f5" : "#007bb5"}`,
-                color: isDarkMode ? "#90caf9" : "#007bb5",
-            }}
-        >
-            <Avatar
-                src={isDarkMode ? clinicInfo?.logo.dark : clinicInfo?.logo.light}
-                alt="Clinic Logo"
-                sx={{
-                    width: 80,
-                    height: 80,
-                    mb: 2,
-                    border: `2px solid ${isDarkMode ? "#42a5f5" : "#007bb5"}`,
-                }}
+        <Container maxWidth="xs">
+            <Paper
                 component={motion.div}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
-            />
-            <Typography
-                variant="h4"
+                elevation={3}
                 sx={{
-                    mb: 3,
-                    fontWeight: "bold",
-                    color: isDarkMode ? "#90caf9" : "#007bb5",
+                    p: 4,
+                    borderRadius: 4,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    background: isDarkMode ? 'rgba(18, 18, 18, 0.8)' : 'rgba(255, 255, 255, 0.9)',
+                    backdropFilter: 'blur(10px)',
+                    border: `1px solid ${isDarkMode ? "#42a5f5" : "#007bb5"}`,
                 }}
             >
-                {t("auth.welcome")}
-            </Typography>
-            <Typography
-                align={isArabic ? "right" : "left"}
-                variant="body1"
-                sx={{ color: isDarkMode ? "#90caf9" : "#007bb5", mt: 2, mb: 2 }}>
-                {t("auth.notRegistered")} {' '}
-                <Link to="/auth/register" style={{ textDecoration: "none", fontWeight: "bold", color: '#C96868' }}>
-                    {t("auth.registerNow")}
-                </Link>
-            </Typography>
-
-            <form onSubmit={handleSubmit}>
-                <TextField
-                    label={`${t("auth.email")} ${t("auth.or")} ${t("auth.username")}`}
-                    name="identifier"
-                    type="text"
-                    fullWidth
-                    required
-                    autoComplete="username"
-                    value={formData.identifier}
-                    onChange={handleChange}
-                    InputProps={{
-                        startAdornment: (
-                            <InputAdornment position="start">
-                                <Person sx={{ color: isDarkMode ? "#90caf9" : "#007bb5" }} />
-                            </InputAdornment>
-                        ),
-                    }}
-                    helperText={formData.identifier && formData.identifier.length < 3 ? t("auth.enterValid") : ""}
-                    error={formData.identifier && formData.identifier.length < 3}
-                    sx={{ mb: 2 }}
-                />
-
-                <TextField
-                    label={t("auth.password")}
-                    name="password"
-                    autoComplete="password"
-                    type={showPassword ? "text" : "password"}
-                    fullWidth
-                    required
-                    value={formData.password}
-                    onChange={handleChange}
-                    InputProps={{
-                        startAdornment: (
-                            <InputAdornment position="start">
-                                <LockOutlined sx={{ color: isDarkMode ? "#90caf9" : "#007bb5" }} />
-                            </InputAdornment>
-                        ),
-                        endAdornment: (
-                            <InputAdornment position="end">
-                                <Box onClick={togglePasswordVisibility} sx={{ cursor: "pointer" }}>
-                                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                                </Box>
-                            </InputAdornment>
-                        ),
-                    }}
-                    sx={{ mb: 2 }}
-                />
-                <Button
-                    type="submit"
-                    variant="contained"
-                    fullWidth
+                <Avatar
+                    src={isDarkMode ? clinicInfo?.logo.dark : clinicInfo?.logo.light}
+                    alt="Clinic Logo"
                     sx={{
-                        mt: 2,
-                        py: 1.5,
-                        borderRadius: 3,
-                        fontSize: "1rem",
-                        textTransform: "none",
-                        backgroundColor: isDarkMode ? "#42a5f5" : "#007bb5",
+                        width: 80,
+                        height: 80,
+                        mb: 2,
+                        border: `2px solid ${isDarkMode ? "#42a5f5" : "#1976d2"}`,
+                        boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                        transition: "transform 0.3s ease",
                         "&:hover": {
-                            backgroundColor: isDarkMode ? "#1e88e5" : "#005f7f",
+                            transform: "scale(1.05)",
                         },
                     }}
-                    disabled={loading}
+                />
+
+                <Typography
+                    variant={isMobile ? "h5" : "h4"}
+                    sx={{
+                        mb: 4,
+                        fontWeight: "bold",
+                        color: isDarkMode ? "#90caf9" : "#1976d2",
+                        textAlign: "center",
+                    }}
                 >
-                    {loading ? t("common.loading") : t("auth.login")}
-                </Button>
-            </form>
+                    {t("auth.welcome")}
+                </Typography>
+                <form onSubmit={handleSubmit} style={{ width: '100%' }}>
+                    <TextField
+                        label={t("auth.identifier")}
+                        name="identifier"
+                        type="text"
+                        fullWidth
+                        required
+                        value={formData.identifier}
+                        onChange={handleChange}
+                        sx={{ mb: 2, ch: 1 }}
+                        InputProps={{
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <Person sx={{ color: isDarkMode ? "#90caf9" : "#1976d2" }} />
+                                </InputAdornment>
+                            ),
+                        }}
+                    />
 
+                    <TextField
+                        label={t("auth.password")}
+                        name="password"
+                        type={showPassword ? "text" : "password"}
+                        fullWidth
+                        required
+                        value={formData.password}
+                        onChange={handleChange}
+                        sx={{ mb: 2, ch: 1 }}
+                        InputProps={{
+                            startAdornment: (
+                                <InputAdornment position="end">
+                                    <LockOutlined sx={{ color: isDarkMode ? "#90caf9" : "#1976d2" }} />
+                                </InputAdornment>
+                            ),
+                            endAdornment: (
+                                <InputAdornment position="start">
+                                    <IconButton
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        edge="end"
+                                        sx={{ color: isDarkMode ? "#90caf9" : "#1976d2" }}
+                                    >
+                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                                </InputAdornment>
+                            ),
+                        }}
+                    />
 
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        fullWidth
+                        disabled={loading}
+                        sx={{
+                            mt: 2,
+                            mb: 3,
+                            py: 1.5,
+                            borderRadius: 2,
+                            fontSize: "1rem",
+                            textTransform: "none",
+                            backgroundColor: isDarkMode ? "#42a5f5" : "#1976d2",
+                            transition: "all 0.3s ease",
+                            "&:hover": {
+                                backgroundColor: isDarkMode ? "#1e88e5" : "#1565c0",
+                                transform: "translateY(-2px)",
+                                boxShadow: "0 6px 20px rgba(0,0,0,0.2)",
+                            },
+                        }}
+                    >
+                        {loading ? (
+                            <CircularProgress size={24} color="inherit" />
+                        ) : (
+                            t("auth.login")
+                        )}
+                    </Button>
+                </form>
 
-            <Typography variant="body2" sx={{ mt: 2, color: isDarkMode ? "#e0f7fa" : "#007bb5" }}>
-                <Button variant="text" onClick={() => navigate("/")} style={{ textDecoration: "none", color: isDarkMode ? "#90caf9" : "#007bb5" }}>
-                    {isArabic ? "الرجوع إلى الصفحة الرئيسية" : "Back to Home"}
-                </Button>
-            </Typography>
-        </Box>
+                <Typography
+                    variant="body2"
+                    align="center"
+                    sx={{
+                        color: isDarkMode ? "#90caf9" : "#1976d2",
+                        mt: 2,
+                    }}
+                >
+                    {t("auth.notRegistered")}{" "}
+                    <Link
+                        to="/auth/register"
+                        style={{
+                            textDecoration: "none",
+                            color: isDarkMode ? "#f48fb1" : "#c2185b",
+                            fontWeight: "bold",
+                            transition: "color 0.3s ease",
+                        }}
+                    >
+                        {t("auth.registerNow")}
+                    </Link>
+                </Typography>
+
+                <Box sx={{ mt: 3 }}>
+                    <Button
+                        variant="text"
+                        onClick={() => navigate("/")}
+                        sx={{
+                            color: isDarkMode ? "#90caf9" : "#1976d2",
+                            textTransform: "none",
+                            "&:hover": {
+                                backgroundColor: "transparent",
+                                textDecoration: "underline",
+                            },
+                        }}
+                    >
+                        {isArabic ? "الرجوع إلى الصفحة الرئيسية" : "Back to Home"}
+                    </Button>
+                </Box>
+            </Paper>
+        </Container>
     );
 };
 

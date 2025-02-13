@@ -32,6 +32,10 @@
         "register": "تسجيل",
         "logout": "تسجيل الخروج",
         "adminMenu": "قائمة الادمن",
+        "switchEnglish": "الانجليزية",
+        "switchArabic": "العربية",
+        "lightMode": "الوضع الفاتح",
+        "darkMode": "الوضع الداكن",
         "languages": {
             "en": "الانجليزية",
             "ar": "العربية",
