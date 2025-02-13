@@ -11,7 +11,6 @@ import { Facebook, Twitter, LinkedIn, Instagram } from "@mui/icons-material";
 import doctorService from "../../services/doctorService";
 import { useCustomTheme } from "../../contexts/ThemeProvider";
 
-
 const TeamSection = () => {
     const { t, i18n } = useTranslation();
     const [staffMembers, setStaffMembers] = useState([]);
@@ -50,33 +49,35 @@ const TeamSection = () => {
     };
 
     return (
-        <Box py={5} px={{ xs: 2, md: 10 }} bgcolor="background.default">
-            <Container maxWidth="xl" sx={{ position: "relative" }}>
-                <Grid container spacing={3}>
+        <Box py={6} px={{ xs: 2, md: 10 }} sx={{
+            minHeight: "100vh",
+            // backgroundColor: darkMode ? "#1a1a1a" : "#f9f9f9",
+        }}>
+            <Container maxWidth="xl">
+                <Grid container spacing={4}>
+                    {/* Section Title */}
                     <Grid item xs={12} md={3}>
                         <motion.div
                             initial={{ opacity: 0, y: 60 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.5 }}
                             style={{
-                                position: "relative",
-                                backgroundColor: darkMode ? "#333" : "#E3F2FD",
-                                boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
-                                padding: "20px",
-                                borderRadius: 0,
+                                backgroundColor: darkMode ? "#252839" : "#EEF7FF",
+                                boxShadow: '0px 8px 20px rgba(0, 0, 0, 0.1)',
+                                padding: "30px",
+                                borderRadius: "12px",
                                 border: "1px solid #ddd",
                                 height: "100%",
                                 display: "flex",
                                 flexDirection: "column",
-                                // justifyContent: "space-between",
                             }}
                         >
-                            <Stack direction="column" spacing={2} justifyContent="center" mb={10}>
-                                <Typography gutterBottom variant="h3" fontWeight="bold" component="div" mb={2}>
+                            <Stack direction="column" spacing={3}>
+                                <Typography variant="h3" fontWeight="700" sx={{ color: darkMode ? "#fff" : "#333" }}>
                                     {isArabic ? "فريقنا" : "Meet Our Team"}
                                 </Typography>
                                 <Divider sx={{ bgcolor: "text.primary" }} />
-                                <Typography variant="subtitle1" mt={2}>
+                                <Typography variant="subtitle1" sx={{ color: darkMode ? "#bbb" : "#555" }}>
                                     {isArabic ? "نحن نعمل معًا لتقديم أفضل الخدمات لك" : "We work together to provide the best services for you"}
                                 </Typography>
                             </Stack>
@@ -86,8 +87,11 @@ const TeamSection = () => {
                                 sx={{
                                     mt: 4,
                                     width: "100%",
-                                    border: "1px solid #ddd",
-                                    borderRadius: 0,
+                                    borderRadius: "8px",
+                                    fontWeight: "600",
+                                    py: 1.5,
+                                    transition: "all 0.3s ease",
+                                    '&:hover': { transform: "scale(1.05)" },
                                 }}
                                 onClick={() => navigate("/contact-us")}
                             >
@@ -96,6 +100,7 @@ const TeamSection = () => {
                         </motion.div>
                     </Grid>
 
+                    {/* Team Members */}
                     {teamMembers.map((member, index) => (
                         <Grid item xs={12} md={3} key={member.id}>
                             <motion.div
@@ -108,12 +113,10 @@ const TeamSection = () => {
                                         height: "100%",
                                         display: "flex",
                                         flexDirection: "column",
-                                        position: "relative",
-                                        boxShadow: 1,
-                                        borderRadius: 0,
-                                        border: "none",
-                                        bgcolor: darkMode ? "#333" : "#E3F2FD",
-                                        '&:hover': { boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.4)' },
+                                        boxShadow: "0px 8px 20px rgba(0, 0, 0, 0.1)",
+                                        borderRadius: "12px",
+                                        bgcolor: darkMode ? "#252839" : "#EEF7FF",
+                                        '&:hover': { transform: "scale(1.02)", transition: "0.3s ease-in-out" },
                                     }}
                                 >
                                     <CardMedia>
@@ -123,26 +126,22 @@ const TeamSection = () => {
                                             onClick={() => navigate(`/doctors/${member.id}`)}
                                             style={{
                                                 width: "100%",
-                                                height: "400px",
+                                                height: "350px",
                                                 objectFit: "cover",
                                                 objectPosition: "top",
+                                                borderTopLeftRadius: "12px",
+                                                borderTopRightRadius: "12px",
                                                 cursor: "pointer",
-                                                '&:hover': { boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.4)' },
                                             }}
                                         />
                                     </CardMedia>
 
+                                    {/* Social Media Links */}
                                     <Box
                                         display="flex"
                                         justifyContent="center"
                                         alignItems="center"
-                                        sx={{
-                                            p: 1,
-                                            position: "absolute",
-                                            top: '375px',
-                                            left: '50%',
-                                            transform: 'translateX(-50%)',
-                                        }}
+                                        sx={{ p: 2 }}
                                     >
                                         {Object.keys(member.socials).map((social, index) => (
                                             <Tooltip title={social.charAt(0).toUpperCase() + social.slice(1)} key={index}>
@@ -151,17 +150,15 @@ const TeamSection = () => {
                                                     href={member.socials[social]}
                                                     target="_blank"
                                                     sx={{
-                                                        border: "1px solid",
-                                                        borderColor: "divider",
+                                                        borderRadius: "50%",
                                                         bgcolor: socialIcons[social].color,
-                                                        color: "common.white",
+                                                        color: "white",
                                                         mx: 0.7,
-                                                        boxShadow: 4,
-                                                        transition: "background-color 0.3s, color 0.3s",
                                                         '&:hover': {
-                                                            bgcolor: "common.white",
+                                                            bgcolor: "white",
                                                             color: socialIcons[social].color,
-                                                            border: `1px solid ${socialIcons[social].color}`,
+                                                            boxShadow: "0px 8px 20px rgba(0, 0, 0, 0.1)",
+                                                            border: "1px solid #ddd",
                                                         },
                                                     }}
                                                 >
@@ -170,33 +167,14 @@ const TeamSection = () => {
                                             </Tooltip>
                                         ))}
                                     </Box>
-                                    <CardContent sx={{ flexGrow: 1, pt: 4, backgroundColor: darkMode ? "#333" : "#E3F2FD" }}>
-                                        <Typography gutterBottom variant="h4" fontWeight="bold" component="div">
-                                            {member.name}
-                                        </Typography>
-                                        <Typography
-                                            variant="h6"
-                                            fontFamily='"Open Sans", sans-serif'
-                                            color="primary.dark"
-                                            fontWeight="bold"
-                                        >
-                                            {member.role}
-                                        </Typography>
-                                        <Typography variant="body1" fontFamily='"Open Sans", sans-serif' color="text.secondary" mt={2}>
-                                            {member.description}
-                                        </Typography>
-                                        <Typography align="center" variant="body2" fontFamily='"Open Sans", sans-serif' color="text.secondary" mt={2}>
-                                            {member.rating && member.rating.length > 0 ? (
-                                                <Rating
-                                                    name="read-only"
-                                                    size="large"
-                                                    value={member.rating.reduce((acc, rating) => acc + rating.stars, 0) / member.rating.length}
-                                                    readOnly
-                                                />
-                                            ) : (
-                                                <Typography variant="body2" color="text.secondary">No ratings yet</Typography>
-                                            )}
-                                        </Typography>
+
+                                    <CardContent sx={{ flexGrow: 1, textAlign: "center" }}>
+                                        <Typography variant="h5" fontWeight="700">{member.name}</Typography>
+                                        <Typography variant="subtitle1" color="primary">{member.role}</Typography>
+                                        <Typography variant="body2" color="text.secondary" mt={1} mb={2}>{member.description}</Typography>
+                                        {member.rating && member.rating.length > 0 && (
+                                            <Rating value={member.rating.reduce((acc, r) => acc + r.stars, 0) / member.rating.length} readOnly size="large" />
+                                        )}
                                     </CardContent>
                                 </Card>
                             </motion.div>

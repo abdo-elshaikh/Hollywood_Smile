@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Container, Typography, Grid, Paper, List, ListItem, ListItemText, ListItemAvatar, Divider, CircularProgress, Card, CardContent } from '@mui/material';
+import { Box, Container, Typography, Grid, Card, CardContent, CircularProgress, Divider, List, ListItem, ListItemText, ListItemAvatar } from '@mui/material';
 import { motion } from 'framer-motion';
 import { useCustomTheme } from '../../contexts/ThemeProvider';
 import { useTranslation } from 'react-i18next';
-import { BorderBottom, CheckCircle } from '@mui/icons-material';
+import { CheckCircle } from '@mui/icons-material';
 import { fetchServices } from "../../services/servicesService";
 import backgroundImage from '../../assets/images/m_mabrouk.jpg';
-
-
 
 const ServicesSection = () => {
     const { mode: themeMode } = useCustomTheme();
@@ -15,7 +13,7 @@ const ServicesSection = () => {
     const { t, i18n } = useTranslation();
     const [services, setServices] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [hoveredService, setHoveredService] = useState(null); // Added state for hover effect
+    const [hoveredService, setHoveredService] = useState(null);
     const isArabic = i18n.language === 'ar';
 
     useEffect(() => {
@@ -35,8 +33,7 @@ const ServicesSection = () => {
         } catch (error) {
             console.error('Error fetching services:', error);
         }
-    }
-
+    };
 
     if (loading) {
         return (
@@ -106,6 +103,7 @@ const ServicesSection = () => {
                                     onMouseEnter={() => setHoveredService(index)}
                                     onMouseLeave={() => setHoveredService(null)}
                                     sx={{
+                                        position: 'relative',
                                         height: '100%',
                                         minHeight: 250,
                                         textAlign: 'center',
@@ -121,7 +119,6 @@ const ServicesSection = () => {
                                                 ? '0 15px 35px rgba(255, 255, 255, 0.05)'
                                                 : '0 15px 35px rgba(0, 0, 0, 0.08)'),
                                         transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
-                                        position: 'relative',
                                         overflow: 'hidden',
                                         border: isDark
                                             ? '1px solid rgba(255, 255, 255, 0.08)'
@@ -144,6 +141,11 @@ const ServicesSection = () => {
                                     {/* Icon Section */}
                                     <Box
                                         sx={{
+                                            // position: 'absolute',
+                                            // top: -50,
+                                            // left: 0,
+                                            // right: 0,
+                                            // zIndex: 112,
                                             width: 100,
                                             height: 100,
                                             borderRadius: '50%',
@@ -178,6 +180,7 @@ const ServicesSection = () => {
                                                 fontSize: '1.3rem',
                                                 color: 'text.primary',
                                                 fontFamily: 'Poppins, sans-serif',
+                                                // mt: 10,
                                             }}
                                         >
                                             {isArabic ? service.title.ar : service.title.en}
@@ -205,7 +208,6 @@ const ServicesSection = () => {
                 </Grid>
             </Container>
 
-
             {/* About Section */}
             <Box
                 sx={{
@@ -217,13 +219,9 @@ const ServicesSection = () => {
                     overflow: 'hidden',
                 }}
             >
-                <Grid container >
+                <Grid container>
                     {/* Image Section */}
-                    <Grid
-                        item
-                        xs={12}
-                        md={6}
-                    >
+                    <Grid item xs={12} md={6}>
                         <motion.div
                             initial={{ opacity: 0, y: 30 }}
                             whileInView={{ opacity: 1, y: 0 }}
@@ -237,7 +235,7 @@ const ServicesSection = () => {
 
                     {/* Text Section */}
                     <Grid item xs={12} md={6}>
-                        <Box sx={{ p: 4, }}>
+                        <Box sx={{ p: 4 }}>
                             <motion.div
                                 initial={{ opacity: 0, x: 30 }}
                                 whileInView={{ opacity: 1, x: 0 }}
@@ -253,7 +251,7 @@ const ServicesSection = () => {
                                         fontFamily: 'Poppins',
                                         fontSize: { xs: '2rem', sm: '2.5rem' },
                                         color: 'white',
-                                        fontShadow: '2px 2px 4px rgba(0, 0, 0, 0.2)',
+                                        textShadow: '2px 2px 4px rgba(0, 0, 0, 0.2)',
                                     }}
                                 >
                                     {t('servicesSection.featureSection.title')}
@@ -289,7 +287,6 @@ const ServicesSection = () => {
                                         viewport={{ once: true }}
                                         transition={{ duration: 0.9, ease: 'easeOut', delay: 0.3 * index }}
                                     >
-
                                         <ListItem disablePadding>
                                             <ListItemAvatar>
                                                 <CheckCircle fontSize="large" sx={{ mx: 2, color: '#fff' }} />
