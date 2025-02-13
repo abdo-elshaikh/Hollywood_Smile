@@ -80,6 +80,7 @@ const ManageBookingsPage = () => {
     try {
       setLoading(true);
       const data = await bookingService.getAllBookings();
+      console.log(data.data);
       setBookings(data.data);
     } catch (error) {
       showSnackbar(error?.response?.data?.message || "Error fetching bookings.", "error");
@@ -187,7 +188,7 @@ const ManageBookingsPage = () => {
   };
 
   const filteredBookings = activeTab === "All" ? bookings : bookings.filter((booking) => booking.status === activeTab);
-  
+
   const filetrByDate = (firstDate, secondDate) => {
     const date1 = new Date(firstDate);
     const date2 = new Date(secondDate);
@@ -232,6 +233,7 @@ const ManageBookingsPage = () => {
     { field: "name", headerName: "Name", flex: true, },
     { field: "phone", headerName: "Phone", flex: true, },
     ,
+    { field: "doctor", headerName: "Doctor", flex: true, renderCell: (params) => <Typography variant="body2">{params.value?.name.en}</Typography> },
     {
       field: "date",
       flex: true,
@@ -257,6 +259,7 @@ const ManageBookingsPage = () => {
     time: booking.time,
     status: booking.status,
     code: booking.code,
+    doctor: booking.doctor,
   }));
 
   const TableViewCell = ({ row }) => (
@@ -274,6 +277,9 @@ const ManageBookingsPage = () => {
               <Typography>{row?.name}</Typography>
             </AccordionSummary>
             <AccordionDetails>
+              <Typography>
+                <strong>Doctor:</strong> {row?.doctor?.name.en}
+              </Typography>
               <Typography>
                 <strong>Phone:</strong> {row?.phone}
               </Typography>
@@ -466,29 +472,31 @@ const ManageBookingsPage = () => {
           {/* date */}
           <Typography variant="body2">Change Date & Time</Typography>
           <Divider sx={{ my: 1 }} />
+          {/* change date  */}
           <TextField
-            margin="dense"
-            id="date"
-            label="Date & Time"
-            type="datetime-local"
-            fullWidth
+            type="date"
             variant="outlined"
-            value={
-              selectedBooking?.date
-                ? new Date(selectedBooking.date).toISOString().slice(0, 16)
-                : ''
-            }
-            onChange={(e) => {
-              const newDate = new Date(e.target.value);
-              if (!isNaN(newDate)) {
-                setSelectedBooking({
-                  ...selectedBooking,
-                  date: newDate.toISOString(),
-                  time: newDate.toLocaleTimeString(),
-                });
-              }
+            InputLabelProps={{
+              shrink: true,
             }}
+            value={selectedBooking?.date}
+            onChange={(e) => setSelectedBooking((prev) => ({ ...prev, date: e.target.value }))}
+            size="small"
           />
+
+          {/* change time */}
+          <TextField
+            margin="normal"
+            id="time"
+            label="Preferred Time"
+            type="time"
+            variant="outlined"
+            value={selectedBooking?.time}
+            onChange={(e) => setSelectedBooking((prev) => ({ ...prev, time: e.target.value }))}
+            sx={{ ml: 2 }}
+            size="small"
+          />
+
         </DialogContent>
         <DialogActions>
           <Button
@@ -559,7 +567,7 @@ const ManageBookingsPage = () => {
             setOpenDeleteDialog(true);
             handleCloseContextMenu();
           }}
-          // disabled={selectedBooking?.status !== "Completed" || selectedBooking?.status !== "Cancelled"}
+        // disabled={selectedBooking?.status === "Completed" || selectedBooking?.status === "Cancelled"}
         >
           <ListItemIcon>
             <Delete />

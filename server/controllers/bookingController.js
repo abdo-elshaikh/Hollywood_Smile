@@ -28,7 +28,8 @@ exports.getAllBookings = async (req, res) => {
     try {
         const bookings = await OnlineBooking.find()
             .populate('service')
-            .populate('user');
+            .populate('user')
+            .populate('doctor');
         res.status(200).json({
             success: true,
             data: bookings,
@@ -44,7 +45,7 @@ exports.getAllBookings = async (req, res) => {
 // Get a specific booking by ID
 exports.getBookingById = async (req, res) => {
     try {
-        const booking = await OnlineBooking.findById(req.params.id).populate('service').populate('user');
+        const booking = await OnlineBooking.findById(req.params.id).populate('service').populate('user').populate('doctor');
         if (!booking) {
             return res.status(404).json({
                 success: false,
@@ -118,7 +119,7 @@ exports.getBookingsByClient = async (req, res) => {
         });
     }
     try {
-        const bookings = await OnlineBooking.find({ user: clientId }).populate('service').populate('user');
+        const bookings = await OnlineBooking.find({ user: clientId }).populate('service').populate('user').populate('doctor');
         res.status(200).json({
             success: true,
             data: bookings,
