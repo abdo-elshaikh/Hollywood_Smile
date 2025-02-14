@@ -205,7 +205,6 @@ const ManageBookingsPage = () => {
     return filtered;
   };
 
-
   const columns = [
     {
       field: "actions", headerName: "#", flex: 0.2, renderCell: (params) => (
@@ -234,6 +233,7 @@ const ManageBookingsPage = () => {
     { field: "phone", headerName: "Phone", flex: true, },
     ,
     { field: "doctor", headerName: "Doctor", flex: true, renderCell: (params) => <Typography variant="body2">{params.value?.name.en}</Typography> },
+    { field: "service", headerName: "Service", flex: true, renderCell: (params) => <Typography variant="body2">{params.value?.title.en}</Typography> },
     {
       field: "date",
       flex: true,
@@ -260,6 +260,7 @@ const ManageBookingsPage = () => {
     status: booking.status,
     code: booking.code,
     doctor: booking.doctor,
+    service: booking.service,
   }));
 
   const TableViewCell = ({ row }) => (
@@ -279,6 +280,9 @@ const ManageBookingsPage = () => {
             <AccordionDetails>
               <Typography>
                 <strong>Doctor:</strong> {row?.doctor?.name.en}
+              </Typography>
+              <Typography>
+                <strong>Service:</strong> {row?.service?.title.en}
               </Typography>
               <Typography>
                 <strong>Phone:</strong> {row?.phone}
