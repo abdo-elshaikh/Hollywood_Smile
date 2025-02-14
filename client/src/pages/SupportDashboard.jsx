@@ -16,7 +16,7 @@ import {
     Container,
 } from '@mui/material';
 import { Refresh, BarChart, BookOnline, DarkMode, LightMode, Home, LoginOutlined } from '@mui/icons-material';
-import ManageBookingsPage from '../components/admin-dashboard/ManageBookingsPage';
+import ManageBookingsPage from '../components/dashboard/ManageBookingsPage';
 import bookingService from '../services/bookingService';
 import { useSnackbar } from '../contexts/SnackbarProvider';
 import { useCustomTheme } from '../contexts/ThemeProvider';
