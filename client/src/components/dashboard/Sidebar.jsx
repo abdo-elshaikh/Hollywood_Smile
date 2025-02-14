@@ -48,8 +48,6 @@ import {
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import SidebarItems from "./SidebarItems";
 import { useAuth } from "../../contexts/AuthContext";
-import TransferWithinAStationIcon from '@mui/icons-material/TransferWithinAStation';
-import ConfirmationDialog from "../common/ConfirmationDialog";
 
 const Sidebar = ({ open, sidebarWidth, onToggleDrawer, setCurrentPage, setOpen }) => {
     const { logout } = useAuth();

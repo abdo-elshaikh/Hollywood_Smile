@@ -1,75 +1,80 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import * as React from 'react';
+import { Route, Routes, useNavigate, useLocation } from 'react-router-dom';
+import { styled, alpha, useTheme } from '@mui/material/styles';
 import {
-    Box,
-    AppBar,
-    Toolbar,
-    IconButton,
-    Typography,
-    Avatar,
-    CssBaseline,
-    Drawer,
-    List,
-    ListItemIcon,
-    ListItemText,
-    Divider,
-    useTheme,
-    useMediaQuery,
-    Menu,
-    MenuItem,
-    ListItemButton,
-    Tooltip,
-    TextField,
-    InputAdornment,
-    CircularProgress,
-    Snackbar,
-    Alert,
+    Box, Drawer, CssBaseline, AppBar as MuiAppBar,
+    Toolbar, List, Typography, Divider, IconButton,
+    ListItem, ListItemButton, ListItemIcon, ListItemText,
+    Avatar, Menu, MenuItem, InputAdornment, TextField,
+    Card, CardContent, Grid, Table, TableBody, TableCell,
+    TableContainer, TableHead, TableRow, Button, Tooltip,
+    Chip, CircularProgress, LinearProgress
 } from '@mui/material';
 import {
-    Search,
-    PostAdd,
-    Comment,
-    Notifications,
-    Settings,
-    Home,
-    Menu as MenuIcon,
-    Logout,
-    LightMode,
-    DarkMode,
-    ExitToApp,
-    AccountCircle,
+    Menu as MenuIcon, ChevronLeft, ChevronRight,
+    Home, Article, Add, Comment, Notifications, ExitToApp,
+    Search, AccountCircle, DarkMode, LightMode, Logout,
+    Edit, Delete, Visibility, CheckCircle, PendingActions,
+    BarChart, DateRange, CloudUpload, Category, Close as Exit, PostAdd, Settings,
+    ArrowUpward, ArrowDownward, MoreVert
 } from '@mui/icons-material';
-import { Route, Routes, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import MainContentPage from '../components/blogDashboard/MainContentPage';
-import ManageBlogs from '../components/blogDashboard/ManageBlogs';
-import BlogEditPage from '../components/blogDashboard/BlogEditPage';
-import BlogCreatePage from '../components/blogDashboard/BlogCreatePage';
-import BlogDetailPage from '../components/blogDashboard/BlogDetailPage';
-import ManageComments from '../components/blogDashboard/ManageComments';
-import NotificationPopupMenu from '../components/common/NotificationPopupMenu';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { useCustomTheme } from '../contexts/ThemeProvider';
-import ScrollToTopButton from '../components/common/ScrollToTopButton';
+import MainContentPage from '../components/blogDashboard/MainContentPage';
+import BlogDetailPage from '../components/blogDashboard/BlogDetailPage';
+import BlogEditPage from '../components/blogDashboard/BlogEditPage';
+import ManageBlogs from '../components/blogDashboard/ManageBlogs';
+import ManageComments from '../components/blogDashboard/ManageComments';
+import BlogCreatePage from '../components/blogDashboard/BlogCreatePage';
 
-const BlogDashboard = () => {
-    const { logout, user } = useAuth();
-    const { mode, toggleMode } = useCustomTheme();
+const drawerWidth = 280;
+
+// Styled Components
+const AppBar = styled(MuiAppBar, {
+    shouldForwardProp: (prop) => prop !== 'open',
+})(({ theme, open }) => ({
+    backgroundColor: alpha(theme.palette.background.default, 0.8),
+    color: theme.palette.text.primary,
+    boxShadow: 'none',
+    borderBottom: `1px solid ${theme.palette.divider}`,
+    backdropFilter: 'blur(20px)',
+    transition: theme.transitions.create(['margin', 'width'], {
+        easing: theme.transitions.easing.easeInOut,
+        duration: 300,
+    }),
+    ...(open && {
+        width: `calc(100% - ${drawerWidth}px)`,
+        marginLeft: `${drawerWidth}px`,
+    }),
+}));
+
+const StyledDrawer = styled(Drawer)(({ theme }) => ({
+    '& .MuiDrawer-paper': {
+        width: drawerWidth,
+        borderRight: `1px solid ${theme.palette.divider}`,
+        background: alpha(theme.palette.background.paper, 0.75),
+        backdropFilter: 'blur(15px)',
+    },
+}));
+
+const ChartContainer = styled(Box)(({ theme }) => ({
+    padding: theme.spacing(3),
+    borderRadius: theme.shape.borderRadius,
+    background: theme.palette.background.paper,
+    boxShadow: theme.shadows[2],
+}));
+
+// Main Component
+export default function BlogDashboard() {
     const theme = useTheme();
+    const location = useLocation();
     const navigate = useNavigate();
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-
-    const [anchorEl, setAnchorEl] = useState(null);
-    const [menuOpen, setMenuOpen] = useState(!isMobile);
-    const [error, setError] = useState(null);
-    const [successMessage, setSuccessMessage] = useState(null);
-
-
-    const handleDrawerToggle = useCallback(() => {
-        setMenuOpen((prev) => !prev);
-    }, []);
-
-    const handleMenuOpen = (event) => setAnchorEl(event.currentTarget);
-    const handleMenuClose = () => setAnchorEl(null);
+    const { user, logout } = useAuth();
+    const { mode, toggleMode } = useCustomTheme();
+    const [open, setOpen] = React.useState(true);
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const [searchQuery, setSearchQuery] = React.useState('');
 
     const drawerItems = [
         { text: 'Dashboard', icon: <Home />, path: '/blog-dashboard' },
@@ -80,134 +85,254 @@ const BlogDashboard = () => {
         { text: 'Exit', icon: <ExitToApp />, path: '/' },
     ];
 
-    const drawerList = (
-        <Box>
-            <Toolbar />
-            <Divider />
-            <List>
-                {drawerItems.map((item, index) => (
-                    <motion.div
-                        key={index}
-                        initial={{ x: -100 }}
-                        animate={{ x: 0 }}
-                        transition={{ duration: 0.5, delay: index * 0.1, type: 'spring', stiffness: 100 }}
-                        whileHover={{ scale: 1.05 }}
-                    >
-                        <Tooltip title={item.text} placement="right" arrow>
-                            <ListItemButton
-                                selected={window.location.pathname === item.path}
-                                onClick={() => {
-                                    navigate(item.path);
-                                    if (isMobile) handleDrawerToggle();
-                                }}
-                            >
-                                <ListItemIcon>{item.icon}</ListItemIcon>
-                                <ListItemText primary={item.text} sx={{ typography: 'subtitle1', fontWeight: 'medium' }} />
-                            </ListItemButton>
-                        </Tooltip>
-                    </motion.div>
-                ))}
-            </List>
-        </Box>
-    );
+    const handleDrawerToggle = () => setOpen(!open);
+    const handleMenuOpen = (e) => setAnchorEl(e.currentTarget);
+    const handleMenuClose = () => setAnchorEl(null);
 
-    useEffect(() => {
-        if (!user) {
-            navigate('/login');
-        }
-    }, [user, navigate]);
-    
     return (
-        <Box sx={{ display: 'flex', height: '100vh', backgroundColor: theme.palette.background.default }}>
+        <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: 'background.default' }}>
             <CssBaseline />
-            <AppBar position="fixed" sx={{ zIndex: theme.zIndex.drawer + 1 }}>
-                <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <IconButton color="inherit" edge="start" onClick={handleDrawerToggle} sx={{ mr: 2 }}>
+
+            {/* App Bar */}
+            <AppBar position="fixed" open={open}>
+                <Toolbar sx={{ justifyContent: 'space-between', px: 3 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <IconButton
+                            color="inherit"
+                            onClick={handleDrawerToggle}
+                            edge="start"
+                            sx={{
+                                mr: 2,
+                                ...(open && { display: { xs: 'none', sm: 'flex' } }),
+                                '&:hover': { bgcolor: 'action.hover' }
+                            }}
+                        >
                             <MenuIcon />
                         </IconButton>
                         <Typography
                             variant="h6"
                             sx={{
-                                fontWeight: 'bold',
-                                textTransform: 'uppercase',
-                                display: { xs: 'none', sm: 'block' },
-                                color: theme.palette.primary.main,
+                                fontWeight: 700,
+                                display: { xs: 'none', md: 'block' },
+                                fontFamily: 'Inter, sans-serif',
+                                letterSpacing: -0.5
                             }}
                         >
                             Blog Dashboard
                         </Typography>
                     </Box>
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
                         <TextField
-                            aria-label="Search blogs"
                             size="small"
-                            placeholder="Search …"
-                            sx={{ backgroundColor: theme.palette.background.paper, mr: 2, borderRadius: 1 }}
+                            placeholder="Search content..."
+                            variant="outlined"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            sx={{
+                                width: 280,
+                                '& .MuiOutlinedInput-root': {
+                                    borderRadius: 4,
+                                    bgcolor: 'background.paper'
+                                }
+                            }}
                             InputProps={{
-                                startAdornment: <InputAdornment position="start"><Search /></InputAdornment>,
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <Search fontSize="small" />
+                                    </InputAdornment>
+                                ),
                             }}
                         />
-                        <NotificationPopupMenu source="blog-dashboard" />
-                        <IconButton onClick={handleMenuOpen} color="inherit">
-                            <Avatar alt={user?.name?.split(' ')[0]} src={user?.avatarUrl} />
-                        </IconButton>
-                        <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
-                            <MenuItem onClick={() => navigate('/profile')}>
-                                <ListItemIcon><AccountCircle /></ListItemIcon>
-                                <ListItemText primary="Profile" />
-                            </MenuItem>
-                            <MenuItem onClick={toggleMode}>
-                                <ListItemIcon>{mode === 'light' ? <DarkMode fontSize="small" /> : <LightMode fontSize="small" />}</ListItemIcon>
-                                <ListItemText primary={mode === 'light' ? 'Dark Mode' : 'Light Mode'} />
-                            </MenuItem>
-                            <MenuItem onClick={logout}>
-                                <ListItemIcon><Logout fontSize="small" /></ListItemIcon>
-                                <ListItemText primary="Logout" />
-                            </MenuItem>
-                        </Menu>
+
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <Tooltip title={mode === 'dark' ? 'Light theme' : 'Dark theme'}>
+                                <IconButton
+                                    onClick={toggleMode}
+                                    sx={{
+                                        color: 'text.primary',
+                                        '&:hover': { bgcolor: 'action.hover' }
+                                    }}
+                                >
+                                    {mode === 'dark' ? <LightMode /> : <DarkMode />}
+                                </IconButton>
+                            </Tooltip>
+
+                            <IconButton
+                                onClick={handleMenuOpen}
+                                sx={{ p: 0, '&:hover': { transform: 'scale(1.05)' } }}
+                            >
+                                <Avatar
+                                    src={user?.avatarUrl}
+                                    sx={{
+                                        width: 40,
+                                        height: 40,
+                                        border: `2px solid ${theme.palette.primary.main}`
+                                    }}
+                                />
+                            </IconButton>
+                        </Box>
                     </Box>
                 </Toolbar>
+                <LinearProgress
+                    color="primary"
+                    variant="determinate"
+                    value={75}
+                    sx={{ height: 2, bgcolor: 'transparent' }}
+                />
             </AppBar>
-            <Drawer
-                variant={isMobile ? 'temporary' : 'persistent'}
-                open={menuOpen}
-                onClose={handleDrawerToggle}
+
+            {/* Navigation Drawer */}
+            <StyledDrawer
+                variant="persistent"
+                anchor="left"
+                open={open}
+            >
+                <Box sx={{ p: 2, borderBottom: `1px solid ${theme.palette.divider}` }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <Typography
+                            variant="subtitle1"
+                            sx={{
+                                fontWeight: 600,
+                                color: 'text.secondary',
+                                pl: 1.5
+                            }}
+                        >
+                            Navigation
+                        </Typography>
+                        <IconButton
+                            onClick={handleDrawerToggle}
+                            sx={{ color: 'text.secondary' }}
+                        >
+                            {theme.direction === 'ltr' ? <ChevronLeft /> : <ChevronRight />}
+                        </IconButton>
+                    </Box>
+                </Box>
+
+                <List sx={{ px: 2, pt: 2 }}>
+                    {drawerItems.map((item) => (
+                        <motion.div
+                            key={item.text}
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                        >
+                            <ListItemButton
+                                selected={location.pathname === item.path}
+                                onClick={() => navigate(item.path)}
+                                sx={{
+                                    borderRadius: 2,
+                                    mb: 1,
+                                    '&.Mui-selected': {
+                                        bgcolor: 'action.selected',
+                                        '&:hover': { bgcolor: 'action.hover' }
+                                    }
+                                }}
+                            >
+                                <ListItemIcon sx={{ minWidth: 40 }}>
+                                    {React.cloneElement(item.icon, {
+                                        color: location.pathname === item.path ? 'primary' : 'inherit'
+                                    })}
+                                </ListItemIcon>
+                                <ListItemText
+                                    primary={item.text}
+                                    primaryTypographyProps={{
+                                        variant: 'body2',
+                                        fontWeight: 500
+                                    }}
+                                />
+                            </ListItemButton>
+                        </motion.div>
+                    ))}
+                </List>
+            </StyledDrawer>
+
+            {/* Main Content */}
+            <Box
+                component="main"
                 sx={{
-                    '& .MuiDrawer-paper': { width: 240, boxSizing: 'border-box', backgroundColor: theme.palette.background.paper },
+                    flexGrow: 1,
+                    p: { xs: 2, md: 4 },
+                    ml: open ? `${drawerWidth}px` : 0,
+                    transition: theme.transitions.create('margin', {
+                        easing: theme.transitions.easing.easeInOut,
+                        duration: 300,
+                    }),
                 }}
             >
-                {drawerList}
-            </Drawer>
-            <Box component="main" sx={{ flexGrow: 1, overflow: 'auto', p: 1 }}>
                 <Toolbar />
-                <Routes>
-                    <Route path="/" element={<MainContentPage />} />
-                    <Route path="/blogs" element={<ManageBlogs />} />
-                    <Route path="/settings" element={<Settings />} />
-                    <Route path="/add-blog" element={<BlogCreatePage />} />
-                    <Route path="/edit-blog/:id" element={<BlogEditPage />} />
-                    <Route path="/view-blog/:id" element={<BlogDetailPage />} />
-                    <Route path="/comments" element={<ManageComments />} />
-                    <Route path="/notifications" element={<Notifications />} />
-                </Routes>
+                <AnimatePresence mode='wait'>
+                    <motion.div
+                        key={location.pathname}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ duration: 0.2 }}
+                    >
+                        <Routes>
+                            <Route path="/" element={<MainContentPage />} />
+                            <Route path="/blogs" element={<ManageBlogs />} />
+                            <Route path="/settings" element={<Settings />} />
+                            <Route path="/add-blog" element={<BlogCreatePage />} />
+                            <Route path="/edit-blog/:id" element={<BlogEditPage />} />
+                            <Route path="/view-blog/:id" element={<BlogDetailPage />} />
+                            <Route path="/comments" element={<ManageComments />} />
+                            <Route path="/notifications" element={<Notifications />} />
+                        </Routes>
+                    </motion.div>
+                </AnimatePresence>
             </Box>
 
-            {/* Success Snackbar */}
-            <Snackbar
-                open={!!successMessage}
-                autoHideDuration={6000}
-                onClose={() => setSuccessMessage(null)}
+            {/* User Menu */}
+            <Menu
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleMenuClose}
+                PaperProps={{
+                    sx: {
+                        width: 280,
+                        borderRadius: 2,
+                        boxShadow: 24,
+                        mt: 1,
+                        overflow: 'visible',
+                        '&:before': {
+                            content: '""',
+                            display: 'block',
+                            position: 'absolute',
+                            top: 0,
+                            right: 14,
+                            width: 10,
+                            height: 10,
+                            bgcolor: 'background.paper',
+                            transform: 'translateY(-50%) rotate(45deg)',
+                            zIndex: 0,
+                        },
+                    }
+                }}
             >
-                <Alert severity="success" onClose={() => setSuccessMessage(null)}>
-                    {successMessage}
-                </Alert>
-            </Snackbar>
-
-            {/* Scroll to Top Button */}
-            <ScrollToTopButton />
+                <MenuItem
+                    onClick={() => navigate('/profile')}
+                    sx={{ py: 1.5, '&:hover': { bgcolor: 'action.hover' } }}
+                >
+                    <ListItemIcon><AccountCircle /></ListItemIcon>
+                    <ListItemText
+                        primary="Profile"
+                        secondary={user?.email}
+                        secondaryTypographyProps={{ variant: 'caption' }}
+                    />
+                </MenuItem>
+                <Divider sx={{ my: 1 }} />
+                <MenuItem
+                    onClick={logout}
+                    sx={{
+                        color: 'error.main',
+                        '&:hover': { bgcolor: 'error.light' }
+                    }}
+                >
+                    <ListItemIcon><Logout color="error" /></ListItemIcon>
+                    <ListItemText primary="Logout" />
+                </MenuItem>
+            </Menu>
         </Box>
     );
-};
+}
 
-export default BlogDashboard;

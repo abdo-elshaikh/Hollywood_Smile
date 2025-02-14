@@ -6,7 +6,7 @@ import { useClinicContext } from './contexts/ClinicContext';
 const HomePage = lazy(() => import('./pages/HomePage'));
 const AuthPage = lazy(() => import('./pages/AuthPage'));
 const AboutUsPage = lazy(() => import('./pages/AboutUsPage'));
-const DashboardPage = lazy(() => import('./pages/admin-dashboardPage'));
+const DashboardPage = lazy(() => import('./pages/DashboardPage'));
 const SupportDashboard = lazy(() => import('./pages/SupportDashboard'));
 const BlogDashboard = lazy(() => import('./pages/BlogDashboard'));
 const BlogPage = lazy(() => import('./pages/BlogPage'));

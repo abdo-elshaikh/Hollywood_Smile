@@ -437,6 +437,57 @@ const MobileMenu = ({ open, onClose, items, user, isArabic, navigate, handleLang
                         </ListItem>
                     </Box>
 
+                    {/* Admin Section */}
+                    {user && ['admin', 'support'].includes(user.role) && (
+                        <Box sx={{ mt: 4, bgcolor: 'background.paper', borderRadius: 2, boxShadow: 1 }}>
+                            <ListItem
+                                button
+                                onClick={() => {
+                                    navigate(`/${user.role}-dashboard`);
+                                    onClose();
+                                }}
+                                sx={{ borderRadius: 2 }}
+                            >
+                                <ListItemIcon sx={{ minWidth: 40 }}>
+                                    <SettingsApplications color="primary" />
+                                </ListItemIcon>
+                                <ListItemText
+                                    primary={t(`app.${user.role}Dashboard`)}
+                                    primaryTypographyProps={{
+                                        fontWeight: 600,
+                                        align: isArabic ? 'right' : 'left'
+                                    }}
+                                />
+                            </ListItem>
+                        </Box>
+                    )}
+
+                    {/* Blog Section */}
+                    {user && ['author', 'editor'].includes(user.role) && (
+                        <Box sx={{ mt: 4, bgcolor: 'background.paper', borderRadius: 2, boxShadow: 1 }}>
+                            <ListItem
+                                button
+                                onClick={() => {
+                                    navigate('/blog-dashboard');
+                                    onClose();
+                                }}
+                                sx={{ borderRadius: 2 }}
+                            >
+                                <ListItemIcon sx={{ minWidth: 40 }}>
+                                    <DriveFileMove color="primary" />
+                                </ListItemIcon>
+                                <ListItemText
+                                    primary={t('app.blogDashboard')}
+                                    primaryTypographyProps={{
+                                        fontWeight: 600,
+                                        align: isArabic ? 'right' : 'left'
+                                    }}
+                                />
+                            </ListItem>
+                        </Box>
+                    )}
+
+                   
                     {/* User Section */}
                     {user && (
                         <Box sx={{ mt: 4, bgcolor: 'background.paper', borderRadius: 2, boxShadow: 1 }}>

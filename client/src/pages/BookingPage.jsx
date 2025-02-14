@@ -67,7 +67,7 @@ const BookingPage = () => {
     const [bookings, setBookings] = useState([]);
     const { id } = useParams();
     const [bookingData, setBookingData] = useState({
-        name: '', email: '', phone: '', service: id || '',
+        name: user?.name || '', email: user?.email || '', phone: user?.phone || '', service: id || '',
         date: new Date(), time: '', message: '', user: user?._id || null, doctor: null
     });
 
