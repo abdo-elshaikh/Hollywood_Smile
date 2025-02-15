@@ -176,8 +176,8 @@ const HeaderSection = () => {
                             <>
                                 <IconButton onClick={handleAdminMenu} sx={{ p: 0 }}>
                                     <Avatar
-                                        src={user.avatar}
-                                        sx={{ width: 40, height: 40, bgcolor: 'primary.main' }}
+                                        src={user?.avatarUrl}
+                                        sx={{ width: 40, height: 40 }}
                                     >
                                         {user.name[0]}
                                     </Avatar>
