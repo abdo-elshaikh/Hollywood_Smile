@@ -31,14 +31,24 @@ import {
   AccordionDetails,
 } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import { Delete, Done, Cancel, Edit, Send, MoreVert, ExpandMore } from "@mui/icons-material";
+import {
+  Delete,
+  Done,
+  Cancel,
+  Edit,
+  Send,
+  MoreVert,
+  ExpandMore,
+  Search,
+  Refresh,
+} from "@mui/icons-material";
 import bookingService from "../../services/bookingService";
 import { useSnackbar } from "../../contexts/SnackbarProvider";
 import SendSMS from "../SendSMS";
 import WhatsAppMessage from "../common/WhatsAppMessage";
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
-import { format } from 'date-fns';
+import { format } from "date-fns";
 import { daysInWeek } from "date-fns/constants";
 
 const ManageBookingsPage = () => {
@@ -52,13 +62,24 @@ const ManageBookingsPage = () => {
   const [ConfirmDialog, setConfirmDialog] = useState(false);
   const [loadingConfirm, setLoadingConfirm] = useState(false);
   const [contextMenu, setContextMenu] = useState(null);
+  const [searchdate, setSearchDate] = useState({
+    firstDate: null,
+    secondDate: null,
+  });
   const Ar = i18n.language === "ar";
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const showSnackbar = useSnackbar();
-  const statuses = ["All", "Pending", "Confirmed", "In Progress", "Completed", "Cancelled"];
+  const statuses = [
+    "All",
+    "Pending",
+    "Confirmed",
+    "In Progress",
+    "Completed",
+    "Cancelled",
+  ];
 
   const bookStatusColor = (status) => {
     switch (status) {
@@ -88,7 +109,10 @@ const ManageBookingsPage = () => {
       console.log(data.data);
       setBookings(data.data);
     } catch (error) {
-      showSnackbar(error?.response?.data?.message || "Error fetching bookings.", "error");
+      showSnackbar(
+        error?.response?.data?.message || "Error fetching bookings.",
+        "error",
+      );
     } finally {
       setLoading(false);
     }
@@ -99,11 +123,12 @@ const ManageBookingsPage = () => {
   };
 
   const handleChangeStatus = async (id, currentStatus) => {
-    const newStatus = currentStatus === "Cancelled" ? null : getNewStatus(currentStatus);
+    const newStatus =
+      currentStatus === "Cancelled" ? null : getNewStatus(currentStatus);
     if (!newStatus) {
       showSnackbar("Cannot update status.", "error");
       return;
-    };
+    }
 
     try {
       await bookingService.updateBooking(id, { status: newStatus });
@@ -128,7 +153,9 @@ const ManageBookingsPage = () => {
     setLoadingDelete(true);
     try {
       await bookingService.deleteBooking(selectedBooking.id);
-      setBookings((prev) => prev.filter((booking) => booking._id !== selectedBooking.id));
+      setBookings((prev) =>
+        prev.filter((booking) => booking._id !== selectedBooking.id),
+      );
       fetchBookings();
       showSnackbar("Booking deleted successfully.", "success");
     } catch (error) {
@@ -192,35 +219,39 @@ const ManageBookingsPage = () => {
     setContextMenu(null);
   };
 
-  const filteredBookings = activeTab === "All" ? bookings : bookings.filter((booking) => booking.status === activeTab);
+  const filteredBookings =
+    activeTab === "All"
+      ? bookings
+      : bookings.filter((booking) => booking.status === activeTab);
 
-  const filetrByDate = (firstDate, secondDate) => {
-    const date1 = new Date(firstDate);
-    const date2 = new Date(secondDate);
-
-    if (isNaN(date1) || isNaN(date2)) {
-      return filteredBookings;
+  const filetrByDate = () => {
+    if (searchdate.firstDate && searchdate.secondDate) {
+      const filtered = bookings.filter((booking) => {
+        const bookingDate = new Date(booking.date);
+        const firstDate = new Date(searchdate.firstDate);
+        const secondDate = new Date(searchdate.secondDate);
+        return bookingDate >= firstDate && bookingDate <= secondDate;
+      });
+      setBookings(filtered);
+    } else {
+      showSnackbar("Please select both dates.", "error");
     }
-
-    const filtered = filteredBookings.filter((booking) => {
-      const bookingDate = new Date(booking.date);
-      return bookingDate >= date1 && bookingDate <= date2;
-    });
-
-    return filtered;
   };
 
   const columns = [
     {
-      field: "actions", headerName: "#", flex: 0.2, renderCell: (params) => (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+      field: "actions",
+      headerName: "#",
+      flex: 0.2,
+      renderCell: (params) => (
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
           <IconButton onClick={(event) => handleContextMenu(event, params.row)}>
             <MoreVert color="primary.main" />
           </IconButton>
         </Box>
-      )
+      ),
     },
-    { field: "code", headerName: "ID", hide: true, flex: true, },
+    { field: "code", headerName: "ID", hide: true, flex: true },
     {
       field: "status",
       headerName: "Status",
@@ -234,18 +265,33 @@ const ManageBookingsPage = () => {
         />
       ),
     },
-    { field: "name", headerName: "Name", flex: true, },
-    { field: "phone", headerName: "Phone", flex: true, },
+    { field: "name", headerName: "Name", flex: true },
+    { field: "phone", headerName: "Phone", flex: true },
     ,
-    { field: "doctor", headerName: "Doctor", flex: true, renderCell: (params) => <Typography variant="body2">{params.value}</Typography> },
-    { field: "service", headerName: "Service", flex: true, renderCell: (params) => <Typography variant="body2">{params.value}</Typography> },
+    {
+      field: "doctor",
+      headerName: "Doctor",
+      flex: true,
+      renderCell: (params) => (
+        <Typography variant="body2">{params.value}</Typography>
+      ),
+    },
+    {
+      field: "service",
+      headerName: "Service",
+      flex: true,
+      renderCell: (params) => (
+        <Typography variant="body2">{params.value}</Typography>
+      ),
+    },
     {
       field: "date",
       flex: true,
       headerName: "Preferred Date",
       renderCell: (params) => (
         <Typography variant="body2">
-          {t(`days.${format(new Date(params.value), 'eeee').toLowerCase()}`)} {params.value.slice(0, 10)}
+          {t(`days.${format(new Date(params.value), "eeee").toLowerCase()}`)}{" "}
+          {params.value.slice(0, 10)}
         </Typography>
       ),
     },
@@ -253,9 +299,10 @@ const ManageBookingsPage = () => {
       field: "time",
       flex: true,
       headerName: "Preferred Time",
-      renderCell: (params) => <Typography variant="body2">{params.value}</Typography>,
+      renderCell: (params) => (
+        <Typography variant="body2">{params.value}</Typography>
+      ),
     },
-
   ];
 
   const rows = filteredBookings.map((booking) => ({
@@ -274,9 +321,7 @@ const ManageBookingsPage = () => {
     <ListItem alignItems="flex-start">
       <ListItemText
         primary={
-          <Accordion
-            sx={{ width: "100%" }}
-          >
+          <Accordion sx={{ width: "100%" }}>
             <AccordionSummary
               expandIcon={<ExpandMore />}
               aria-controls="panel1a-content"
@@ -295,11 +340,9 @@ const ManageBookingsPage = () => {
                 <strong>Phone:</strong> {row?.phone}
               </Typography>
               <Typography>
-                <strong>Day:</strong> {format(new Date(row?.date), 'EEEE')} {row?.date.slice(0, 10)}
+                <strong>Day:</strong>{" "}
+                {t(`days.${format(new Date(row?.date), "eeee").toLowerCase()}`)} - {row?.date.slice(0, 10)}
               </Typography>
-              {/* <Typography>
-                <strong>Date:</strong> {row?.date.slice(0, 10)}
-              </Typography> */}
               <Typography>
                 <strong>Time:</strong> {row?.time}
               </Typography>
@@ -310,7 +353,14 @@ const ManageBookingsPage = () => {
           </Accordion>
         }
         secondary={
-          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 1 }}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: 1,
+            }}
+          >
             <Chip
               label={row?.status}
               color={bookStatusColor(row?.status)}
@@ -327,8 +377,70 @@ const ManageBookingsPage = () => {
   );
 
   return (
-    <Box >
-      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", mb: 2, gap: 2 }}>
+    <Box>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          gap: 2,
+          mb: 2,
+          flexWrap: "wrap",
+        }}
+      >
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+          <TextField
+            id="date"
+            label="From Date"
+            type="date"
+            variant="outlined"
+            InputLabelProps={{
+              shrink: true,
+            }}
+            size="small"
+            onChange={(e) =>
+              searchdate((prev) => ({ ...prev, firstDate: e.target.value }))
+            }
+          />
+          <TextField
+            id="date"
+            label="To Date"
+            type="date"
+            variant="outlined"
+            InputLabelProps={{
+              shrink: true,
+            }}
+            size="small"
+            onChange={(e) =>
+              searchdate((prev) => ({ ...prev, secondDate: e.target.value }))
+            }
+          />
+          <Button
+            onClick={filetrByDate}
+            variant="outlined"
+            color="primary"
+          >
+            <Search />
+          </Button>
+        </Box>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={fetchBookings}
+        >
+          <Refresh />
+        </Button>
+      </Box>
+
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          mb: 2,
+          gap: 2,
+        }}
+      >
         <Tabs
           value={activeTab}
           onChange={handleTabChange}
@@ -336,38 +448,19 @@ const ManageBookingsPage = () => {
           scrollButtons="auto"
           allowScrollButtonsMobile
           aria-label="scrollable auto tabs example"
+          textColor="secondary"
+          indicatorColor="secondary"
         >
           {statuses.map((status) => (
             <Tab key={status} label={status} value={status} />
           ))}
         </Tabs>
       </Box>
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 2, mb: 2 }}>
-        <TextField
-          id="date"
-          label="Filter by Date"
-          type="date"
-          variant="outlined"
-          InputLabelProps={{
-            shrink: true,
-          }}
-          onChange={(e) => {
-            const date = new Date(e.target.value);
-            const filtered = filetrByDate(date, new Date());
-            setBookings(filtered);
-          }}
-        />
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={fetchBookings}
-          startIcon={<Send />}
-        >
-          Refresh
-        </Button>
-      </Box>
-      <Paper sx={{ height: 'calc(100vh - 250px)', width: '100%', overflow: 'auto' }}>
-        {!isMobile ?
+
+      <Paper
+        sx={{ height: "calc(100vh - 250px)", width: "100%", overflow: "auto" }}
+      >
+        {!isMobile ? (
           <DataGrid
             rows={rows}
             columns={columns}
@@ -384,12 +477,26 @@ const ManageBookingsPage = () => {
             slots={{
               toolbar: GridToolbar,
               noRowsOverlay: () => (
-                <Stack height="100%" alignItems="center" justifyContent="center">
-                  {loading ? <CircularProgress /> : <Typography>No bookings found.</Typography>}
+                <Stack
+                  height="100%"
+                  alignItems="center"
+                  justifyContent="center"
+                >
+                  {loading ? (
+                    <CircularProgress />
+                  ) : (
+                    <Typography variant="body2">
+                      No bookings found. Please try again later.
+                    </Typography>
+                  )}
                 </Stack>
               ),
               noResultsOverlay: () => (
-                <Stack height="100%" alignItems="center" justifyContent="center">
+                <Stack
+                  height="100%"
+                  alignItems="center"
+                  justifyContent="center"
+                >
                   <Typography>No results found.</Typography>
                 </Stack>
               ),
@@ -400,10 +507,9 @@ const ManageBookingsPage = () => {
                 quickFilterProps: { debounceMs: 500 },
               },
             }}
-
           />
-          :
-          <Box sx={{ height: 'calc(100vh - 250px)', p: 2 }}>
+        ) : (
+          <Box sx={{ height: "calc(100vh - 250px)", p: 2 }}>
             <List
               sx={{
                 width: "100%",
@@ -416,20 +522,26 @@ const ManageBookingsPage = () => {
                 <TableViewCell key={row.id} row={row} />
               ))}
             </List>
-
           </Box>
-        }
+        )}
       </Paper>
 
       {/* Delete Confirmation Dialog */}
-      <Dialog open={openDeleteDialog} onClose={() => setOpenDeleteDialog(false)}>
+      <Dialog
+        open={openDeleteDialog}
+        onClose={() => setOpenDeleteDialog(false)}
+      >
         <DialogTitle>Confirm Delete</DialogTitle>
         <DialogContent>
           <Typography>Are you sure you want to delete this booking?</Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpenDeleteDialog(false)}>Cancel</Button>
-          <Button onClick={handleDeleteBooking} color="error" disabled={loadingDelete}>
+          <Button
+            onClick={handleDeleteBooking}
+            color="error"
+            disabled={loadingDelete}
+          >
             {loadingDelete ? <CircularProgress size={24} /> : "Delete"}
           </Button>
         </DialogActions>
@@ -438,7 +550,11 @@ const ManageBookingsPage = () => {
       {/* Confirm Dialog */}
       <Dialog open={ConfirmDialog} onClose={() => setConfirmDialog(false)}>
         <DialogTitle
-          sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
         >
           <Typography>Confirm Booking</Typography>
           <IconButton onClick={() => setConfirmDialog(false)}>
@@ -446,7 +562,9 @@ const ManageBookingsPage = () => {
           </IconButton>
         </DialogTitle>
         <DialogContent>
-          <Typography>Are you sure you want to confirm this booking?</Typography>
+          <Typography>
+            Are you sure you want to confirm this booking?
+          </Typography>
           <Divider sx={{ my: 1 }} />
           <TextField
             margin="dense"
@@ -494,7 +612,9 @@ const ManageBookingsPage = () => {
               shrink: true,
             }}
             value={selectedBooking?.date}
-            onChange={(e) => setSelectedBooking((prev) => ({ ...prev, date: e.target.value }))}
+            onChange={(e) =>
+              setSelectedBooking((prev) => ({ ...prev, date: e.target.value }))
+            }
             size="small"
           />
 
@@ -506,11 +626,12 @@ const ManageBookingsPage = () => {
             type="time"
             variant="outlined"
             value={selectedBooking?.time}
-            onChange={(e) => setSelectedBooking((prev) => ({ ...prev, time: e.target.value }))}
+            onChange={(e) =>
+              setSelectedBooking((prev) => ({ ...prev, time: e.target.value }))
+            }
             sx={{ ml: 2 }}
             size="small"
           />
-
         </DialogContent>
         <DialogActions>
           <Button
@@ -541,7 +662,10 @@ const ManageBookingsPage = () => {
             handleChangeStatus(selectedBooking.id, selectedBooking?.status);
             handleCloseContextMenu();
           }}
-          disabled={selectedBooking?.status === "Completed" || selectedBooking?.status === "Cancelled"}
+          disabled={
+            selectedBooking?.status === "Completed" ||
+            selectedBooking?.status === "Cancelled"
+          }
         >
           <ListItemIcon>
             <Done />
@@ -560,9 +684,7 @@ const ManageBookingsPage = () => {
           <ListItemIcon>
             <Edit />
           </ListItemIcon>
-          <ListItemText>
-            Change Date & Time Booking
-          </ListItemText>
+          <ListItemText>Change Date & Time Booking</ListItemText>
         </MenuItem>
         <MenuItem
           onClick={() => {
@@ -601,7 +723,6 @@ const ManageBookingsPage = () => {
           text={`Hello ${selectedBooking?.name}, your booking has been confirmed. Date: ${selectedBooking?.date.split("T")[0]}, Time: ${selectedBooking?.time}. Please note your booking code: ${selectedBooking?.code}. Please be on time.`}
           status={selectedBooking?.status}
         />
-
       </Menu>
     </Box>
   );

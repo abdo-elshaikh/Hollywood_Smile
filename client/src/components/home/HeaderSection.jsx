@@ -487,7 +487,7 @@ const MobileMenu = ({ open, onClose, items, user, isArabic, navigate, handleLang
                         </Box>
                     )}
 
-                   
+
                     {/* User Section */}
                     {user && (
                         <Box sx={{ mt: 4, bgcolor: 'background.paper', borderRadius: 2, boxShadow: 1 }}>
