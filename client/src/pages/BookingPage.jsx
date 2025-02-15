@@ -44,6 +44,7 @@ const BookingPage = () => {
     const [openDialog, setOpenDialog] = useState(false);
     const [expanded, setExpanded] = useState(true);
     const [doctors, setDoctors] = useState([]);
+    const [selectedDay, setSelectedDay] = useState('');
 
     const [selectedDoctor, setSelectedDoctor] = useState({
         _id: '',
@@ -196,8 +197,9 @@ const BookingPage = () => {
         }
 
 
-        const selectedDay = format(date, 'eeee').toLowerCase();
-        showSnackBar(isArabic ? `تم اختيار اليوم : ${t(`days.${selectedDay}`)}` : `Selected Day : ${t(`days.${selectedDay}`)}`, 'info');
+        const day = format(date, 'eeee').toLowerCase();
+        setSelectedDay(day);
+        showSnackBar(isArabic ? `تم اختيار اليوم : ${t(`days.${day}`)}` : `Selected Day : ${t(`days.${day}`)}`, 'info');
         setSelectedDate(dayjs(date));
 
         setBookingData({ ...bookingData, date: date });
@@ -451,6 +453,9 @@ const BookingPage = () => {
                             <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
                                 {isArabic ? 'أختر التاريخ المفضل :' : 'Select Perefare Date :'} {selectedDate ? selectedDate.format('DD/MM/YYYY') : ''}
                             </Typography>
+                            {/* <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+                                {isArabic ? `اليوم : ${t(`days.${selectedDay}`)}` : `Day : ${t(`days.${selectedDay}`)}`}
+                            </Typography> */}
                             <Divider sx={{ my: 1 }} />
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
                                 <DateCalendar

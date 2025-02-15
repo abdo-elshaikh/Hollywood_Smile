@@ -37,8 +37,12 @@ import { useSnackbar } from "../../contexts/SnackbarProvider";
 import SendSMS from "../SendSMS";
 import WhatsAppMessage from "../common/WhatsAppMessage";
 import { useTheme } from "@mui/material/styles";
+import { useTranslation } from "react-i18next";
+import { format } from 'date-fns';
+import { daysInWeek } from "date-fns/constants";
 
 const ManageBookingsPage = () => {
+  const { t, i18n } = useTranslation();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("All");
@@ -48,6 +52,7 @@ const ManageBookingsPage = () => {
   const [ConfirmDialog, setConfirmDialog] = useState(false);
   const [loadingConfirm, setLoadingConfirm] = useState(false);
   const [contextMenu, setContextMenu] = useState(null);
+  const Ar = i18n.language === "ar";
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -232,14 +237,16 @@ const ManageBookingsPage = () => {
     { field: "name", headerName: "Name", flex: true, },
     { field: "phone", headerName: "Phone", flex: true, },
     ,
-    { field: "doctor", headerName: "Doctor", flex: true, renderCell: (params) => <Typography variant="body2">{params.value?.name.en}</Typography> },
-    { field: "service", headerName: "Service", flex: true, renderCell: (params) => <Typography variant="body2">{params.value?.title.en}</Typography> },
+    { field: "doctor", headerName: "Doctor", flex: true, renderCell: (params) => <Typography variant="body2">{params.value}</Typography> },
+    { field: "service", headerName: "Service", flex: true, renderCell: (params) => <Typography variant="body2">{params.value}</Typography> },
     {
       field: "date",
       flex: true,
       headerName: "Preferred Date",
       renderCell: (params) => (
-        <Typography variant="body2">{new Date(params.value).toLocaleDateString()}</Typography>
+        <Typography variant="body2">
+          {t(`days.${format(new Date(params.value), 'eeee').toLowerCase()}`)} {params.value.slice(0, 10)}
+        </Typography>
       ),
     },
     {
@@ -259,8 +266,8 @@ const ManageBookingsPage = () => {
     time: booking.time,
     status: booking.status,
     code: booking.code,
-    doctor: booking.doctor,
-    service: booking.service,
+    doctor: Ar ? booking.doctor?.name.ar : booking.doctor?.name.en,
+    service: Ar ? booking.service?.title.ar : booking.service?.title.en,
   }));
 
   const TableViewCell = ({ row }) => (
@@ -279,17 +286,20 @@ const ManageBookingsPage = () => {
             </AccordionSummary>
             <AccordionDetails>
               <Typography>
-                <strong>Doctor:</strong> {row?.doctor?.name.en}
+                <strong>Doctor:</strong> {row?.doctor}
               </Typography>
               <Typography>
-                <strong>Service:</strong> {row?.service?.title.en}
+                <strong>Service:</strong> {row?.service}
               </Typography>
               <Typography>
                 <strong>Phone:</strong> {row?.phone}
               </Typography>
               <Typography>
-                <strong>Date:</strong> {row?.date.slice(0, 10)}
+                <strong>Day:</strong> {format(new Date(row?.date), 'EEEE')} {row?.date.slice(0, 10)}
               </Typography>
+              {/* <Typography>
+                <strong>Date:</strong> {row?.date.slice(0, 10)}
+              </Typography> */}
               <Typography>
                 <strong>Time:</strong> {row?.time}
               </Typography>
