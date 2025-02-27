@@ -170,7 +170,7 @@ const Footer = () => {
             <Typography variant="body2" textAlign="center">
               {t('Footer.MadeWith')} <span role="img" aria-label="heart">❤️</span>{' '}
               {t('Footer.By')}{' '}
-              <Link href="https://www.linkedin.com/in/abdelrahman-mohamed-ahmed-56874a28a/" target="_blank" color="#C1713B">
+              <Link href="https://www.abdomhmd.site/" target="_blank" color="#C1713B">
                 {isArabic ? 'عبدالرحمن محمد' : 'Abdelrahman Mohamed'}
               </Link>
             </Typography>
